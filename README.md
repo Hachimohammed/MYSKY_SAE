@@ -37,7 +37,7 @@ Les étudiants développent un **prototype (pilote)** avec :
 |SEBBAH Sofiane | sofianesbh6@gmail.com| |
 |FILLONNEAU Kenzo| naekenshi@gmail.com | |
 |BOUABTA Yunes|yunes.bouabta@gmail.com | |
-| | | |
+|SOW Yakouba | | |
 
 ## 📜 Le sujet sous format PDF : 
 
