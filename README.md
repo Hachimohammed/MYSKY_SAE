@@ -36,7 +36,7 @@ Les étudiants développent un **prototype (pilote)** avec :
 |HACHIM Mohammed |hachim.mohammed@hotmail.com| |
 |SEBBAH Sofiane | sofianesbh6@gmail.com| |
 |FILLONNEAU Kenzo| naekenshi@gmail.com | |
-| | | |
+|BOUABTA Yunes|yunes.bouabta@gmail.com | |
 | | | |
 
 ## 📜 Le sujet sous format PDF : 
