@@ -35,7 +35,7 @@ Les étudiants développent un **prototype (pilote)** avec :
 |--------------|----------------|------|
 |HACHIM Mohammed |hachim.mohammed@hotmail.com| |
 |SEBBAH Sofiane | sofianesbh6@gmail.com| |
-|FILLONNEAU Kenzo| kenzo.filloneau@edu.univ-paris13.fr | |
+|FILLONNEAU Kenzo| kenzo.fillonneau@edu.univ-paris13.fr | |
 |BOUABTA Yunes|yunes.bouabta@gmail.com | |
 |SOW Yakouba |yakoubasow13@gmail.com | |
 
