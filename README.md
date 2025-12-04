@@ -31,13 +31,13 @@ Les étudiants développent un **prototype (pilote)** avec :
 
 ## 👥 Équipe de réalisation
 
-| Nom complet | Adresse e-mail | Rôle |
-|--------------|----------------|------|
-|HACHIM Mohammed |hachim.mohammed@hotmail.com| |
-|SEBBAH Sofiane | sofianesbh6@gmail.com| |
-|FILLONNEAU Kenzo| kenzo.fillonneau@edu.univ-paris13.fr | |
-|BOUABTA Yunes|yunes.bouabta@gmail.com | |
-|SOW Yakouba |yakoubasow13@gmail.com | |
+| Nom complet | Adresse e-mail |
+|--------------|----------------|
+|HACHIM Mohammed |hachim.mohammed@hotmail.com|
+|SEBBAH Sofiane | sofianesbh6@gmail.com|
+|FILLONNEAU Kenzo| kenzo.fillonneau@edu.univ-paris13.fr |
+|BOUABTA Yunes|yunes.bouabta@gmail.com |
+|SOW Yakouba |yakoubasow13@gmail.com |
 
 ## 📜 Le sujet sous format PDF : 
 
