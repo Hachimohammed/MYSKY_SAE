@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Marketing - MySky Audio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
+    
+    <!-- Header avec logo -->
+    <div class="bg-white/10 backdrop-blur-sm border-b border-white/20">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl overflow-hidden">
+                    <img 
+                        src="{{ url_for('static', filename='Logo3.png') }}" 
+                        alt="MySky Audio Logo" 
+                        class="w-full h-full object-contain"
+                    />
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white">MySky Audio</h1>
+                    <p class="text-xs text-blue-200">Service Marketing - Gestion Musique d'Ambiance</p>
+                </div>
+            </div>
+            <button class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors text-sm font-medium">
+                Déconnexion
+            </button>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Titre principal -->
+        <div class="mb-10">
+            <h2 class="text-5xl font-bold text-white mb-2 text-center">SERVICE MARKETING</h2>
+            <p class="text-center text-blue-200 text-lg">Gestion de la musique d'ambiance hebdomadaire</p>
+        </div>
+
+        <!-- Liste des jours de la semaine -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8 max-w-5xl mx-auto">
+            
+            <!-- LUNDI -->
+            <div class="px-8 py-6 bg-white hover:bg-gray-50 transition-colors">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xl font-bold text-gray-900">LUNDI</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="showDetails('LUNDI')" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Détails
+                        </button>
+                        <button class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Ajouter musique
+                        </button>
+                        <button onclick="deleteMp3('LUNDI')" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                        </svg>
+                        45 musiques 
+                    </span>
+                </div>
+            </div>
+
+            <!-- MARDI -->
+            <div class="px-8 py-6 bg-gray-100 hover:bg-gray-200 transition-colors">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xl font-bold text-gray-900">MARDI</span>
+                    <div class="flex items-center gap-3">
+                        <button class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Ajouter musique
+                        </button>
+                    </div>
+                </div>
+                <p class="text-gray-500 text-sm italic">Aucune musique programmée</p>
+            </div>
+
+            <!-- MERCREDI -->
+            <div class="px-8 py-6 bg-white hover:bg-gray-50 transition-colors">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xl font-bold text-gray-900">MERCREDI</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="showDetails('MERCREDI')" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Détails
+                        </button>
+                        <button class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Ajouter musique
+                        </button>
+                        <button onclick="deleteMp3('MERCREDI')" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                        </svg>
+                        31 musiques 
+                    </span>
+                </div>
+            </div>
+
+            <!-- JEUDI -->
+            <div class="px-8 py-6 bg-gray-100 hover:bg-gray-200 transition-colors">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xl font-bold text-gray-900">JEUDI</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="showDetails('JEUDI')" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Détails
+                        </button>
+                        <button class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Ajouter musique
+                        </button>
+                        <button onclick="deleteMp3('JEUDI')" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                        </svg>
+                        29 musiques 
+                    </span>
+                </div>
+            </div>
+
+            <!-- VENDREDI -->
+            <div class="px-8 py-6 bg-white hover:bg-gray-50 transition-colors">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xl font-bold text-gray-900">VENDREDI</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="showDetails('VENDREDI')" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Détails
+                        </button>
+                        <button class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Ajouter musique
+                        </button>
+                        <button onclick="deleteMp3('VENDREDI')" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                        </svg>
+                        36 musiques 
+                    </span>
+                </div>
+            </div>
+
+            <!-- SAMEDI -->
+            <div class="px-8 py-6 bg-gray-100 hover:bg-gray-200 transition-colors">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xl font-bold text-gray-900">SAMEDI</span>
+                    <div class="flex items-center gap-3">
+                        <button class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Ajouter musique
+                        </button>
+                    </div>
+                </div>
+                <p class="text-gray-500 text-sm italic">Aucune musique programmée</p>
+            </div>
+
+            <!-- DIMANCHE -->
+            <div class="px-8 py-6 bg-white hover:bg-gray-50 transition-colors rounded-b-3xl">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xl font-bold text-gray-900">DIMANCHE</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="showDetails('DIMANCHE')" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Détails
+                        </button>
+                        <button class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Ajouter musique
+                        </button>
+                        <button onclick="deleteMp3('DIMANCHE')" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                        </svg>
+                        38 musiques 
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Boutons d'action principaux -->
+        <div class="flex items-center justify-center gap-6 mt-10">
+            <button onclick="showPlanning()" class="px-10 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 text-lg flex items-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Voir planning musical
+            </button>
+            <button onclick="generatePlaylist()" class="px-10 py-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 text-lg flex items-center gap-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                </svg>
+                Générer playlist
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Détails des MP3 -->
+    <div id="detailsModal" class="modal">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-3xl font-bold text-gray-900" id="modalTitle">Détails - LUNDI</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">×</button>
+            </div>
+
+            <p class="text-gray-600 mb-6" id="modalDescription">Sélectionnez une musique pour voir ses détails :</p>
+
+            <div id="mp3List" class="space-y-4">
+                <!-- La liste sera générée dynamiquement -->
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeModal()" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de données des fichiers musicaux
+            const mp3Database = {
+    'LUNDI': [
+        // Jazz Morning (15 fichiers)
+        { nom: 'jazz_morning_01.mp3', duree: '30:51', taille: '27.9 MB', description: 'Jazz doux pour démarrer la semaine', type: 'Jazz', artiste: 'Various Artists' },
+        { nom: 'jazz_morning_02.mp3', duree: '4:30', taille: '6.1 MB', description: 'Jazz énergisant', type: 'Jazz', artiste: 'Morning Jazz Band' },
+        { nom: 'jazz_morning_03.mp3', duree: '4:30', taille: '6.3 MB', description: 'Jazz swing matinal', type: 'Jazz', artiste: 'Swing Masters' },
+        { nom: 'jazz_morning_04.mp3', duree: '4:30', taille: '6.0 MB', description: 'Jazz moderne', type: 'Jazz', artiste: 'Modern Jazz Collective' },
+        { nom: 'jazz_morning_05.mp3', duree: '4:30', taille: '6.2 MB', description: 'Jazz bebop', type: 'Jazz', artiste: 'Bebop Legends' },
+        { nom: 'jazz_morning_06.mp3', duree: '4:30', taille: '6.1 MB', description: 'Jazz cool', type: 'Jazz', artiste: 'Cool Jazz Quartet' },
+        { nom: 'jazz_morning_07.mp3', duree: '4:30', taille: '6.3 MB', description: 'Jazz fusion matinal', type: 'Jazz', artiste: 'Fusion Morning' },
+        { nom: 'jazz_morning_08.mp3', duree: '4:30', taille: '6.0 MB', description: 'Jazz latino', type: 'Jazz', artiste: 'Latin Jazz Ensemble' },
+        { nom: 'jazz_morning_09.mp3', duree: '4:30', taille: '6.2 MB', description: 'Jazz funk', type: 'Jazz', artiste: 'Funk Jazz Band' },
+        { nom: 'jazz_morning_10.mp3', duree: '4:30', taille: '6.1 MB', description: 'Jazz contemporain', type: 'Jazz', artiste: 'Contemporary Jazz' },
+        { nom: 'jazz_morning_11.mp3', duree: '4:30', taille: '6.3 MB', description: 'Jazz vocal', type: 'Jazz', artiste: 'Jazz Voices' },
+        { nom: 'jazz_morning_12.mp3', duree: '4:30', taille: '6.0 MB', description: 'Jazz trio', type: 'Jazz', artiste: 'Piano Trio' },
+        { nom: 'jazz_morning_13.mp3', duree: '4:30', taille: '6.2 MB', description: 'Jazz quartet', type: 'Jazz', artiste: 'Classic Quartet' },
+        { nom: 'jazz_morning_14.mp3', duree: '4:30', taille: '6.1 MB', description: 'Jazz big band', type: 'Jazz', artiste: 'Big Band Orchestra' },
+        { nom: 'jazz_morning_15.mp3', duree: '4:30', taille: '6.3 MB', description: 'Jazz standards', type: 'Jazz', artiste: 'Standards Collection' },
+        
+        // Lounge Afternoon (30 fichiers)
+        { nom: 'lounge_afternoon_01.mp3', duree: '4:30', taille: '6.5 MB', description: 'Musique lounge pour l\'après-midi', type: 'Lounge', artiste: 'Chill Masters' },
+        { nom: 'lounge_afternoon_02.mp3', duree: '4:30', taille: '6.4 MB', description: 'Lounge électro', type: 'Lounge', artiste: 'Electro Lounge' },
+        { nom: 'lounge_afternoon_03.mp3', duree: '4:30', taille: '6.6 MB', description: 'Lounge atmosphérique', type: 'Lounge', artiste: 'Atmosphere Sounds' },
+        { nom: 'lounge_afternoon_04.mp3', duree: '4:30', taille: '6.3 MB', description: 'Lounge downtempo', type: 'Lounge', artiste: 'Downtempo Collective' },
+        { nom: 'lounge_afternoon_05.mp3', duree: '4:30', taille: '6.5 MB', description: 'Lounge chillout', type: 'Lounge', artiste: 'Chillout Zone' },
+        { nom: 'lounge_afternoon_06.mp3', duree: '4:30', taille: '6.4 MB', description: 'Lounge ambient', type: 'Lounge', artiste: 'Ambient Dreams' },
+        { nom: 'lounge_afternoon_07.mp3', duree: '4:30', taille: '6.7 MB', description: 'Lounge sunset', type: 'Lounge', artiste: 'Sunset Vibes' },
+        { nom: 'lounge_afternoon_08.mp3', duree: '4:30', taille: '6.2 MB', description: 'Lounge evening', type: 'Lounge', artiste: 'Evening Moods' },
+        { nom: 'lounge_afternoon_09.mp3', duree: '4:30', taille: '6.6 MB', description: 'Lounge mellow', type: 'Lounge', artiste: 'Mellow Sounds' },
+        { nom: 'lounge_afternoon_10.mp3', duree: '4:30', taille: '6.3 MB', description: 'Lounge smooth', type: 'Lounge', artiste: 'Smooth Operators' },
+        { nom: 'lounge_afternoon_11.mp3', duree: '4:30', taille: '6.5 MB', description: 'Lounge peaceful', type: 'Lounge', artiste: 'Peace Makers' },
+        { nom: 'lounge_afternoon_12.mp3', duree: '4:30', taille: '6.4 MB', description: 'Lounge tranquil', type: 'Lounge', artiste: 'Tranquility' },
+        { nom: 'lounge_afternoon_13.mp3', duree: '4:30', taille: '6.6 MB', description: 'Lounge relaxing', type: 'Lounge', artiste: 'Relaxation Station' },
+        { nom: 'lounge_afternoon_14.mp3', duree: '4:30', taille: '6.3 MB', description: 'Lounge groovy', type: 'Lounge', artiste: 'Groove Lounge' },
+        { nom: 'lounge_afternoon_15.mp3', duree: '4:30', taille: '6.5 MB', description: 'Lounge jazzy', type: 'Lounge', artiste: 'Jazz Lounge' },
+        { nom: 'lounge_afternoon_16.mp3', duree: '4:30', taille: '6.4 MB', description: 'Lounge latin', type: 'Lounge', artiste: 'Latin Lounge' },
+        { nom: 'lounge_afternoon_17.mp3', duree: '4:30', taille: '6.6 MB', description: 'Lounge tropical', type: 'Lounge', artiste: 'Tropical Lounge' },
+        { nom: 'lounge_afternoon_18.mp3', duree: '4:30', taille: '6.3 MB', description: 'Lounge deep', type: 'Lounge', artiste: 'Deep Lounge' },
+        { nom: 'lounge_afternoon_19.mp3', duree: '4:30', taille: '6.5 MB', description: 'Lounge space', type: 'Lounge', artiste: 'Space Lounge' },
+        { nom: 'lounge_afternoon_20.mp3', duree: '4:30', taille: '6.4 MB', description: 'Lounge cosmic', type: 'Lounge', artiste: 'Cosmic Chill' },
+        { nom: 'lounge_afternoon_21.mp3', duree: '4:30', taille: '6.6 MB', description: 'Lounge beach', type: 'Lounge', artiste: 'Beach Lounge' },
+        { nom: 'lounge_afternoon_22.mp3', duree: '4:30', taille: '6.3 MB', description: 'Lounge summer', type: 'Lounge', artiste: 'Summer Vibes' },
+        { nom: 'lounge_afternoon_23.mp3', duree: '4:30', taille: '6.5 MB', description: 'Lounge sunset', type: 'Lounge', artiste: 'Sunset Chill' },
+        { nom: 'lounge_afternoon_24.mp3', duree: '4:30', taille: '6.4 MB', description: 'Lounge cafe', type: 'Lounge', artiste: 'Cafe Lounge' },
+        { nom: 'lounge_afternoon_25.mp3', duree: '4:30', taille: '6.6 MB', description: 'Lounge hotel', type: 'Lounge', artiste: 'Hotel Lounge' },
+        { nom: 'lounge_afternoon_26.mp3', duree: '4:30', taille: '6.3 MB', description: 'Lounge bar', type: 'Lounge', artiste: 'Bar Lounge' },
+        { nom: 'lounge_afternoon_27.mp3', duree: '4:30', taille: '6.5 MB', description: 'Lounge restaurant', type: 'Lounge', artiste: 'Restaurant Lounge' },
+        { nom: 'lounge_afternoon_28.mp3', duree: '4:30', taille: '6.4 MB', description: 'Lounge spa', type: 'Lounge', artiste: 'Spa Lounge' },
+        { nom: 'lounge_afternoon_29.mp3', duree: '4:30', taille: '6.6 MB', description: 'Lounge wellness', type: 'Lounge', artiste: 'Wellness Lounge' },
+        { nom: 'lounge_afternoon_30.mp3', duree: '4:30', taille: '6.3 MB', description: 'Lounge meditation', type: 'Lounge', artiste: 'Meditation Lounge' }
+    ],
+    
+    'MERCREDI': [
+        // 31 fichiers acoustiques
+        { nom: 'acoustic_midweek_01.mp3', duree: '4:30', taille: '6.2 MB', description: 'Guitare acoustique relaxante', type: 'Acoustique', artiste: 'Acoustic Dreams' },
+        { nom: 'acoustic_midweek_02.mp3', duree: '4:30', taille: '6.1 MB', description: 'Guitare folk', type: 'Acoustique', artiste: 'Folk Masters' },
+        { nom: 'acoustic_midweek_03.mp3', duree: '4:30', taille: '6.3 MB', description: 'Guitare fingerstyle', type: 'Acoustique', artiste: 'Fingerstyle Pro' },
+        { nom: 'acoustic_midweek_04.mp3', duree: '4:30', taille: '6.0 MB', description: 'Guitare classique', type: 'Acoustique', artiste: 'Classical Guitar' },
+        { nom: 'acoustic_midweek_05.mp3', duree: '4:30', taille: '6.4 MB', description: 'Guitare jazz', type: 'Acoustique', artiste: 'Jazz Guitar' },
+        { nom: 'acoustic_midweek_06.mp3', duree: '4:30', taille: '6.2 MB', description: 'Guitare bossa', type: 'Acoustique', artiste: 'Bossa Guitar' },
+        { nom: 'acoustic_midweek_07.mp3', duree: '4:30', taille: '6.5 MB', description: 'Guitare flamenco', type: 'Acoustique', artiste: 'Flamenco Passion' },
+        { nom: 'acoustic_midweek_08.mp3', duree: '4:30', taille: '6.1 MB', description: 'Guitare country', type: 'Acoustique', artiste: 'Country Roads' },
+        { nom: 'acoustic_midweek_09.mp3', duree: '4:30', taille: '6.3 MB', description: 'Guitare blues', type: 'Acoustique', artiste: 'Blues Acoustic' },
+        { nom: 'acoustic_midweek_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Guitare world', type: 'Acoustique', artiste: 'World Guitar' },
+        { nom: 'acoustic_midweek_11.mp3', duree: '4:30', taille: '6.2 MB', description: 'Guitare celtique', type: 'Acoustique', artiste: 'Celtic Strings' },
+        { nom: 'acoustic_midweek_12.mp3', duree: '4:30', taille: '6.6 MB', description: 'Guitare méditative', type: 'Acoustique', artiste: 'Meditation Guitar' },
+        { nom: 'acoustic_midweek_13.mp3', duree: '4:30', taille: '6.1 MB', description: 'Guitare ambient', type: 'Acoustique', artiste: 'Ambient Guitar' },
+        { nom: 'acoustic_midweek_14.mp3', duree: '4:30', taille: '6.5 MB', description: 'Guitare new age', type: 'Acoustique', artiste: 'New Age Strings' },
+        { nom: 'acoustic_midweek_15.mp3', duree: '4:30', taille: '6.3 MB', description: 'Guitare cinématique', type: 'Acoustique', artiste: 'Cinematic Guitar' },
+        { nom: 'acoustic_midweek_16.mp3', duree: '4:30', taille: '6.4 MB', description: 'Guitare contemplative', type: 'Acoustique', artiste: 'Contemplation' },
+        { nom: 'acoustic_midweek_17.mp3', duree: '4:30', taille: '6.2 MB', description: 'Guitare espagnole', type: 'Acoustique', artiste: 'Spanish Guitar' },
+        { nom: 'acoustic_midweek_18.mp3', duree: '4:30', taille: '6.1 MB', description: 'Guitare latine', type: 'Acoustique', artiste: 'Latin Acoustic' },
+        { nom: 'acoustic_midweek_19.mp3', duree: '4:30', taille: '6.3 MB', description: 'Guitare tropicale', type: 'Acoustique', artiste: 'Tropical Guitar' },
+        { nom: 'acoustic_midweek_20.mp3', duree: '4:30', taille: '6.0 MB', description: 'Guitare orientale', type: 'Acoustique', artiste: 'Oriental Strings' },
+        { nom: 'acoustic_midweek_21.mp3', duree: '4:30', taille: '6.4 MB', description: 'Guitare africaine', type: 'Acoustique', artiste: 'African Guitar' },
+        { nom: 'acoustic_midweek_22.mp3', duree: '4:30', taille: '6.2 MB', description: 'Guitare indienne', type: 'Acoustique', artiste: 'Indian Strings' },
+        { nom: 'acoustic_midweek_23.mp3', duree: '4:30', taille: '6.5 MB', description: 'Guitare hawaïenne', type: 'Acoustique', artiste: 'Hawaiian Guitar' },
+        { nom: 'acoustic_midweek_24.mp3', duree: '4:30', taille: '6.1 MB', description: 'Guitare irlandaise', type: 'Acoustique', artiste: 'Irish Guitar' },
+        { nom: 'acoustic_midweek_25.mp3', duree: '4:30', taille: '6.3 MB', description: 'Guitare écossaise', type: 'Acoustique', artiste: 'Scottish Strings' },
+        { nom: 'acoustic_midweek_26.mp3', duree: '4:30', taille: '6.4 MB', description: 'Guitare américaine', type: 'Acoustique', artiste: 'American Guitar' },
+        { nom: 'acoustic_midweek_27.mp3', duree: '4:30', taille: '6.2 MB', description: 'Guitare européenne', type: 'Acoustique', artiste: 'European Strings' },
+        { nom: 'acoustic_midweek_28.mp3', duree: '4:30', taille: '6.6 MB', description: 'Guitare asiatique', type: 'Acoustique', artiste: 'Asian Guitar' },
+        { nom: 'acoustic_midweek_29.mp3', duree: '4:30', taille: '6.1 MB', description: 'Guitare australienne', type: 'Acoustique', artiste: 'Australian Guitar' },
+        { nom: 'acoustic_midweek_30.mp3', duree: '4:30', taille: '6.5 MB', description: 'Guitare néo-zélandaise', type: 'Acoustique', artiste: 'NZ Guitar' },
+        { nom: 'acoustic_midweek_31.mp3', duree: '4:30', taille: '6.3 MB', description: 'Guitare fusion', type: 'Acoustique', artiste: 'Fusion Acoustic' }
+    ],
+    
+    'JEUDI': [
+        // 29 fichiers (Bossa Nova + Jazz + Chill)
+        { nom: 'bossa_nova_morning_01.mp3', duree: '4:30', taille: '6.2 MB', description: 'Bossa nova énergisante', type: 'Bossa Nova', artiste: 'Brazilian Vibes' },
+        { nom: 'bossa_nova_morning_02.mp3', duree: '4:30', taille: '6.1 MB', description: 'Bossa nova classique', type: 'Bossa Nova', artiste: 'Rio Sounds' },
+        { nom: 'bossa_nova_morning_03.mp3', duree: '4:30', taille: '6.3 MB', description: 'Bossa nova moderne', type: 'Bossa Nova', artiste: 'Modern Bossa' },
+        { nom: 'bossa_nova_morning_04.mp3', duree: '4:30', taille: '6.0 MB', description: 'Bossa nova jazz', type: 'Bossa Nova', artiste: 'Jazz Bossa' },
+        { nom: 'bossa_nova_morning_05.mp3', duree: '4:30', taille: '6.2 MB', description: 'Bossa nova samba', type: 'Bossa Nova', artiste: 'Samba Bossa' },
+        { nom: 'bossa_nova_morning_06.mp3', duree: '4:30', taille: '6.1 MB', description: 'Bossa nova tropicale', type: 'Bossa Nova', artiste: 'Tropical Bossa' },
+        { nom: 'bossa_nova_morning_07.mp3', duree: '4:30', taille: '6.3 MB', description: 'Bossa nova relaxante', type: 'Bossa Nova', artiste: 'Relaxing Bossa' },
+        { nom: 'bossa_nova_morning_08.mp3', duree: '4:30', taille: '6.0 MB', description: 'Bossa nova plage', type: 'Bossa Nova', artiste: 'Beach Bossa' },
+        { nom: 'bossa_nova_morning_09.mp3', duree: '4:30', taille: '6.2 MB', description: 'Bossa nova sunset', type: 'Bossa Nova', artiste: 'Sunset Bossa' },
+        { nom: 'bossa_nova_morning_10.mp3', duree: '4:30', taille: '6.1 MB', description: 'Bossa nova café', type: 'Bossa Nova', artiste: 'Cafe Bossa' },
+        
+        { nom: 'smooth_jazz_afternoon_01.mp3', duree: '4:30', taille: '6.4 MB', description: 'Jazz smooth pour l\'après-midi', type: 'Jazz', artiste: 'Smooth Collective' },
+        { nom: 'smooth_jazz_afternoon_02.mp3', duree: '4:30', taille: '6.2 MB', description: 'Jazz saxophone', type: 'Jazz', artiste: 'Sax Masters' },
+        { nom: 'smooth_jazz_afternoon_03.mp3', duree: '4:30', taille: '6.5 MB', description: 'Jazz piano', type: 'Jazz', artiste: 'Piano Jazz' },
+        { nom: 'smooth_jazz_afternoon_04.mp3', duree: '4:30', taille: '6.3 MB', description: 'Jazz trumpet', type: 'Jazz', artiste: 'Trumpet Soul' },
+        { nom: 'smooth_jazz_afternoon_05.mp3', duree: '4:30', taille: '6.1 MB', description: 'Jazz guitare', type: 'Jazz', artiste: 'Guitar Jazz' },
+        { nom: 'smooth_jazz_afternoon_06.mp3', duree: '4:30', taille: '6.4 MB', description: 'Jazz fusion', type: 'Jazz', artiste: 'Fusion Collective' },
+        { nom: 'smooth_jazz_afternoon_07.mp3', duree: '4:30', taille: '6.2 MB', description: 'Jazz soul', type: 'Jazz', artiste: 'Soul Jazz' },
+        { nom: 'smooth_jazz_afternoon_08.mp3', duree: '4:30', taille: '6.5 MB', description: 'Jazz funk', type: 'Jazz', artiste: 'Funk Jazz' },
+        { nom: 'smooth_jazz_afternoon_09.mp3', duree: '4:30', taille: '6.3 MB', description: 'Jazz latin', type: 'Jazz', artiste: 'Latin Jazz' },
+        
+        { nom: 'chill_evening_01.mp3', duree: '4:30', taille: '6.2 MB', description: 'Musique chill pour la soirée', type: 'Chill', artiste: 'Evening Sounds' },
+        { nom: 'chill_evening_02.mp3', duree: '4:30', taille: '6.3 MB', description: 'Chill électronique', type: 'Chill', artiste: 'Electronic Chill' },
+        { nom: 'chill_evening_03.mp3', duree: '4:30', taille: '6.5 MB', description: 'Chill ambient', type: 'Chill', artiste: 'Ambient Night' },
+        { nom: 'chill_evening_04.mp3', duree: '4:30', taille: '6.1 MB', description: 'Chill downtempo', type: 'Chill', artiste: 'Downtempo Evening' },
+        { nom: 'chill_evening_05.mp3', duree: '4:30', taille: '6.4 MB', description: 'Chill lounge', type: 'Chill', artiste: 'Lounge Night' },
+        { nom: 'chill_evening_06.mp3', duree: '4:30', taille: '6.2 MB', description: 'Chill relaxation', type: 'Chill', artiste: 'Relaxation Time' },
+        { nom: 'chill_evening_07.mp3', duree: '4:30', taille: '6.3 MB', description: 'Chill wave', type: 'Chill', artiste: 'Chill Wave' },
+        { nom: 'chill_evening_08.mp3', duree: '4:30', taille: '6.5 MB', description: 'Chill hop', type: 'Chill', artiste: 'Chill Hop' },
+        { nom: 'chill_evening_09.mp3', duree: '4:30', taille: '6.1 MB', description: 'Chill trap', type: 'Chill', artiste: 'Chill Trap' },
+        { nom: 'chill_evening_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Chill house', type: 'Chill', artiste: 'Chill House' }
+    ],
+            'VENDREDI': [
+                { nom: 'upbeat_weekend_01.mp3', duree: '4:30', taille: '6.5 MB', description: 'Ambiance festive pour le weekend', type: 'Pop', artiste: 'Weekend Beats' },
+                { nom: 'upbeat_weekend_02.mp3', duree: '4:30', taille: '6.4 MB', description: 'Pop énergique', type: 'Pop', artiste: 'Energy Pop' },
+                { nom: 'upbeat_weekend_03.mp3', duree: '4:30', taille: '6.6 MB', description: 'Dance pop', type: 'Pop', artiste: 'Dance Floor' },
+                { nom: 'upbeat_weekend_04.mp3', duree: '4:30', taille: '6.3 MB', description: 'Electro pop', type: 'Pop', artiste: 'Electro Beats' },
+                { nom: 'upbeat_weekend_05.mp3', duree: '4:30', taille: '6.5 MB', description: 'Indie pop', type: 'Pop', artiste: 'Indie Vibes' },
+                { nom: 'upbeat_weekend_06.mp3', duree: '4:30', taille: '6.2 MB', description: 'Funk pop', type: 'Pop', artiste: 'Funky Friday' },
+                { nom: 'upbeat_weekend_07.mp3', duree: '4:30', taille: '6.7 MB', description: 'Disco pop', type: 'Pop', artiste: 'Disco Fever' },
+                { nom: 'upbeat_weekend_08.mp3', duree: '4:30', taille: '6.1 MB', description: 'Soul pop', type: 'Pop', artiste: 'Soul Party' },
+                { nom: 'upbeat_weekend_09.mp3', duree: '4:30', taille: '6.4 MB', description: 'R&B pop', type: 'Pop', artiste: 'R&B Groove' },
+                { nom: 'upbeat_weekend_10.mp3', duree: '4:30', taille: '6.3 MB', description: 'House pop', type: 'Pop', artiste: 'House Party' },
+                { nom: 'upbeat_weekend_11.mp3', duree: '4:30', taille: '6.6 MB', description: 'Nu disco', type: 'Pop', artiste: 'Nu Disco' },
+                { nom: 'upbeat_weekend_12.mp3', duree: '4:30', taille: '6.2 MB', description: 'Synthwave', type: 'Pop', artiste: 'Synth Wave' },
+                { nom: 'upbeat_weekend_13.mp3', duree: '4:30', taille: '6.5 MB', description: 'Tropical house', type: 'Pop', artiste: 'Tropical Vibes' },
+                { nom: 'upbeat_weekend_14.mp3', duree: '4:30', taille: '6.4 MB', description: 'Future pop', type: 'Pop', artiste: 'Future Sounds' },
+                { nom: 'upbeat_weekend_15.mp3', duree: '4:30', taille: '6.3 MB', description: 'Pop rock', type: 'Pop', artiste: 'Rock Party' },
+                { nom: 'upbeat_weekend_16.mp3', duree: '4:30', taille: '6.7 MB', description: 'Party anthems', type: 'Pop', artiste: 'Party Time' },
+                { nom: 'upbeat_weekend_01.mp3', duree: '4:30', taille: '6.5 MB', description: 'Ambiance festive pour le weekend', type: 'Pop', artiste: 'Weekend Beats' },
+                { nom: 'upbeat_weekend_02.mp3', duree: '4:30', taille: '6.4 MB', description: 'Pop énergique', type: 'Pop', artiste: 'Energy Pop' },
+                { nom: 'upbeat_weekend_03.mp3', duree: '4:30', taille: '6.6 MB', description: 'Dance pop', type: 'Pop', artiste: 'Dance Floor' },
+                { nom: 'upbeat_weekend_04.mp3', duree: '4:30', taille: '6.3 MB', description: 'Electro pop', type: 'Pop', artiste: 'Electro Beats' },
+                { nom: 'upbeat_weekend_05.mp3', duree: '4:30', taille: '6.5 MB', description: 'Indie pop', type: 'Pop', artiste: 'Indie Vibes' },
+                { nom: 'upbeat_weekend_06.mp3', duree: '4:30', taille: '6.2 MB', description: 'Funk pop', type: 'Pop', artiste: 'Funky Friday' },
+                { nom: 'upbeat_weekend_07.mp3', duree: '4:30', taille: '6.7 MB', description: 'Disco pop', type: 'Pop', artiste: 'Disco Fever' },
+                { nom: 'upbeat_weekend_08.mp3', duree: '4:30', taille: '6.1 MB', description: 'Soul pop', type: 'Pop', artiste: 'Soul Party' },
+                { nom: 'upbeat_weekend_09.mp3', duree: '4:30', taille: '6.4 MB', description: 'R&B pop', type: 'Pop', artiste: 'R&B Groove' },
+                { nom: 'upbeat_weekend_10.mp3', duree: '4:30', taille: '6.3 MB', description: 'House pop', type: 'Pop', artiste: 'House Party' },
+                { nom: 'upbeat_weekend_11.mp3', duree: '4:30', taille: '6.6 MB', description: 'Nu disco', type: 'Pop', artiste: 'Nu Disco' },
+                { nom: 'upbeat_weekend_12.mp3', duree: '4:30', taille: '6.2 MB', description: 'Synthwave', type: 'Pop', artiste: 'Synth Wave' },
+                { nom: 'upbeat_weekend_13.mp3', duree: '4:30', taille: '6.5 MB', description: 'Tropical house', type: 'Pop', artiste: 'Tropical Vibes' },
+                { nom: 'upbeat_weekend_14.mp3', duree: '4:30', taille: '6.4 MB', description: 'Future pop', type: 'Pop', artiste: 'Future Sounds' },
+                { nom: 'upbeat_weekend_15.mp3', duree: '4:30', taille: '6.3 MB', description: 'Pop rock', type: 'Pop', artiste: 'Rock Party' },
+                { nom: 'upbeat_weekend_16.mp3', duree: '4:30', taille: '6.7 MB', description: 'Party anthems', type: 'Pop', artiste: 'Party Time' },
+                { nom: 'upbeat_weekend_13.mp3', duree: '4:30', taille: '6.5 MB', description: 'Tropical house', type: 'Pop', artiste: 'Tropical Vibes' },
+                { nom: 'upbeat_weekend_14.mp3', duree: '4:30', taille: '6.4 MB', description: 'Future pop', type: 'Pop', artiste: 'Future Sounds' },
+                { nom: 'upbeat_weekend_15.mp3', duree: '4:30', taille: '6.3 MB', description: 'Pop rock', type: 'Pop', artiste: 'Rock Party' },
+                { nom: 'upbeat_weekend_16.mp3', duree: '4:30', taille: '6.7 MB', description: 'Party anthems', type: 'Pop', artiste: 'Party Time' },
+            ],
+            'DIMANCHE': [
+                { nom: 'classical_sunday_01.mp3', duree: '4:30', taille: '6.5 MB', description: 'Musique classique apaisante', type: 'Classique', artiste: 'Symphony Orchestra' },
+                { nom: 'classical_sunday_02.mp3', duree: '4:30', taille: '6.4 MB', description: 'Quatuor à cordes', type: 'Classique', artiste: 'String Quartet' },
+                { nom: 'classical_sunday_03.mp3', duree: '4:30', taille: '6.6 MB', description: 'Concerto pour piano', type: 'Classique', artiste: 'Piano Concerto' },
+                { nom: 'classical_sunday_04.mp3', duree: '4:30', taille: '6.3 MB', description: 'Musique baroque', type: 'Classique', artiste: 'Baroque Ensemble' },
+                { nom: 'classical_sunday_05.mp3', duree: '4:30', taille: '6.5 MB', description: 'Symphonie romantique', type: 'Classique', artiste: 'Romantic Symphony' },
+                { nom: 'classical_sunday_06.mp3', duree: '4:30', taille: '6.2 MB', description: 'Musique de chambre', type: 'Classique', artiste: 'Chamber Music' },
+                { nom: 'piano_relaxation_01.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano relaxant pour le dimanche', type: 'Piano', artiste: 'Piano Masters' },
+                { nom: 'piano_relaxation_02.mp3', duree: '4:30', taille: '6.3 MB', description: 'Piano solo contemplatif', type: 'Piano', artiste: 'Solo Piano' },
+                { nom: 'piano_relaxation_03.mp3', duree: '4:30', taille: '6.5 MB', description: 'Piano minimaliste', type: 'Piano', artiste: 'Minimal Piano' },
+                { nom: 'piano_relaxation_04.mp3', duree: '4:30', taille: '6.1 MB', description: 'Piano néoclassique', type: 'Piano', artiste: 'Neoclassical Piano' },
+                { nom: 'piano_relaxation_05.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano ambient', type: 'Piano', artiste: 'Ambient Piano' },
+                { nom: 'piano_relaxation_06.mp3', duree: '4:30', taille: '6.2 MB', description: 'Piano jazz', type: 'Piano', artiste: 'Jazz Piano' },
+                { nom: 'piano_relaxation_07.mp3', duree: '4:30', taille: '6.6 MB', description: 'Piano new age', type: 'Piano', artiste: 'New Age Piano' },
+                { nom: 'piano_relaxation_08.mp3', duree: '4:30', taille: '6.3 MB', description: 'Piano cinématique', type: 'Piano', artiste: 'Cinematic Piano' },
+                { nom: 'piano_relaxation_09.mp3', duree: '4:30', taille: '6.5 MB', description: 'Piano méditation', type: 'Piano', artiste: 'Meditation Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+                { nom: 'piano_relaxation_10.mp3', duree: '4:30', taille: '6.4 MB', description: 'Piano sérénité', type: 'Piano', artiste: 'Serenity Piano' },
+            ]
+        };
+
+        // Planning horaire pour chaque jour - Musique d'ambiance
+        // Chaque fichier dure 4:30, donc pour 12h (720 minutes) = 160 musiques environ
+        const planningHoraire = {
+            'LUNDI': [
+                { heure: '08:00 - 08:30', fichier: 'jazz_morning_01.mp3', zone: 'Zone Entrée', type: 'Jazz' },
+                { heure: '08:30 - 09:00', fichier: 'jazz_morning_02.mp3', zone: 'Zone Entrée', type: 'Jazz' },
+                { heure: '09:00 - 09:30', fichier: 'jazz_morning_03.mp3', zone: 'Zone Entrée', type: 'Jazz' },
+                { heure: '09:30 - 10:00', fichier: 'jazz_morning_04.mp3', zone: 'Zone Entrée', type: 'Jazz' },
+                { heure: '10:00 - 10:30', fichier: 'lounge_afternoon_01.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '10:30 - 11:00', fichier: 'lounge_afternoon_02.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '11:00 - 11:30', fichier: 'lounge_afternoon_03.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '11:30 - 12:00', fichier: 'lounge_afternoon_04.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '12:00 - 12:30', fichier: 'lounge_afternoon_05.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '12:30 - 13:00', fichier: 'lounge_afternoon_06.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '13:00 - 13:30', fichier: 'lounge_afternoon_07.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '13:30 - 14:00', fichier: 'lounge_afternoon_08.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '14:00 - 14:30', fichier: 'lounge_afternoon_09.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '14:30 - 15:00', fichier: 'lounge_afternoon_10.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '15:00 - 15:30', fichier: 'lounge_afternoon_11.mp3', zone: 'Zone Centrale', type: 'Lounge' },
+                { heure: '15:30 - 16:00', fichier: 'lounge_afternoon_12.mp3', zone: 'Zone Centrale', type: 'Lounge' }
+            ],
+            'MARDI': [],
+            'MERCREDI': [
+                { heure: '08:00 - 08:30', fichier: 'acoustic_midweek_01.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '08:30 - 09:00', fichier: 'acoustic_midweek_02.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '09:00 - 09:30', fichier: 'acoustic_midweek_03.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '09:30 - 10:00', fichier: 'acoustic_midweek_04.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '10:00 - 10:30', fichier: 'acoustic_midweek_05.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '10:30 - 11:00', fichier: 'acoustic_midweek_06.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '11:00 - 11:30', fichier: 'acoustic_midweek_07.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '11:30 - 12:00', fichier: 'acoustic_midweek_08.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '12:00 - 12:30', fichier: 'acoustic_midweek_09.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '12:30 - 13:00', fichier: 'acoustic_midweek_10.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '13:00 - 13:30', fichier: 'acoustic_midweek_11.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '13:30 - 14:00', fichier: 'acoustic_midweek_12.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '14:00 - 14:30', fichier: 'acoustic_midweek_13.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '14:30 - 15:00', fichier: 'acoustic_midweek_14.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '15:00 - 15:30', fichier: 'acoustic_midweek_15.mp3', zone: 'Zone Générale', type: 'Acoustique' },
+                { heure: '15:30 - 16:00', fichier: 'acoustic_midweek_16.mp3', zone: 'Zone Générale', type: 'Acoustique' }
+            ],
+            'JEUDI': [
+                { heure: '08:00 - 08:30', fichier: 'bossa_nova_morning_01.mp3', zone: 'Zone Entrée', type: 'Bossa Nova' },
+                { heure: '08:30 - 09:00', fichier: 'bossa_nova_morning_02.mp3', zone: 'Zone Entrée', type: 'Bossa Nova' },
+                { heure: '09:00 - 09:30', fichier: 'bossa_nova_morning_03.mp3', zone: 'Zone Entrée', type: 'Bossa Nova' },
+                { heure: '09:30 - 10:00', fichier: 'bossa_nova_morning_04.mp3', zone: 'Zone Entrée', type: 'Bossa Nova' },
+                { heure: '10:00 - 10:30', fichier: 'smooth_jazz_afternoon_01.mp3', zone: 'Zone Centrale', type: 'Jazz' },
+                { heure: '10:30 - 11:00', fichier: 'smooth_jazz_afternoon_02.mp3', zone: 'Zone Centrale', type: 'Jazz' },
+                { heure: '11:00 - 11:30', fichier: 'smooth_jazz_afternoon_03.mp3', zone: 'Zone Centrale', type: 'Jazz' },
+                { heure: '11:30 - 12:00', fichier: 'smooth_jazz_afternoon_04.mp3', zone: 'Zone Centrale', type: 'Jazz' },
+                { heure: '12:00 - 12:30', fichier: 'smooth_jazz_afternoon_05.mp3', zone: 'Zone Centrale', type: 'Jazz' },
+                { heure: '12:30 - 13:00', fichier: 'smooth_jazz_afternoon_06.mp3', zone: 'Zone Centrale', type: 'Jazz' },
+                { heure: '13:00 - 13:30', fichier: 'chill_evening_01.mp3', zone: 'Zone Détente', type: 'Chill' },
+                { heure: '13:30 - 14:00', fichier: 'chill_evening_02.mp3', zone: 'Zone Détente', type: 'Chill' },
+                { heure: '14:00 - 14:30', fichier: 'chill_evening_03.mp3', zone: 'Zone Détente', type: 'Chill' },
+                { heure: '14:30 - 15:00', fichier: 'chill_evening_04.mp3', zone: 'Zone Détente', type: 'Chill' },
+                { heure: '15:00 - 15:30', fichier: 'chill_evening_05.mp3', zone: 'Zone Détente', type: 'Chill' },
+                { heure: '15:30 - 16:00', fichier: 'chill_evening_06.mp3', zone: 'Zone Détente', type: 'Chill' }
+            ],
+            'VENDREDI': [
+                { heure: '08:00 - 08:30', fichier: 'upbeat_weekend_01.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '08:30 - 09:00', fichier: 'upbeat_weekend_02.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '09:00 - 09:30', fichier: 'upbeat_weekend_03.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '09:30 - 10:00', fichier: 'upbeat_weekend_04.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '10:00 - 10:30', fichier: 'upbeat_weekend_05.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '10:30 - 11:00', fichier: 'upbeat_weekend_06.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '11:00 - 11:30', fichier: 'upbeat_weekend_07.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '11:30 - 12:00', fichier: 'upbeat_weekend_08.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '12:00 - 12:30', fichier: 'upbeat_weekend_09.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '12:30 - 13:00', fichier: 'upbeat_weekend_10.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '13:00 - 13:30', fichier: 'upbeat_weekend_11.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '13:30 - 14:00', fichier: 'upbeat_weekend_12.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '14:00 - 14:30', fichier: 'upbeat_weekend_13.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '14:30 - 15:00', fichier: 'upbeat_weekend_14.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '15:00 - 15:30', fichier: 'upbeat_weekend_15.mp3', zone: 'Zone Générale', type: 'Pop' },
+                { heure: '15:30 - 16:00', fichier: 'upbeat_weekend_16.mp3', zone: 'Zone Générale', type: 'Pop' }
+            ],
+            'SAMEDI': [],
+            'DIMANCHE': [
+                { heure: '08:00 - 08:30', fichier: 'classical_sunday_01.mp3', zone: 'Zone Détente', type: 'Classique' },
+                { heure: '08:30 - 09:00', fichier: 'classical_sunday_02.mp3', zone: 'Zone Détente', type: 'Classique' },
+                { heure: '09:00 - 09:30', fichier: 'classical_sunday_03.mp3', zone: 'Zone Détente', type: 'Classique' },
+                { heure: '09:30 - 10:00', fichier: 'classical_sunday_04.mp3', zone: 'Zone Détente', type: 'Classique' },
+                { heure: '10:00 - 10:30', fichier: 'classical_sunday_05.mp3', zone: 'Zone Détente', type: 'Classique' },
+                { heure: '10:30 - 11:00', fichier: 'classical_sunday_06.mp3', zone: 'Zone Détente', type: 'Classique' },
+                { heure: '11:00 - 11:30', fichier: 'piano_relaxation_01.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '11:30 - 12:00', fichier: 'piano_relaxation_02.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '12:00 - 12:30', fichier: 'piano_relaxation_03.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '12:30 - 13:00', fichier: 'piano_relaxation_04.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '13:00 - 13:30', fichier: 'piano_relaxation_05.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '13:30 - 14:00', fichier: 'piano_relaxation_06.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '14:00 - 14:30', fichier: 'piano_relaxation_07.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '14:30 - 15:00', fichier: 'piano_relaxation_08.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '15:00 - 15:30', fichier: 'piano_relaxation_09.mp3', zone: 'Zone Centrale', type: 'Piano' },
+                { heure: '15:30 - 16:00', fichier: 'piano_relaxation_10.mp3', zone: 'Zone Centrale', type: 'Piano' }
+            ]
+        };
+
+        function showDetails(jour) {
+            const modal = document.getElementById('detailsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const mp3List = document.getElementById('mp3List');
+            
+            modalTitle.textContent = `Détails - ${jour}`;
+            modalDescription.textContent = 'Cliquez sur une musique pour voir ses informations détaillées :';
+            
+            const fichiers = mp3Database[jour] || [];
+            
+            if (fichiers.length === 0) {
+                mp3List.innerHTML = '<p class="text-gray-500 italic">Aucune musique disponible pour ce jour</p>';
+            } else {
+                mp3List.innerHTML = fichiers.map((fichier, index) => `
+                    <div onclick="showMp3Details('${jour}', ${index})" class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-5 border-2 border-purple-200 hover:border-purple-400 transition-all hover:shadow-lg cursor-pointer">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-bold text-gray-900">${fichier.nom}</h4>
+                                    <p class="text-sm text-gray-600">${fichier.type}</p>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function showMp3Details(jour, index) {
+            const modal = document.getElementById('detailsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const mp3List = document.getElementById('mp3List');
+            
+            const fichier = mp3Database[jour][index];
+            
+            modalTitle.textContent = `Informations - ${fichier.nom}`;
+            modalDescription.textContent = '';
+            
+            mp3List.innerHTML = `
+                <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-8 border-2 border-purple-200">
+                    <div class="flex items-start gap-6 mb-6">
+                        <div class="w-20 h-20 bg-purple-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-2">${fichier.nom}</h4>
+                            <p class="text-gray-700 text-base mb-3">${fichier.description}</p>
+                            <span class="inline-block px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-sm font-semibold">${fichier.artiste}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 bg-white rounded-xl p-5">
+                        <div class="flex flex-col">
+                            <span class="text-gray-500 text-sm font-medium mb-1">Genre Musical</span>
+                            <span class="text-gray-900 font-bold text-lg">${fichier.type}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-gray-500 text-sm font-medium mb-1">Durée</span>
+                            <span class="text-gray-900 font-bold text-lg">${fichier.duree}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-gray-500 text-sm font-medium mb-1">Taille</span>
+                            <span class="text-gray-900 font-bold text-lg">${fichier.taille}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-gray-500 text-sm font-medium mb-1">Jour</span>
+                            <span class="text-gray-900 font-bold text-lg">${jour}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="showDetails('${jour}')" class="mt-4 px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-xl transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Retour à la liste
+                </button>
+            `;
+        }
+
+        function deleteMp3(jour) {
+            const modal = document.getElementById('detailsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const mp3List = document.getElementById('mp3List');
+            
+            modalTitle.textContent = `Supprimer une musique - ${jour}`;
+            modalDescription.textContent = 'Sélectionnez la musique que vous souhaitez supprimer :';
+            
+            const fichiers = mp3Database[jour] || [];
+            
+            if (fichiers.length === 0) {
+                mp3List.innerHTML = '<p class="text-gray-500 italic">Aucune musique disponible pour ce jour</p>';
+            } else {
+                mp3List.innerHTML = `
+                    <div class="space-y-3 mb-6">
+                        ${fichiers.map((fichier, index) => `
+                            <div onclick="selectMp3ToDelete('${jour}', ${index})" id="mp3-${index}" class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border-2 border-gray-200 hover:border-red-400 transition-all hover:shadow-lg cursor-pointer">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-gray-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-lg font-bold text-gray-900">${fichier.nom}</h4>
+                                            <p class="text-sm text-gray-600">${fichier.type}</p>
+                                        </div>
+                                    </div>
+                                    <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button id="deleteBtn" onclick="confirmDelete()" disabled class="w-full py-3 bg-gray-300 text-gray-500 font-bold rounded-xl cursor-not-allowed transition-all" style="pointer-events: none;">
+                        Sélectionnez une musique pour supprimer
+                    </button>
+                `;
+            }
+            
+            modal.classList.add('active');
+            window.selectedMp3 = null;
+        }
+
+        function selectMp3ToDelete(jour, index) {
+            document.querySelectorAll('[id^="mp3-"]').forEach(el => {
+                el.classList.remove('border-red-500', 'bg-gradient-to-r', 'from-red-50', 'to-red-100');
+                el.classList.add('border-gray-200', 'from-gray-50', 'to-gray-100');
+                const icon = el.querySelector('.w-10');
+                icon.classList.remove('bg-red-500');
+                icon.classList.add('bg-gray-400');
+                const checkbox = el.querySelector('.w-6');
+                checkbox.innerHTML = '';
+                checkbox.classList.remove('bg-red-500', 'border-red-500');
+                checkbox.classList.add('border-gray-300');
+            });
+            
+            const selected = document.getElementById(`mp3-${index}`);
+            selected.classList.remove('border-gray-200', 'from-gray-50', 'to-gray-100');
+            selected.classList.add('border-red-500', 'bg-gradient-to-r', 'from-red-50', 'to-red-100');
+            const icon = selected.querySelector('.w-10');
+            icon.classList.remove('bg-gray-400');
+            icon.classList.add('bg-red-500');
+            const checkbox = selected.querySelector('.w-6');
+            checkbox.classList.remove('border-gray-300');
+            checkbox.classList.add('bg-red-500', 'border-red-500');
+            checkbox.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+            
+            const deleteBtn = document.getElementById('deleteBtn');
+            deleteBtn.disabled = false;
+            deleteBtn.className = 'w-full py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all cursor-pointer';
+            deleteBtn.style.pointerEvents = 'auto';
+            deleteBtn.textContent = `Supprimer ${mp3Database[jour][index].nom}`;
+            
+            window.selectedMp3 = { jour, index };
+        }
+
+        function confirmDelete() {
+            if (window.selectedMp3) {
+                const fichier = mp3Database[window.selectedMp3.jour][window.selectedMp3.index];
+                alert(`La musique "${fichier.nom}" sera supprimée (fonctionnalité de maquette)`);
+                closeModal();
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detailsModal');
+            modal.classList.remove('active');
+        }
+
+        document.getElementById('detailsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        function showPlanning() {
+            const modal = document.getElementById('detailsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const mp3List = document.getElementById('mp3List');
+            
+            modalTitle.textContent = 'Planning musical de la semaine';
+            modalDescription.textContent = 'Cliquez sur un jour pour voir le planning horaire détaillé :';
+            
+            const jours = [
+                { nom: 'LUNDI', couleur: 'blue' },
+                { nom: 'MARDI', couleur: 'indigo' },
+                { nom: 'MERCREDI', couleur: 'purple' },
+                { nom: 'JEUDI', couleur: 'pink' },
+                { nom: 'VENDREDI', couleur: 'rose' },
+                { nom: 'SAMEDI', couleur: 'orange' },
+                { nom: 'DIMANCHE', couleur: 'green' }
+            ];
+            
+            mp3List.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    ${jours.map(jour => {
+                        const fichiers = mp3Database[jour.nom] || [];
+                        const count = fichiers.length;
+                        return `
+                            <div onclick="showDaySchedule('${jour.nom}')" class="bg-gradient-to-br from-${jour.couleur}-50 to-${jour.couleur}-100 rounded-2xl p-6 border-2 border-${jour.couleur}-200 hover:border-${jour.couleur}-400 transition-all hover:shadow-xl cursor-pointer transform hover:scale-105">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-xl font-bold text-gray-900">${jour.nom}</h4>
+                                    <svg class="w-6 h-6 text-${jour.couleur}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-${jour.couleur}-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                                    </svg>
+                                    <span class="text-${jour.couleur}-700 font-semibold">
+                                        ${count} musique${count !== 1 ? 's' : ''} programmée${count !== 1 ? 's' : ''}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function showDaySchedule(jour) {
+            const modal = document.getElementById('detailsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const mp3List = document.getElementById('mp3List');
+            
+            modalTitle.textContent = `Planning musical - ${jour}`;
+            modalDescription.textContent = '';
+            
+            const planning = planningHoraire[jour] || [];
+            
+            if (planning.length === 0) {
+                mp3List.innerHTML = `
+                    <div class="text-center py-12">
+                        <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                        </svg>
+                        <p class="text-gray-500 text-lg font-medium">Aucune musique programmée pour ${jour}</p>
+                        <p class="text-gray-400 text-sm mt-2">Ce jour est actuellement vide</p>
+                    </div>
+                    <button onclick="showPlanning()" class="mt-6 px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-xl transition-colors flex items-center gap-2 mx-auto">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Retour au planning
+                    </button>
+                `;
+            } else {
+                mp3List.innerHTML = `
+                    <div class="space-y-4">
+                        ${planning.map((slot, index) => `
+                            <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-6 border-2 border-purple-200 hover:border-purple-400 transition-all hover:shadow-lg">
+                                <div class="flex items-start gap-5">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3 mb-3">
+                                            <span class="px-4 py-2 bg-purple-600 text-white font-bold rounded-lg text-lg">
+                                                ${slot.heure}
+                                            </span>
+                                            <span class="px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-sm font-semibold">
+                                                ${slot.type}
+                                            </span>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                                                </svg>
+                                                <span class="text-gray-900 font-semibold text-base">${slot.fichier}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                </svg>
+                                                <span class="text-gray-700 font-medium">${slot.zone}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button onclick="showPlanning()" class="mt-6 px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-xl transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Retour au planning
+                    </button>
+                `;
+            }
+        }
+
+        function generatePlaylist() {
+            const modal = document.getElementById('detailsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const mp3List = document.getElementById('mp3List');
+            
+            modalTitle.textContent = 'Générer une playlist musicale';
+            modalDescription.textContent = '';
+            
+            // Compter le nombre total de musiques
+            let totalMusiques = 0;
+            Object.keys(mp3Database).forEach(jour => {
+                totalMusiques += mp3Database[jour].length;
+            });
+            
+            mp3List.innerHTML = `
+                <div class="text-center py-16">
+                    <div class="w-24 h-24 bg-gradient-to-br from-teal-400 to-teal-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl animate-pulse">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Génération de playlist</h3>
+                    <p class="text-gray-600 text-lg mb-4">Prêt à créer votre playlist hebdomadaire</p>
+                    <div class="bg-teal-50 rounded-xl p-6 mb-6 max-w-md mx-auto border-2 border-teal-200">
+                        <div class="text-5xl font-bold text-teal-600 mb-2">${totalMusiques}</div>
+                        <div class="text-gray-700 font-semibold">Musiques disponibles</div>
+                    </div>
+                    <p class="text-gray-500 text-sm">La playlist sera générée à partir de toutes les musiques d'ambiance programmées dans la semaine</p>
+                    <button onclick="confirmGeneratePlaylist()" class="mt-6 px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all">
+                        Générer maintenant
+                    </button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function confirmGeneratePlaylist() {
+            alert('Playlist générée avec succès ! (fonctionnalité de maquette)');
+            closeModal();
+        }
+    </script>
+
+</body>
+</html>
