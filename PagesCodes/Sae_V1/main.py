@@ -6,5 +6,6 @@ if __name__ == "__main__":
     print("Vérification de la base de données...")
     DatabaseInit() 
     
-    # Ensuite on lance Flask
+    # Ensuite on lance Flask 
+    # PS vaut mieux (beaucoup mieux) d'executer via cmd et sudo tout est expliquer dans lecteurDAO
     app.run(debug=True)

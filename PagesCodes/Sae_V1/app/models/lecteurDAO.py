@@ -1,12 +1,14 @@
 import sqlite3
+from ping3 import *
 from app import app
-from app.models.lecteur import User
+from app.models.lecteur import BDDAao
 from app.models.lecteurDAOInterface import lecteurDAOInterface
 
 def lecteurDAO(lecteurDAOInterface):
 
     def __init__(self):
         self.database = app.root_path + '/musicapp.db'
+        self.database.init
         self.server_adresse = None
         self.gateway = None
         self.subnet_mask = None
@@ -20,3 +22,30 @@ def lecteurDAO(lecteurDAOInterface):
 
     def findPlayer(self):
         detected = []
+
+
+    def findStatut(self):
+        """
+        
+        Le programme marche trés bien (tester avec une version test sur une machine) MAIS
+        les sockets RAW nécessite des privilgés DONC EXECUTER SUDO
+
+        """
+        
+        conn = self.DatabaseInit._getDBConnection()
+        try:
+            ip_adresse = conn.execute('SELECT DISTINCT adresse_ip FROM lecteur').fetchall()
+            for ip in ip_adresse:
+                delay = ping(ip,timeout=4)
+
+                if delay is not None and delay is not False:
+                    conn.execute("UPDATE lecteur SET statut = 'OK' WHERE adresse_ip = (?)",ip)
+                else:
+                    conn.execute("UPDATE lecteur SET statut = 'KO' WHERE adresse_ip = (?)",ip)
+            print("Programme executer à la perfection")
+        except Exception as e:
+            print(f"Erreur {e} dans le programme")
+
+
+
+
