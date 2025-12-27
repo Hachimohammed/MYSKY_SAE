@@ -1,5 +1,6 @@
 import sqlite3
 from ping3 import *
+import subprocess
 from app import app
 from app.models.lecteur import BDDAao
 from app.models.lecteurDAOInterface import lecteurDAOInterface
@@ -39,9 +40,9 @@ def lecteurDAO(lecteurDAOInterface):
                 delay = ping(ip,timeout=4)
 
                 if delay is not None and delay is not False:
-                    conn.execute("UPDATE lecteur SET statut = 'OK' WHERE adresse_ip = (?)",ip)
+                    conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",ip)
                 else:
-                    conn.execute("UPDATE lecteur SET statut = 'KO' WHERE adresse_ip = (?)",ip)
+                    pass # DOWNN étant définie par défaut
             print("Programme executer à la perfection")
         except Exception as e:
             print(f"Erreur {e} dans le programme")
