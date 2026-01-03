@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panneau Administrateur - MySky Audio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e293b 0%, #1e3a8a 50%, #1e293b 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .header-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .service-btn {
+            padding: 2rem;
+            border-radius: 1rem;
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+            text-align: left;
+            cursor: pointer;
+        }
+        .service-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .service-btn-marketing {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+        }
+        .service-btn-commercial {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+        }
+        .service-icon-box {
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        .service-btn:hover .service-icon-box {
+            transform: rotate(12deg);
+        }
+        .service-arrow {
+            transition: transform 0.3s ease;
+        }
+        .service-btn:hover .service-arrow {
+            transform: translateX(8px);
+        }
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .stat-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sync-all-btn {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+            height: 100%;
+            cursor: pointer;
+        }
+        .sync-all-btn:hover {
+            transform: scale(1.05);
+        }
+        .search-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .table-container {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .table thead {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        .table thead th {
+            border-bottom: 2px solid #bfdbfe;
+            padding: 1.25rem 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s ease;
+        }
+        .table tbody tr:hover {
+            background-color: #eff6ff;
+        }
+        .table tbody td {
+            padding: 1rem 1.5rem;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+        .status-up {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+        .status-ko {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        .sync-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .sync-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+        }
+        .bulk-actions-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .history-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+        .date-input {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .date-input:hover {
+            background-color: #4b5563;
+        }
+        .date-input:focus {
+            outline: 2px solid #3b82f6;
+            background-color: #4b5563;
+        }
+        .export-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .export-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+        }
+        .table-scroll {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .users-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .users-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+        .users-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        .users-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .users-title i {
+            font-size: 2rem;
+            color: #3b82f6;
+        }
+        .add-user-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        .add-user-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+        }
+        .users-table {
+            border-collapse: separate;
+            border-spacing: 0 0.5rem;
+        }
+        .users-table thead th {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1rem 1.25rem;
+            border: none;
+        }
+        .users-table tbody tr {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .users-table tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .users-table tbody td {
+            padding: 1.25rem 1.25rem;
+            vertical-align: middle;
+            border: none;
+        }
+        .users-table tbody tr td:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+        .users-table tbody tr td:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .role-badge-admin {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+        .role-badge-commercial {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .role-badge-marketing {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        .delete-user-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            cursor: pointer;
+        }
+        .delete-user-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        .protected-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1rem;
+            background: #f3f4f6;
+            color: #6b7280;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .modal-content {
+            border-radius: 1.5rem;
+            border: none;
+            overflow: hidden;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            padding: 1.5rem 2rem;
+            border: none;
+        }
+        .modal-body {
+            padding: 2rem;
+        }
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border: none;
+            background: #f8fafc;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .user-name-cell {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+        .user-date-cell {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="container py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; overflow: hidden;">
+                        <img src="{{ url_for('static', filename='Logo3.png') }}" alt="MySky Audio Logo" class="w-100 h-100" style="object-fit: contain;">
+                    </div>
+                    <div>
+                        <h1 class="h5 text-white mb-0 fw-bold">MySky Audio</h1>
+                        <p class="mb-0 text-white-50 small">Panneau Administrateur</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('logout') }}"><button class="btn btn-outline-light btn-sm">Déconnexion</button> </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <!-- Titre -->
+        <div class="mb-4">
+            <h2 class="display-5 text-white fw-bold mb-2">Panneau Administrateur</h2>
+            <p class="text-white-50 fst-italic">Gestion des appareils MySky Audio</p>
+        </div>
+
+        <!-- Section Utilisateurs -->
+        <div class="users-card mb-4">
+            <div class="users-header">
+                <h3 class="users-title mb-0">
+                    <i class="bi bi-people-fill"></i> Gestion des Utilisateurs
+                </h3>
+                <button class="add-user-btn" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                    <i class="bi bi-plus-circle-fill"></i> Nouvel utilisateur
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="users-table table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Rôle</th>
+                            <th>Date de création</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Boutons Services -->
+       <div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <a href="{{ url_for('marketing') }}" class="service-btn service-btn-marketing w-100 d-block text-decoration-none">
+            <div class="d-flex align-items-center gap-3">
+                <div class="service-icon-box">
+                    <i class="bi bi-megaphone fs-2"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="h4 mb-1 fw-bold">Service Marketing</h3>
+                    <p class="mb-0 small opacity-75">Campagnes, promotions et communication</p>
+                </div>
+                <i class="bi bi-chevron-right fs-4 service-arrow"></i>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <a href="{{ url_for('commercial') }}" class="service-btn service-btn-commercial w-100 d-block text-decoration-none">
+            <div class="d-flex align-items-center gap-3">
+                <div class="service-icon-box">
+                    <i class="bi bi-people fs-2"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="h4 mb-1 fw-bold">Service Commercial</h3>
+                    <p class="mb-0 small opacity-75">Ventes, clients et statistiques</p>
+                </div>
+                <i class="bi bi-chevron-right fs-4 service-arrow"></i>
+            </div>
+        </a>
+    </div>
+</div>
+
+        <!-- Statistiques -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary small fw-medium mb-1">Total appareils</p>
+                            <p class="h2 fw-bold mb-0" id="totalDevices">250</p>
+                        </div>
+                        <div class="stat-icon-box bg-primary bg-opacity-10">
+                            <i class="bi bi-grid-3x3-gap fs-4 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary small fw-medium mb-1">En ligne (UP)</p>
+                            <p class="h2 fw-bold mb-0 text-success" id="upDevices">205</p>
+                        </div>
+                        <div class="stat-icon-box bg-success bg-opacity-10">
+                            <i class="bi bi-check-circle fs-4 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary small fw-medium mb-1">Hors ligne (K/O)</p>
+                            <p class="h2 fw-bold mb-0 text-danger" id="koDevices">45</p>
+                        </div>
+                        <div class="stat-icon-box bg-danger bg-opacity-10">
+                            <i class="bi bi-x-circle fs-4 text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button onclick="syncAllKO()" class="sync-all-btn w-100 d-flex flex-column align-items-center justify-content-center gap-2">
+                    <i class="bi bi-arrow-repeat fs-2"></i>
+                    <span class="fw-bold small">Synchroniser tous les K/O</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Recherche -->
+        <div class="search-card mb-4">
+            <div class="row g-3">
+                <div class="col-md-9">
+                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="🔍 Rechercher par IP ou lieu..." onkeyup="filterDevices()">
+                </div>
+                <div class="col-md-3">
+                    <select id="filterStatus" class="form-select form-select-lg" onchange="filterDevices()">
+                        <option value="all">Tous les états</option>
+                        <option value="UP">UP uniquement</option>
+                        <option value="KO">K/O uniquement</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau Appareils -->
+        <div class="table-container mb-4">
+            <div class="table-scroll">
+                <table class="table table-hover mb-0">
+                    <thead class="sticky-top">
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()" class="form-check-input"></th>
+                            <th>Adresse IP</th>
+                            <th>Lieux</th>
+                            <th>Joue</th>
+                            <th>État</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="deviceTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Actions groupées -->
+        <div id="bulkActions" class="bulk-actions-card mb-4 d-none">
+            <div class="d-flex justify-content-between align-items-center">
+                <p class="mb-0 fw-semibold">
+                    <span id="selectedCount">0</span> appareil(s) sélectionné(s)
+                </p>
+                <div class="d-flex gap-2">
+                    <button onclick="syncSelected()" class="btn btn-primary">Synchroniser la sélection</button>
+                    <button onclick="clearSelection()" class="btn btn-secondary">Annuler</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique -->
+        <div class="history-card">
+            <h3 class="h4 fw-bold mb-4">
+                Historique <span class="text-secondary fw-normal">(exporter en fichier txt):</span>
+            </h3>
+            
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <span class="fw-semibold">De</span>
+                <input type="date" id="dateDebut" class="date-input">
+                <span class="fw-semibold">à</span>
+                <input type="date" id="dateFin" class="date-input">
+                <button onclick="exportHistory()" class="export-btn d-flex align-items-center gap-2">
+                    <i class="bi bi-download"></i>
+                    Exporter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter Utilisateur -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white fw-bold">
+                        <i class="bi bi-person-plus-fill"></i> Créer un nouvel utilisateur
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-person-badge"></i> Nom
+                            </label>
+                            <input type="text" class="form-control" id="userName" placeholder="Ex: Dupont" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-person"></i> Prénom
+                            </label>
+                            <input type="text" class="form-control" id="userFirstName" placeholder="Ex: Jean" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-award"></i> Rôle
+                            </label>
+                            <select class="form-select" id="userRole" required>
+                                <option value="">Sélectionner un rôle...</option>
+                                <option value="Admin">🛡️ Administrateur</option>
+                                <option value="Service Commercial">💼 Service Commercial</option>
+                                <option value="Service Marketing">📢 Service Marketing</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Annuler
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="addUser()">
+                        <i class="bi bi-check-circle-fill"></i> Créer l'utilisateur
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let devices = [];
+        const lieux = ['Châtelet', 'La Défense', 'République', 'Bastille', 'Nation', 'Gare du Nord', 'Montparnasse', 'Saint-Lazare', 'Opéra', 'Concorde'];
+        const fichiers = ['jazz_lounge.mp3', 'ambiance_matinale.mp3', 'soft_piano.mp3', 'lounge_mix.mp3', 'friday_energy.mp3'];
+
+        let users = [
+            { id: 1, nom: 'Dupont', prenom: 'Jean', role: 'Admin', dateCreation: '2024-01-15' },
+            { id: 2, nom: 'Martin', prenom: 'Sophie', role: 'Service Commercial', dateCreation: '2024-02-20' },
+            { id: 3, nom: 'Bernard', prenom: 'Luc', role: 'Service Marketing', dateCreation: '2024-03-10' },
+            { id: 4, nom: 'Dubois', prenom: 'Marie', role: 'Admin', dateCreation: '2024-01-20' }
+        ];
+        let nextUserId = 5;
+
+        function generateDevices() {
+            devices = [];
+            for (let i = 0; i < 250; i++) {
+                const isUp = i < 205;
+                devices.push({
+                    ip: `192.168.${Math.floor(i / 255)}.${i % 255}`,
+                    lieu: lieux[i % lieux.length] + (i > 9 ? ` - Boutique ${Math.floor(i / 10)}` : ''),
+                    fichier: isUp ? fichiers[i % fichiers.length] : '?',
+                    status: isUp ? 'UP' : 'KO',
+                    selected: false
+                });
+            }
+            renderDevices();
+            updateStats();
+        }
+
+        function renderUsers() {
+            const table = document.getElementById('usersTable');
+            
+            table.innerHTML = users.map(user => {
+                let roleClass = '', roleIcon = '';
+                
+                if (user.role === 'Admin') {
+                    roleClass = 'role-badge-admin';
+                    roleIcon = '<i class="bi bi-shield-fill-check"></i>';
+                } else if (user.role === 'Service Commercial') {
+                    roleClass = 'role-badge-commercial';
+                    roleIcon = '<i class="bi bi-briefcase-fill"></i>';
+                } else {
+                    roleClass = 'role-badge-marketing';
+                    roleIcon = '<i class="bi bi-megaphone-fill"></i>';
+                }
+                
+                const roleBadge = `<span class="role-badge ${roleClass}">${roleIcon} ${user.role}</span>`;
+                const deleteBtn = user.role !== 'Admin' 
+                    ? `<button onclick="deleteUser(${user.id})" class="delete-user-btn">
+                        <i class="bi bi-trash3-fill"></i> Supprimer
+                       </button>`
+                    : '<span class="protected-badge"><i class="bi bi-shield-lock-fill"></i> Protégé</span>';
+
+                return `
+                    <tr>
+                        <td class="user-name-cell">${user.nom}</td>
+                        <td class="user-name-cell">${user.prenom}</td>
+                        <td>${roleBadge}</td>
+                        <td class="user-date-cell"><i class="bi bi-calendar3"></i> ${new Date(user.dateCreation).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
+                        <td>${deleteBtn}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function addUser() {
+            const nom = document.getElementById('userName').value.trim();
+            const prenom = document.getElementById('userFirstName').value.trim();
+            const role = document.getElementById('userRole').value;
+
+            if (!nom || !prenom || !role) {
+                alert('⚠️ Veuillez remplir tous les champs');
+                return;
+            }
+
+            const newUser = {
+                id: nextUserId++,
+                nom: nom,
+                prenom: prenom,
+                role: role,
+                dateCreation: new Date().toISOString().split('T')[0]
+            };
+
+            users.push(newUser);
+            renderUsers();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+            modal.hide();
+
+            document.getElementById('addUserForm').reset();
+
+            alert(`✅ Utilisateur ${prenom} ${nom} créé avec succès !`);
+        }
+
+        function deleteUser(userId) {
+            const user = users.find(u => u.id === userId);
+            
+            if (user.role === 'Admin') {
+                alert('❌ Vous ne pouvez pas supprimer un administrateur !');
+                return;
+            }
+
+            if (confirm(`Êtes-vous sûr de vouloir supprimer ${user.prenom} ${user.nom} ?`)) {
+                users = users.filter(u => u.id !== userId);
+                renderUsers();
+                alert('✅ Utilisateur supprimé avec succès');
+            }
+        }
+
+        function renderDevices() {
+            const table = document.getElementById('deviceTable');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            const filteredDevices = devices.filter(device => {
+                const matchSearch = device.ip.toLowerCase().includes(searchTerm) || 
+                                   device.lieu.toLowerCase().includes(searchTerm);
+                const matchStatus = filterStatus === 'all' || device.status === filterStatus;
+                return matchSearch && matchStatus;
+            });
+
+            table.innerHTML = filteredDevices.map((device, index) => {
+                const realIndex = devices.indexOf(device);
+                const statusHtml = device.status === 'UP'
+                    ? `<span class="status-badge status-up">
+                        <i class="bi bi-check-circle-fill"></i>
+                        UP
+                       </span>`
+                    : `<span class="status-badge status-ko">
+                        <i class="bi bi-x-circle-fill"></i>
+                        K/O
+                       </span>`;
+
+                const syncButton = device.status === 'KO'
+                    ? `<button onclick="syncDevice(${realIndex})" class="sync-btn">Synchroniser</button>`
+                    : '';
+
+                return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" ${device.selected ? 'checked' : ''} onchange="toggleDevice(${realIndex})" class="form-check-input">
+                        </td>
+                        <td class="fw-semibold">${device.ip}</td>
+                        <td>${device.lieu}</td>
+                        <td class="${device.status === 'KO' ? 'fst-italic text-muted' : ''}">${device.fichier}</td>
+                        <td>${statusHtml}</td>
+                        <td>${syncButton}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function syncDevice(index) {
+            const device = devices[index];
+            const button = event.target;
+
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+            setTimeout(() => {
+                device.status = 'UP';
+                device.fichier = fichiers[Math.floor(Math.random() * fichiers.length)];
+                renderDevices();
+                updateStats();
+            }, 2000);
+        }
+
+        function syncAllKO() {
+            const koDevices = devices.filter(d => d.status === 'KO');
+            if (!confirm(`Voulez-vous synchroniser les ${koDevices.length} appareils K/O ?`)) {
+                return;
+            }
+
+            let koCount = 0;
+            devices.forEach(device => {
+                if (device.status === 'KO') {
+                    koCount++;
+                    setTimeout(() => {
+                        device.status = 'UP';
+                        device.fichier = fichiers[Math.floor(Math.random() * fichiers.length)];
+                        renderDevices();
+                        updateStats();
+                    }, koCount * 100);
+                }
+            });
+        }
+
+        function toggleDevice(index) {
+            devices[index].selected = !devices[index].selected;
+            updateSelectionUI();
+        }
+
+        function toggleSelectAll() {
+            const checked = document.getElementById('selectAll').checked;
+            devices.forEach(device => device.selected = checked);
+            renderDevices();
+            updateSelectionUI();
+        }
+
+        function updateSelectionUI() {
+            const selectedCount = devices.filter(d => d.selected).length;
+            document.getElementById('selectedCount').textContent = selectedCount;
+            document.getElementById('bulkActions').classList.toggle('d-none', selectedCount === 0);
+        }
+
+        function syncSelected() {
+            const selected = devices.filter(d => d.selected);
+            if (selected.length === 0) return;
+
+            selected.forEach((device, i) => {
+                setTimeout(() => {
+                    device.status = 'UP';
+                    device.fichier = fichiers[Math.floor(Math.random() * fichiers.length)];
+                    device.selected = false;
+                    renderDevices();
+                    updateStats();
+                    updateSelectionUI();
+                }, i * 100);
+            });
+        }
+
+        function clearSelection() {
+            devices.forEach(d => d.selected = false);
+            document.getElementById('selectAll').checked = false;
+            renderDevices();
+            updateSelectionUI();
+        }
+
+        function filterDevices() {
+            renderDevices();
+        }
+
+        function updateStats() {
+            const total = devices.length;
+            const up = devices.filter(d => d.status === 'UP').length;
+            const ko = devices.filter(d => d.status === 'KO').length;
+
+            document.getElementById('totalDevices').textContent = total;
+            document.getElementById('upDevices').textContent = up;
+            document.getElementById('koDevices').textContent = ko;
+        }
+
+        function exportHistory() {
+            const dateDebut = document.getElementById('dateDebut').value;
+            const dateFin = document.getElementById('dateFin').value;
+
+            if (!dateDebut || !dateFin) {
+                alert('⚠️ Veuillez sélectionner les deux dates');
+                return;
+            }
+
+            let content = `═══════════════════════════════════════════════════════
+MySky Audio - Historique des Appareils
+Le ciel n'est plus une limite
+═══════════════════════════════════════════════════════
+
+Période: Du ${dateDebut} au ${dateFin}
+
+Adresse IP       | Lieu                  | Fichier             | État
+────────────────────────────────────────────────────────────────────
+`;
+
+            devices.slice(0, 50).forEach(device => {
+                content += `${device.ip.padEnd(16)} | ${device.lieu.padEnd(21)} | ${device.fichier.padEnd(19)} | ${device.status}\n`;
+            });
+
+            content += `\n... et ${devices.length - 50} autres appareils\n\n`;
+            content += `═══════════════════════════════════════════════════════\n`;
+            content += `Total: ${devices.length} appareils | UP: ${devices.filter(d => d.status === 'UP').length} | K/O: ${devices.filter(d => d.status === 'KO').length}\n`;
+            content += `Généré le ${new Date().toLocaleString('fr-FR')}\n`;
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mysky_historique_${dateDebut}_${dateFin}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        window.onload = function() {
+            generateDevices();
+            renderUsers();
+        };
+    </script>
+</body>
+</html>
