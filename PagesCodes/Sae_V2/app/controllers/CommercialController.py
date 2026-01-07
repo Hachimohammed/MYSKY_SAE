@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request 
 from app import app
 import os
-#from mutagen.mp3 import MP3
+from mutagen.mp3 import MP3
 from app.services.AudioFileService import AudioFileService
 from app.controllers.LoginController import reqrole
 from werkzeug.utils import secure_filename
@@ -54,6 +54,7 @@ class CommercialController:
         metadata = {"title": "Audio Files List"}
         audio_files = AudioFileService.get_all_audio_files()
         return render_template('commercial_files.html', metadata=metadata, audio_files=audio_files)
+    
     
     @app.route('/commercial/delete/<int:file_id>', methods=['POST'])
     @reqrole("ADMIN", "COMMERCIAL")
