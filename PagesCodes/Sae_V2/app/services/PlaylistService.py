@@ -4,11 +4,13 @@ import os
 
 class PlaylistService:
     """
-    Classe dédiée à la logique métier des playlists
+    Service contenant TOUTE la logique métier des playlists
     """
     
     def __init__(self):
         self.playlist_dao = PlaylistDAO()
+    
+    # ==================== MÉTHODES DE BASE ====================
     
     def getAllPlaylists(self):
         """Récupère toutes les playlists"""
@@ -82,10 +84,12 @@ class PlaylistService:
         """Met à jour l'ordre des fichiers dans une playlist"""
         return self.playlist_dao.updateAudioOrder(id_playlist, fichiers_ordonnes)
     
+    # ==================== LOGIQUE MÉTIER AVANCÉE ====================
+    
     def getPlaylistStatistics(self, id_playlist):
         """
         Récupère les statistiques d'une playlist
-        Logique métier : agrège plusieurs informations
+        Agrège plusieurs informations
         """
         playlist = self.getPlaylistById(id_playlist)
         if not playlist:
@@ -118,7 +122,6 @@ class PlaylistService:
         if not audio_files:
             return False, "La playlist ne contient aucun fichier audio"
         
-        # Vérifier que les fichiers existent physiquement
         fichiers_manquants = []
         for audio in audio_files:
             if not os.path.exists(audio.chemin_fichier):
@@ -145,3 +148,114 @@ class PlaylistService:
             return True, "Playlist générée avec succès"
         else:
             return False, "Erreur lors de la génération du fichier M3U"
+    
+    # ==================== ORCHESTRATION COMPLEXE ====================
+    
+    def generateWeekPlaylistsWithOrder(self, id_planning, audio_service, app_root_path, use_http_urls=True):
+        """
+        LOGIQUE MÉTIER COMPLÈTE : Génère toutes les playlists de la semaine en respectant l'ordre sauvegardé
+        
+        Cette méthode orchestre :
+        - Chargement de l'ordre des fichiers (via AudioFileService)
+        - Création des playlists pour chaque jour
+        - Ajout des fichiers dans l'ordre
+        - Génération des fichiers M3U
+        
+        Retourne: (playlists_created, errors)
+        """
+        jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
+        playlists_created = []
+        errors = []
+        
+        ordre_folder = os.path.join(app_root_path, 'static', 'ordre')
+        
+        for jour in jours:
+            try:
+                # Charger les fichiers ordonnés via AudioFileService
+                fichiers_ordonnes = audio_service.loadPlaybackOrder(jour, ordre_folder)
+                
+                if not fichiers_ordonnes:
+                    print(f"⚠️ Aucun fichier pour {jour}")
+                    continue
+                
+                # Créer la playlist
+                nom_playlist = f"Playlist_{jour}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                chemin_m3u = os.path.join(app_root_path, 'static', 'playlists', f"{nom_playlist}.m3u")
+                duree_totale = sum(f.duree for f in fichiers_ordonnes if f.duree)
+                
+                playlist = self.createPlaylist(
+                    nom_playlist=nom_playlist,
+                    chemin_fichier_m3u=chemin_m3u,
+                    duree_total=duree_totale,
+                    id_planning=id_planning,
+                    jour_semaine=jour
+                )
+                
+                if not playlist:
+                    error_msg = f"Erreur création playlist pour {jour}"
+                    print(f"❌ {error_msg}")
+                    errors.append(error_msg)
+                    continue
+                
+                # Ajouter les fichiers dans l'ordre
+                for ordre, fichier in enumerate(fichiers_ordonnes, start=1):
+                    self.addAudioWithOrder(playlist.id_playlist, fichier.id_fichier, ordre)
+                
+                # Générer le fichier M3U
+                if self.generateM3UFile(playlist.id_playlist, use_http_urls):
+                    playlists_created.append(playlist)
+                    print(f"✅ Playlist générée pour {jour} avec {len(fichiers_ordonnes)} fichiers")
+                else:
+                    error_msg = f"Erreur génération M3U pour {jour}"
+                    print(f"❌ {error_msg}")
+                    errors.append(error_msg)
+                    
+            except Exception as e:
+                error_msg = f"Erreur lors de la génération de la playlist {jour}: {str(e)}"
+                print(f"❌ {error_msg}")
+                errors.append(error_msg)
+        
+        return playlists_created, errors
+    
+    def deletePlaylistWithPhysicalFile(self, id_playlist):
+        """
+        Supprime une playlist ET son fichier M3U physique
+        Retourne: (success, error_message)
+        """
+        playlist = self.getPlaylistById(id_playlist)
+        
+        if not playlist:
+            return False, 'Playlist introuvable'
+        
+        # Supprimer le fichier M3U physique
+        if playlist.chemin_fichier_m3u and os.path.exists(playlist.chemin_fichier_m3u):
+            try:
+                os.remove(playlist.chemin_fichier_m3u)
+                print(f"✅ Fichier M3U supprimé: {playlist.chemin_fichier_m3u}")
+            except Exception as e:
+                print(f"❌ Erreur suppression fichier M3U: {e}")
+        
+        # Supprimer de la BDD
+        if self.deletePlaylist(id_playlist):
+            return True, None
+        else:
+            return False, 'Erreur suppression BDD'
+    
+    def formatPlaylistForApi(self, playlist, include_files=False):
+        """
+        Formate une playlist pour l'API
+        """
+        data = {
+            'id_playlist': playlist.id_playlist,
+            'nom_playlist': playlist.nom_playlist,
+            'jour_semaine': playlist.jour_semaine,
+            'duree_totale': playlist.duree_total,
+            'download_m3u_url': f"/api/v1/playlist/download/{playlist.id_playlist}"
+        }
+        
+        if include_files:
+            fichiers = self.getPlaylistAudioFiles(playlist.id_playlist)
+            data['nombre_fichiers'] = len(fichiers)
+            data['fichiers'] = [f.to_dict() for f in fichiers]
+        
+        return data

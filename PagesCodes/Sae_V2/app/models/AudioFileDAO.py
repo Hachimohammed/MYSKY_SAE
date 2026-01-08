@@ -20,6 +20,7 @@ class AudioFileDAO(AudioFileDAOInterface):
     def create(self, nom, type_fichier, taille, chemin_fichier, id_type_contenu=1, 
                duree=None, artiste=None, album=None, jour_semaine=None, id_utilisateur=None):
         """Crée un nouveau fichier audio en base de données"""
+        conn = None
         try:
             conn = self._getDbConnection()
             date_ajout = datetime.now().isoformat()
@@ -34,12 +35,15 @@ class AudioFileDAO(AudioFileDAOInterface):
             
             id_fichier = cursor.lastrowid
             
-            # Associer à l'utilisateur si fourni
+            # ✅ IMPORTANT : Associer à l'utilisateur DANS LA MÊME TRANSACTION
             if id_utilisateur:
-                self.addToUser(id_fichier, id_utilisateur)
+                conn.execute("""
+                    INSERT OR IGNORE INTO Ajoute (id_utilisateur, id_Fichier_audio, Date_Ajout)
+                    VALUES (?, ?, ?)
+                """, (id_utilisateur, id_fichier, date_ajout))
             
+            # ✅ COMMIT une seule fois à la fin
             conn.commit()
-            conn.close()
             
             return AudioFile({
                 'id_Fichier_audio': id_fichier,
@@ -56,17 +60,23 @@ class AudioFileDAO(AudioFileDAOInterface):
             })
         except Exception as e:
             print(f"Erreur dans create: {e}")
+            if conn:
+                conn.rollback()
             return None
+        finally:
+            # ✅ TOUJOURS fermer la connexion
+            if conn:
+                conn.close()
     
     def getById(self, id_fichier):
         """Récupère un fichier audio par son ID"""
+        conn = None
         try:
             conn = self._getDbConnection()
             row = conn.execute(
                 "SELECT * FROM Fichier_audio WHERE id_Fichier_audio = ?",
                 (id_fichier,)
             ).fetchone()
-            conn.close()
             
             if row:
                 return AudioFile(dict(row))
@@ -74,9 +84,13 @@ class AudioFileDAO(AudioFileDAOInterface):
         except Exception as e:
             print(f"Erreur dans getById: {e}")
             return None
+        finally:
+            if conn:
+                conn.close()
     
     def getAll(self):
         """Récupère tous les fichiers audio"""
+        conn = None
         try:
             conn = self._getDbConnection()
             rows = conn.execute("""
@@ -85,34 +99,39 @@ class AudioFileDAO(AudioFileDAOInterface):
                 LEFT JOIN Type_contenu t ON f.id_Type_contenu = t.id_Type_contenu
                 ORDER BY f.date_ajout DESC
             """).fetchall()
-            conn.close()
             
             return [AudioFile(dict(row)) for row in rows]
         except Exception as e:
             print(f"Erreur dans getAll: {e}")
             return []
+        finally:
+            if conn:
+                conn.close()
     
     def getByDay(self, jour_semaine):
         """Récupère tous les fichiers audio d'un jour spécifique"""
+        conn = None
         try:
             conn = self._getDbConnection()
             jour_upper = jour_semaine.upper()
-            
             
             rows = conn.execute("""
                 SELECT * FROM Fichier_audio
                 WHERE jour_semaine = ? AND id_Type_contenu = 1
                 ORDER BY nom
             """, (jour_upper,)).fetchall()
-            conn.close()
             
             return [AudioFile(dict(row)) for row in rows]
         except Exception as e:
             print(f"Erreur dans getByDay: {e}")
             return []
+        finally:
+            if conn:
+                conn.close()
     
     def getByType(self, id_type_contenu):
         """Récupère les fichiers par type de contenu"""
+        conn = None
         try:
             conn = self._getDbConnection()
             rows = conn.execute("""
@@ -120,15 +139,18 @@ class AudioFileDAO(AudioFileDAOInterface):
                 WHERE id_Type_contenu = ?
                 ORDER BY date_ajout DESC
             """, (id_type_contenu,)).fetchall()
-            conn.close()
             
             return [AudioFile(dict(row)) for row in rows]
         except Exception as e:
             print(f"Erreur dans getByType: {e}")
             return []
+        finally:
+            if conn:
+                conn.close()
     
     def getByUser(self, id_utilisateur):
         """Récupère les fichiers ajoutés par un utilisateur"""
+        conn = None
         try:
             conn = self._getDbConnection()
             rows = conn.execute("""
@@ -138,15 +160,18 @@ class AudioFileDAO(AudioFileDAOInterface):
                 WHERE a.id_utilisateur = ?
                 ORDER BY a.Date_Ajout DESC
             """, (id_utilisateur,)).fetchall()
-            conn.close()
             
             return [AudioFile(dict(row)) for row in rows]
         except Exception as e:
             print(f"Erreur dans getByUser: {e}")
             return []
+        finally:
+            if conn:
+                conn.close()
     
     def update(self, id_fichier, nom, taille):
         """Met à jour les informations d'un fichier"""
+        conn = None
         try:
             conn = self._getDbConnection()
             conn.execute("""
@@ -155,14 +180,19 @@ class AudioFileDAO(AudioFileDAOInterface):
                 WHERE id_Fichier_audio = ?
             """, (nom, taille, id_fichier))
             conn.commit()
-            conn.close()
             return True
         except Exception as e:
             print(f"Erreur dans update: {e}")
+            if conn:
+                conn.rollback()
             return False
+        finally:
+            if conn:
+                conn.close()
     
     def delete(self, id_fichier):
         """Supprime un fichier audio"""
+        conn = None
         try:
             conn = self._getDbConnection()
             # Supprimer les relations
@@ -171,11 +201,15 @@ class AudioFileDAO(AudioFileDAOInterface):
             # Supprimer le fichier
             conn.execute("DELETE FROM Fichier_audio WHERE id_Fichier_audio = ?", (id_fichier,))
             conn.commit()
-            conn.close()
             return True
         except Exception as e:
             print(f"Erreur dans delete: {e}")
+            if conn:
+                conn.rollback()
             return False
+        finally:
+            if conn:
+                conn.close()
     
     def deleteByDay(self, jour_semaine):
         """Supprime tous les fichiers d'un jour"""
@@ -189,7 +223,11 @@ class AudioFileDAO(AudioFileDAOInterface):
             return False
     
     def addToUser(self, id_fichier, id_utilisateur):
-        """Associe un fichier à un utilisateur dans la table Ajoute"""
+        """
+        ⚠️ DEPRECATED - Utiliser create() avec id_utilisateur directement
+        Associe un fichier à un utilisateur dans la table Ajoute
+        """
+        conn = None
         try:
             conn = self._getDbConnection()
             date_ajout = datetime.now().isoformat()
@@ -198,11 +236,15 @@ class AudioFileDAO(AudioFileDAOInterface):
                 VALUES (?, ?, ?)
             """, (id_utilisateur, id_fichier, date_ajout))
             conn.commit()
-            conn.close()
             return True
         except Exception as e:
             print(f"Erreur dans addToUser: {e}")
+            if conn:
+                conn.rollback()
             return False
+        finally:
+            if conn:
+                conn.close()
     
     def getTotalDuration(self, jour_semaine):
         """Calcule la durée totale des MP3 d'un jour"""
@@ -239,6 +281,7 @@ class AudioFileDAO(AudioFileDAOInterface):
     
     def search(self, keyword):
         """Recherche des fichiers par nom ou artiste"""
+        conn = None
         try:
             conn = self._getDbConnection()
             rows = conn.execute("""
@@ -246,9 +289,11 @@ class AudioFileDAO(AudioFileDAOInterface):
                 WHERE nom LIKE ? OR artiste LIKE ?
                 ORDER BY date_ajout DESC
             """, (f"%{keyword}%", f"%{keyword}%")).fetchall()
-            conn.close()
             
             return [AudioFile(dict(row)) for row in rows]
         except Exception as e:
             print(f"Erreur dans search: {e}")
             return []
+        finally:
+            if conn:
+                conn.close()
