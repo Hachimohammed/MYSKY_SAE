@@ -30,6 +30,15 @@ class DatabaseInit:
                     Description TEXT
                 )
             """)
+
+            # Initialisation de table Role avec 3 lignes seulement, 1 Admin, 2 Marketing, 3 Commercial
+            conn.execute("""
+                INSERT INTO Groupe_Role(nom_groupe, Description)
+                        VALUES
+                            ('ADMIN', 'Administrateur Système'),
+                            ('MARKETING', Service marketing alimentant la playlist')
+                            ('COMMERCIAL', 'Service commercial ajoutant des pubs à la playlist)
+                """)
             
             # 2. Table Utilisateur 
             conn.execute("""
@@ -227,4 +236,6 @@ class DatabaseInit:
                     VALUES (?, ?)
                 """, (nom_type, description))
         except sqlite3.Error as e:
-            print(f"Erreur lors de l'insertion des types par défaut : {e}")
+            print(f"Erreur lors de l’insertion des types par défaut : {e}")
+
+
