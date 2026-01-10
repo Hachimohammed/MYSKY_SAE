@@ -30,6 +30,15 @@ class DatabaseInit:
                     Description TEXT
                 )
             """)
+
+            # Initialisation de table Role avec 3 lignes seulement, 1 Admin, 2 Marketing, 3 Commercial
+            conn.execute("""
+                INSERT INTO Groupe_Role(nom_groupe, Description)
+                        VALUES
+                            ('ADMIN', 'Administrateur Système'),
+                            ('Marketing', Service marketing alimentant la playlist')
+                            ('Commercial', 'Service commercial ajoutant des pubs à la playlist)
+                """)
             
             # 2. Table Utilisateur 
             conn.execute("""
@@ -216,3 +225,21 @@ class DatabaseInit:
                 """, (nom_type, description))
         except sqlite3.Error as e:
             print(f"Erreur lors de l’insertion des types par défaut : {e}")
+
+    def _createRoleMarketing(self, conn):
+        """Crée le groupe Marketing"""
+        try:
+            conn.execute('INSERT OR IGNORE INTO Groupe_Role (nom_groupe, Description) VALUES (?, ?)', 
+                         ('Marketing', 'Service marketing alimentant la playlist'))
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Erreur lors de la création de marketing : {e}")
+
+    def _createRoleCommercial(self, conn):
+        """Crée le groupe Marketing"""
+        try:
+            conn.execute('INSERT OR IGNORE INTO Groupe_Role (nom_groupe, Description) VALUES (?, ?)', 
+                         ('Commercial', 'Service commercial ajoutant des pubs à la playlist'))
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Erreur lors de la création de commercial : {e}")
