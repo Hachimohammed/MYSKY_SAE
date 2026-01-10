@@ -36,8 +36,8 @@ class DatabaseInit:
                 INSERT INTO Groupe_Role(nom_groupe, Description)
                         VALUES
                             ('ADMIN', 'Administrateur Système'),
-                            ('Marketing', Service marketing alimentant la playlist')
-                            ('Commercial', 'Service commercial ajoutant des pubs à la playlist)
+                            ('MARKETING', Service marketing alimentant la playlist')
+                            ('COMMERCIAL', 'Service commercial ajoutant des pubs à la playlist)
                 """)
             
             # 2. Table Utilisateur 
