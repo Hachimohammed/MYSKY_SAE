@@ -77,7 +77,7 @@ class DatabaseInit:
             # 6. Table playlist 
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS playlist (
-                    id_id_playlist INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id_playlist INTEGER PRIMARY KEY AUTOINCREMENT,
                     nom_playlist TEXT NOT NULL,
                     chemin_fichier_m3u TEXT NOT NULL,
                     duree_total INTEGER,
@@ -107,10 +107,9 @@ class DatabaseInit:
             # 8. Table lecteur 
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS lecteur (
-                    id_id_lecteur INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id_lecteur INTEGER PRIMARY KEY AUTOINCREMENT,
                     nom_lecteur TEXT NOT NULL,
                     adresse_ip TEXT UNIQUE NOT NULL,
-                    emplacement TEXT,
                     statut TEXT DEFAULT 'DOWN',
                     id_localisation INTEGER,
                     FOREIGN KEY (id_localisation) REFERENCES id_localisation(id_localisation)
@@ -125,8 +124,8 @@ class DatabaseInit:
                     message TEXT NOT NULL,
                     DateDeLog TEXT NOT NULL,
                     Niveau TEXT NOT NULL,
-                    id_id_lecteur INTEGER,
-                    FOREIGN KEY (id_id_lecteur) REFERENCES lecteur(id_id_lecteur)
+                    id_lecteur INTEGER,
+                    FOREIGN KEY (id_lecteur) REFERENCES lecteur(id_lecteur)
                 )
             """)
             
@@ -146,23 +145,23 @@ class DatabaseInit:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS fait_partie_de (
                     id_Fichier_audio INTEGER NOT NULL,
-                    id_id_playlist INTEGER NOT NULL,
+                    id_playlist INTEGER NOT NULL,
                     ordre INTEGER DEFAULT 0,
-                    PRIMARY KEY (id_Fichier_audio, id_id_playlist),
+                    PRIMARY KEY (id_Fichier_audio, id_playlist),
                     FOREIGN KEY (id_Fichier_audio) REFERENCES Fichier_audio(id_Fichier_audio),
-                    FOREIGN KEY (id_id_playlist) REFERENCES playlist(id_id_playlist)
+                    FOREIGN KEY (id_playlist) REFERENCES playlist(id_playlist)
                 )
             """)
             
             # Relation joue_dans
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS joue_dans (
-                    id_id_playlist INTEGER NOT NULL,
-                    id_id_lecteur INTEGER NOT NULL,
+                    id_playlist INTEGER NOT NULL,
+                    id_lecteur INTEGER NOT NULL,
                     date_diffusion TEXT NOT NULL,
-                    PRIMARY KEY (id_id_playlist, id_id_lecteur),
-                    FOREIGN KEY (id_id_playlist) REFERENCES playlist(id_id_playlist),
-                    FOREIGN KEY (id_id_lecteur) REFERENCES lecteur(id_id_lecteur)
+                    PRIMARY KEY (id_playlist, id_lecteur),
+                    FOREIGN KEY (id_playlist) REFERENCES playlist(id_playlist),
+                    FOREIGN KEY (id_lecteur) REFERENCES lecteur(id_lecteur)
                 )
             """)
 

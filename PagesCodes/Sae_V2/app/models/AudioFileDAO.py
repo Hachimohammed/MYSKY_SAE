@@ -17,7 +17,7 @@ class AudioFileDAO(AudioFileDAOInterface):
         conn.row_factory = sqlite3.Row
         return conn
     
-    def create(self, nom, type_fichier, taille, chemin_fichier, id_type_contenu=1, 
+    def create(self, nom, type_fichier, taille, chemin_fichier, id_type_contenu=1,
                duree=None, artiste=None, album=None, jour_semaine=None, id_utilisateur=None):
         """Crée un nouveau fichier audio en base de données"""
         conn = None
@@ -25,7 +25,7 @@ class AudioFileDAO(AudioFileDAOInterface):
             conn = self._getDbConnection()
             date_ajout = datetime.now().isoformat()
             
-            # Insertion dans Fichier_audio
+            
             cursor = conn.execute("""
                 INSERT INTO Fichier_audio (nom, type_fichier, taille, date_ajout, id_Type_contenu,
                                           chemin_fichier, duree, artiste, album, jour_semaine)
@@ -35,14 +35,14 @@ class AudioFileDAO(AudioFileDAOInterface):
             
             id_fichier = cursor.lastrowid
             
-            # ✅ IMPORTANT : Associer à l'utilisateur DANS LA MÊME TRANSACTION
+            
             if id_utilisateur:
                 conn.execute("""
                     INSERT OR IGNORE INTO Ajoute (id_utilisateur, id_Fichier_audio, Date_Ajout)
                     VALUES (?, ?, ?)
                 """, (id_utilisateur, id_fichier, date_ajout))
             
-            # ✅ COMMIT une seule fois à la fin
+            
             conn.commit()
             
             return AudioFile({
@@ -64,7 +64,7 @@ class AudioFileDAO(AudioFileDAOInterface):
                 conn.rollback()
             return None
         finally:
-            # ✅ TOUJOURS fermer la connexion
+            
             if conn:
                 conn.close()
     

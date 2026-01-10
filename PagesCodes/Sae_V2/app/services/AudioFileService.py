@@ -144,10 +144,10 @@ class AudioFileService:
         for file in files:
             if file.filename == '':
                 continue
+            #fonction de  la biblo  werkzeug elle permet de securiser le nom du fichier
+            filename = secure_filename(file.filename) #supprimer les elements dangereux comme ../
             
-            filename = secure_filename(file.filename)
             
-            # Construire le chemin complet : app_root_path/static/audio/JOUR
             folder_full = os.path.join(app_root_path, 'static', 'audio', jour_semaine)
             os.makedirs(folder_full, exist_ok=True)
             
@@ -191,9 +191,9 @@ class AudioFileService:
         if audio.chemin_fichier and os.path.exists(audio.chemin_fichier):
             try:
                 os.remove(audio.chemin_fichier)
-                print(f"✅ Fichier supprimé: {audio.chemin_fichier}")
+                print(f" Fichier supprimé: {audio.chemin_fichier}")
             except Exception as e:
-                print(f"❌ Erreur suppression fichier: {e}")
+                print(f"Erreur suppression fichier: {e}")
 
         if self.deleteAudioFile(id_fichier):
             return True, None
@@ -212,9 +212,9 @@ class AudioFileService:
             if f.chemin_fichier and os.path.exists(f.chemin_fichier):
                 try:
                     os.remove(f.chemin_fichier)
-                    print(f"✅ Fichier supprimé: {f.chemin_fichier}")
+                    print(f"Fichier supprimé: {f.chemin_fichier}")
                 except Exception as e:
-                    print(f"❌ Erreur suppression fichier {f.chemin_fichier}: {e}")
+                    print(f" Erreur suppression fichier {f.chemin_fichier}: {e}")
             
             if self.deleteAudioFile(f.id_fichier):
                 deleted_count += 1
@@ -236,7 +236,7 @@ class AudioFileService:
                 'date_sauvegarde': datetime.now().isoformat()
             }, f, indent=2)
         
-        print(f"✅ Ordre sauvegardé dans {ordre_file}")
+        print(f" Ordre sauvegardé dans {ordre_file}")
         return True
     
     def loadPlaybackOrder(self, jour_semaine, ordre_folder):
@@ -257,10 +257,10 @@ class AudioFileService:
                     if audio:
                         fichiers_ordonnes.append(audio)
                 
-                print(f"📋 Ordre chargé pour {jour_semaine}: {len(fichiers_ordonnes)} fichiers")
+                print(f" Ordre chargé pour {jour_semaine}: {len(fichiers_ordonnes)} fichiers")
         else:
             fichiers_ordonnes = self.getAudioFilesByDay(jour_semaine)
-            print(f"⚠️ Pas d'ordre pour {jour_semaine}, utilisation ordre par défaut")
+            print(f" Pas d'ordre pour {jour_semaine}, utilisation ordre par défaut")
         
         return fichiers_ordonnes
     
