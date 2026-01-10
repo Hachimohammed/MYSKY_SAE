@@ -1,8 +1,9 @@
 from flask import render_template, redirect, url_for, request 
 from app import app
 import os
-from mutagen.mp3 import MP3
+from mutagen.mp3 import MP3 as mp3
 from app.services.AudioFileService import AudioFileService
+from app.services.PlaylistService import PlaylistService
 from app.controllers.LoginController import reqrole
 from werkzeug.utils import secure_filename
 
@@ -35,16 +36,18 @@ class CommercialController:
                 filename = secure_filename(file.filename)
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(filepath)
-
                 # Extraire la durée du fichier audio
-                audio = MP3(filepath)
+                audio = mp3(filepath)
                 duration = audio.info.length  # Durée en secondes
 
                 # Enregistrer les informations dans la base de données
                 AudioFileService.save_audio_file(filename, filepath, duration)
                 
                 return redirect(url_for('commercialView'))
-        
+            
+            else:
+                return "No file selected", 400
+            
         return render_template('commercial.html', metadata=metadata)
     
 
@@ -56,6 +59,14 @@ class CommercialController:
         return render_template('commercial_files.html', metadata=metadata, audio_files=audio_files)
     
     
+    @app.route('/commercial/play/<int:file_id>')
+    @reqrole("ADMIN", "COMMERCIAL")
+    def commercialPlayFile(file_id):
+        metadata = {"title": "Play Audio File"}
+        audio_file = AudioFileService.get_audio_file_by_id(file_id)
+        return render_template('commercial_play.html', metadata=metadata, audio_file=audio_file)
+    
+
     @app.route('/commercial/delete/<int:file_id>', methods=['POST'])
     @reqrole("ADMIN", "COMMERCIAL")
     def commercialDeleteFile(file_id):
@@ -63,9 +74,10 @@ class CommercialController:
         return redirect(url_for('commercialFiles'))
     
     
-    @app.route('/commercial/play/<int:file_id>')
+    @app.route('/commercial/playlist/stop')
     @reqrole("ADMIN", "COMMERCIAL")
-    def commercialPlayFile(file_id):
-        metadata = {"title": "Play Audio File"}
-        audio_file = AudioFileService.get_audio_file_by_id(file_id)
-        return render_template('commercial_play.html', metadata=metadata, audio_file=audio_file)
+    def commercialStopPlaylist():
+        if PlaylistService.is_playlist_running():
+            PlaylistService.stop_playlist()
+            
+        return redirect(url_for('commercialView'))

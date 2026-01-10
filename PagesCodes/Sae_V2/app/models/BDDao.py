@@ -26,7 +26,7 @@ class DatabaseInit:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS Groupe_Role (
                     id_Groupe INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nom_groupe TEXT NOT NULL,
+                    nom_groupe TEXT NOT NULL UNIQUE,
                     Description TEXT
                 )
             """)
@@ -57,7 +57,7 @@ class DatabaseInit:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS Type_contenu (
                     id_Type_contenu INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nom_type TEXT NOT NULL,
+                    nom_type TEXT NOT NULL UNIQUE,
                     description TEXT
                 )
             """)
@@ -150,17 +150,18 @@ class DatabaseInit:
                     FOREIGN KEY (id_Fichier_audio) REFERENCES Fichier_audio(id_Fichier_audio)
                 )
             """)
+            
             # Relation fait_partie_de 
             conn.execute("""
-        CREATE TABLE IF NOT EXISTS fait_partie_de (
-            id_Fichier_audio INTEGER NOT NULL,
-            id_id_playlist INTEGER NOT NULL,
-            ordre INTEGER DEFAULT 0,
-            PRIMARY KEY (id_Fichier_audio, id_id_playlist),
-            FOREIGN KEY (id_Fichier_audio) REFERENCES Fichier_audio(id_Fichier_audio),
-            FOREIGN KEY (id_id_playlist) REFERENCES playlist(id_id_playlist)
-        )
-    """)
+                CREATE TABLE IF NOT EXISTS fait_partie_de (
+                    id_Fichier_audio INTEGER NOT NULL,
+                    id_id_playlist INTEGER NOT NULL,
+                    ordre INTEGER DEFAULT 0,
+                    PRIMARY KEY (id_Fichier_audio, id_id_playlist),
+                    FOREIGN KEY (id_Fichier_audio) REFERENCES Fichier_audio(id_Fichier_audio),
+                    FOREIGN KEY (id_id_playlist) REFERENCES playlist(id_id_playlist)
+                )
+            """)
             
             # Relation joue_dans
             conn.execute("""
@@ -188,12 +189,23 @@ class DatabaseInit:
             conn.close()
     
     def _createDefaultAdmin(self, conn):
-        """Crée le groupe ADMIN et l'utilisateur LeadAdmin"""
+        """Crée les groupes par défaut et l'utilisateur LeadAdmin"""
         try:
-            conn.execute('INSERT OR IGNORE INTO Groupe_Role (nom_groupe, Description) VALUES (?, ?)', 
-                         ('ADMIN', 'Administrateur Système'))
+           
+            groupes_defaut = [
+                ('ADMIN', 'Administrateur Système'),
+                ('COMMERCIAL', 'Équipe Commerciale'),
+                ('MARKETING', 'Équipe Marketing')
+            ]
             
-            res = conn.execute('SELECT id_Groupe FROM Groupe_Role WHERE nom_groupe = "ADMIN"').fetchone()
+            for nom_groupe, description in groupes_defaut:
+                conn.execute(
+                    'INSERT OR IGNORE INTO Groupe_Role (nom_groupe, Description) VALUES (?, ?)', 
+                    (nom_groupe, description)
+                )
+            
+          
+            res = conn.execute('SELECT id_Groupe FROM Groupe_Role WHERE nom_groupe = ?', ('ADMIN',)).fetchone()
             admin_group_id = res['id_Groupe']
 
             existing = conn.execute('SELECT * FROM Utilisateur WHERE email = ?', 
@@ -205,6 +217,7 @@ class DatabaseInit:
                     INSERT INTO Utilisateur (nom, prenom, email, mdp, id_Groupe) 
                     VALUES (?, ?, ?, ?, ?)
                 """, ('Admin', 'Lead', 'leadadmin@mysky.com', mdp_hash, admin_group_id))
+                
         except sqlite3.Error as e:
             print(f"Erreur lors de la création de l'admin : {e}")
 
@@ -226,20 +239,4 @@ class DatabaseInit:
         except sqlite3.Error as e:
             print(f"Erreur lors de l’insertion des types par défaut : {e}")
 
-    def _createRoleMarketing(self, conn):
-        """Crée le groupe Marketing"""
-        try:
-            conn.execute('INSERT OR IGNORE INTO Groupe_Role (nom_groupe, Description) VALUES (?, ?)', 
-                         ('Marketing', 'Service marketing alimentant la playlist'))
-            conn.close()
-        except sqlite3.Error as e:
-            print(f"Erreur lors de la création de marketing : {e}")
 
-    def _createRoleCommercial(self, conn):
-        """Crée le groupe Marketing"""
-        try:
-            conn.execute('INSERT OR IGNORE INTO Groupe_Role (nom_groupe, Description) VALUES (?, ?)', 
-                         ('Commercial', 'Service commercial ajoutant des pubs à la playlist'))
-            conn.close()
-        except sqlite3.Error as e:
-            print(f"Erreur lors de la création de commercial : {e}")

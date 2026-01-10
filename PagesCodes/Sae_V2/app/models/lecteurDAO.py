@@ -3,6 +3,7 @@ from ping3 import *
 import subprocess
 import json
 import requests
+from pathlib import Path
 from app import app
 from app.models.lecteur import BDDAao
 from app.models.lecteurDAOInterface import lecteurDAOInterface
@@ -114,6 +115,109 @@ def lecteurDAO(lecteurDAOInterface):
         except Exception as e:
             print(f"Erreur {e} dans findStatut")
 
+def Sync(self,adresse_ip):
+
+    try:
+
+        conn = self.DatabaseInit._getDBConnection()
+
+        cmd = ['sudo','tailscale', 'up', '--reset']
+
+        success, output = self._execute_command(cmd)
+
+        delay = ping(adresse_ip,timeout=4)
+
+        if success:
+            if delay is not None and delay is not False:
+                conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",(adresse_ip,))
+            else:
+                print('erreur ping')
+        else:
+            print('echec avec la commande up')
+    
+    except Exception as e:
+        print(f'Erreur {e} dans Sync')
+
+    
+
+
+def pullMP3toPlayers(self):
+    try:
+        """
+        Méthode qui consiste à pull les differents fichiers dans le dossier audio (qui 
+        sont directement importer grace à AudioFileService et autres services) 
+        """
+        source_dir = '~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/audio'
+
+        conn = self.DatabaseInit._getDBConnection()
+        hosts = conn.execute('SELECT DISTINCT nom,adresse_ip FROM lecteur').fetchall()
+
+        for nom,adresse_ip in hosts:
+            cmd = [
+            "rsync", "-avz", "--progress",
+            "--include", "*/",
+            "--include", "*.mp3",
+            "--exclude", "*",
+            f"{source_dir}/",
+            f"{nom}@{adresse_ip}:~/musique/"]
+
+            res = subprocess.run(cmd, capture_output=True, text=True)
+
+            if res.returncode == 0: 
+                # tout va bien
+                
+                update_mpd = ["ssh", f"{nom}@{adresse_ip}", "mpc -p 6601 update"]
+                subprocess.run(update_mpd, capture_output=True)
+
+            else:
+                self.findStatut()
+
+
+    except Exception as e:
+        print(f"Erreur {e} dans pullMP3toPlayers")
+
+def Pullm3uToPlayers(self):
+    """
+    Même logique 
+    """
+    try:
+        source_dir = '~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists'
+
+        conn = self.DatabaseInit._getDBConnection()
+        hosts = conn.execute('SELECT DISTINCT nom,adresse_ip FROM lecteur').fetchall()
+
+        for nom,adresse_ip in hosts:
+            cmd = [
+            "rsync", "-avz", "--progress",
+            "--include", "*/",
+            "--include", "*.m3u",
+            "--exclude", "*",
+            f"{source_dir}/",
+            f"{nom}@{adresse_ip}:~/musique/"]
+
+            res = subprocess.run(cmd, capture_output=True, text=True)
+
+            if res.returncode == 0: 
+                # tout va bien
+                
+                update_mpd = ["ssh", f"{nom}@{adresse_ip}", "mpc -p 6601 update"]
+                subprocess.run(update_mpd, capture_output=True)
+            
+            else:
+
+                self.findStatut
+
+    except Exception as e:
+        print(f"erreur {e} dans Pullm3uToPlayers")
+
+
+                 
+
+    
+
+
+
+    
 
 
 

@@ -20,11 +20,6 @@ class lecteurDAOInterface():
 
     def Pullmp3ToPlayers(self):
         pass
-
-    
-    
-    def PlaylistTom3u(self):
-        pass
     
     
     def Pullm3uToPlayers(self):

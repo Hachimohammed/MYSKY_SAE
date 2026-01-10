@@ -1,0 +1,4 @@
+bcrypt
+ping3
+requests
+flask
