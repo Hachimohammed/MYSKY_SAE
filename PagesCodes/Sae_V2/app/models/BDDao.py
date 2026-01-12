@@ -31,7 +31,7 @@ class DatabaseInit:
                 )
             """)
 
-            # Initialisation de table Role avec 3 lignes seulement, 1 Admin, 2 Marketing, 3 Commercial
+           
             # Initialisation de table Role avec 3 lignes seulement, 1 Admin, 2 Marketing, 3 Commercial
             conn.execute("""
                 INSERT OR IGNORE INTO Groupe_Role(nom_groupe, Description)
