@@ -55,8 +55,8 @@ def logout():
 @app.route("/admin")
 @reqrole("ADMIN")
 def admin_page():
-    users = UserDAO.getAllUsers()
-    return render_template('admin.html', users=users)
+    #users = UserDAO.getAllUsers()
+    return render_template('admin.html')
 
 @app.route('/commercial')
 @reqrole("ADMIN", "COMMERCIAL")
