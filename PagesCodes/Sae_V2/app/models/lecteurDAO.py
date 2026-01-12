@@ -4,6 +4,7 @@ import subprocess
 import json
 import requests
 from pathlib import Path
+import datetime
 from app import app
 from app.models.lecteur import BDDAao
 from app.models.lecteurDAOInterface import lecteurDAOInterface
@@ -13,16 +14,6 @@ def lecteurDAO(lecteurDAOInterface):
     def __init__(self):
         self.database = app.root_path + '/musicapp.db'
         self.database.init()
-        self.server_adresse = None
-        self.gateway = None
-        self.subnet_mask = None
-        self.dns_server = None
-    
-    def setServer(self,server_adresse,gateway,subnet_mask,dns_server):
-        self.server_adresse = server_adresse
-        self.gateway = gateway
-        self.subnet_mask = subnet_mask
-        self.dns_server = dns_server
 
     def findPlayer(self):
 
@@ -64,7 +55,7 @@ def lecteurDAO(lecteurDAOInterface):
                     ip = players[player]['ip']
                     res = requests.get(f"https://ipinfo.io/{ip}/json")
                     loc_data = res.json()
-                    players[player]['Localisation'] = res['City']
+                    players[player]['Localisation'] = loc_data['City']
 
 
             for player in players:
@@ -109,8 +100,9 @@ def lecteurDAO(lecteurDAOInterface):
 
                 if delay is not None and delay is not False:
                     conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",ip)
+                    return True
                 else:
-                    pass # DOWNN étant définie par défaut
+                    return False
             print("Programme executer à la perfection")
         except Exception as e:
             print(f"Erreur {e} dans findStatut")
@@ -171,6 +163,8 @@ def pullMP3toPlayers(self):
 
             else:
                 self.findStatut()
+                if findStatut() == False:
+                    print("Pas Synchro")
 
 
     except Exception as e:
@@ -205,11 +199,39 @@ def Pullm3uToPlayers(self):
             
             else:
 
-                self.findStatut
+                self.findStatut()
 
     except Exception as e:
         print(f"erreur {e} dans Pullm3uToPlayers")
 
+def playm3ubydayandtimestamp(self):
+
+    jours = ["LUNDI","MARDI","MERCREDI","JEUDI","VENDREDI","SAMEDI","DIMANCHE"]
+
+    now = datetime.datetime.now()
+    jour_actuel = jours[now.weekday()]  
+    date_actuelle = now.strftime("%Y%m%d")  
+
+
+def getAllUp(self):
+
+        up = []
+        conn = self.DatabaseInit._getDBConnection()
+        hosts = conn.execute('SELECT DISTINCT * FROM lecteur WHERE statut = UP').fetchall()
+
+        for host in host:
+            if host not in up:
+                up.append(host)
+
+def getAllDown(self):
+
+        down = []
+        conn = self.DatabaseInit._getDBConnection()
+        hosts = conn.execute('SELECT DISTINCT * FROM lecteur WHERE statut = DOWN').fetchall()
+
+        for host in host:
+            if host not in down:
+                down.append(host)
 
                  
 
