@@ -423,14 +423,30 @@
                 <table class="users-table table">
                     <thead>
                         <tr>
-                            <th>Nom</th>
                             <th>Prénom</th>
+                            <th>Nom</th>
+                            <th>Email</th>
                             <th>Rôle</th>
-                            <th>Date de création</th>
-                            <th>Actions</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="usersTable"></tbody>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user[1] }}</td>
+                            <td>{{ user[2] }}</td>
+                            <td>{{ user[3] }}</td>
+                            <td>{{ user[4] }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('delete_user', user_id=user[0]) }}">
+                                    <button class="btn btn-danger btn-sm">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -595,28 +611,40 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addUserForm">
+                    <form id="addUserForm" method="POST" action="/">
                         <div class="mb-3">
                             <label class="form-label">
                                 <i class="bi bi-person-badge"></i> Nom
                             </label>
-                            <input type="text" class="form-control" id="userName" placeholder="Ex: Dupont" required>
+                            <input type="text" class="form-control" id="username" name="firstname" placeholder="Ex: Dupont" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">
                                 <i class="bi bi-person"></i> Prénom
                             </label>
-                            <input type="text" class="form-control" id="userFirstName" placeholder="Ex: Jean" required>
+                            <input type="text" class="form-control" id="userfirstname" name="name" placeholder="Ex: Jean" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-person"></i> Email
+                            </label>
+                            <input type="text" class="form-control" id="useremail" name="email" placeholder="Ex: jean.dupont@gmail.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-person"></i> Mot de passe
+                            </label>
+                            <input type="text" class="form-control" id="userpassword" name="password" placeholder="" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">
                                 <i class="bi bi-award"></i> Rôle
                             </label>
-                            <select class="form-select" id="userRole" required>
+                            <select class="form-select" id="userRole" name="role" required>
                                 <option value="">Sélectionner un rôle...</option>
-                                <option value="Admin">🛡️ Administrateur</option>
-                                <option value="Service Commercial">💼 Service Commercial</option>
-                                <option value="Service Marketing">📢 Service Marketing</option>
+                                {% for g in groupes %}
+                                    <option value="{{ g[0] }}">{{ g[1] }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </form>

@@ -4,7 +4,7 @@ class Playlist:
     """Modèle représentant une playlist M3U"""
     
     def __init__(self, dico):
-        self.id_playlist = dico.get('id_id_playlist')
+        self.id_playlist = dico.get('id_playlist')
         self.nom_playlist = dico.get('nom_playlist')
         self.chemin_fichier_m3u = dico.get('chemin_fichier_m3u')
         self.duree_total = dico.get('duree_total')

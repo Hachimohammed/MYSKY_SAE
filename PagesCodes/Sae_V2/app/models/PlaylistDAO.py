@@ -37,7 +37,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 			conn.close()
 			
 			return Playlist({
-				'id_id_playlist': id_playlist,
+				'id_playlist': id_playlist,
 				'nom_playlist': nom_playlist,
 				'chemin_fichier_m3u': chemin_fichier_m3u,
 				'duree_total': duree_total,
@@ -54,7 +54,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 		try:
 			conn = self._getDbConnection()
 			row = conn.execute(
-				"SELECT * FROM playlist WHERE id_id_playlist = ?",
+				"SELECT * FROM playlist WHERE id_playlist = ?",
 				(id_playlist,)
 			).fetchone()
 			conn.close()
@@ -72,7 +72,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 			conn = self._getDbConnection()
 			rows = conn.execute("""
 				SELECT * FROM playlist
-				ORDER BY id_id_playlist DESC
+				ORDER BY id_playlist DESC
 			""").fetchall()
 			conn.close()
 			
@@ -104,7 +104,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 			row = conn.execute("""
 				SELECT * FROM playlist
 				WHERE nom_playlist LIKE ?
-				ORDER BY id_id_playlist DESC
+				ORDER BY id_playlist DESC
 				LIMIT 1
 			""", (f"%{jour_semaine}%",)).fetchone()
 			conn.close()
@@ -123,7 +123,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 			conn.execute("""
 				UPDATE playlist
 				SET nom_playlist = ?, duree_total = ?
-				WHERE id_id_playlist = ?
+				WHERE id_playlist = ?
 			""", (nom_playlist, duree_total, id_playlist))
 			conn.commit()
 			conn.close()
@@ -136,9 +136,9 @@ class PlaylistDAO(PlaylistDAOInterface):
 		"""Supprime une playlist"""
 		try:
 			conn = self._getDbConnection()
-			conn.execute("DELETE FROM fait_partie_de WHERE id_id_playlist = ?", (id_playlist,))
-			conn.execute("DELETE FROM joue_dans WHERE id_id_playlist = ?", (id_playlist,))
-			conn.execute("DELETE FROM playlist WHERE id_id_playlist = ?", (id_playlist,))
+			conn.execute("DELETE FROM fait_partie_de WHERE id_playlist = ?", (id_playlist,))
+			conn.execute("DELETE FROM joue_dans WHERE id_playlist = ?", (id_playlist,))
+			conn.execute("DELETE FROM playlist WHERE id_playlist = ?", (id_playlist,))
 			conn.commit()
 			conn.close()
 			return True
@@ -151,7 +151,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 		try:
 			conn = self._getDbConnection()
 			conn.execute("""
-				INSERT OR IGNORE INTO fait_partie_de (id_Fichier_audio, id_id_playlist)
+				INSERT OR IGNORE INTO fait_partie_de (id_Fichier_audio, id_playlist)
 				VALUES (?, ?)
 			""", (id_fichier, id_playlist))
 			conn.commit()
@@ -167,7 +167,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 			conn = self._getDbConnection()
 			conn.execute("""
 				DELETE FROM fait_partie_de
-				WHERE id_Fichier_audio = ? AND id_id_playlist = ?
+				WHERE id_Fichier_audio = ? AND id_playlist = ?
 			""", (id_fichier, id_playlist))
 			conn.commit()
 			conn.close()
@@ -184,7 +184,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 				SELECT f.*
 				FROM Fichier_audio f
 				INNER JOIN fait_partie_de fp ON f.id_Fichier_audio = fp.id_Fichier_audio
-				WHERE fp.id_id_playlist = ?
+				WHERE fp.id_playlist = ?
 				ORDER BY f.nom
 			""", (id_playlist,)).fetchall()
 			conn.close()
@@ -323,7 +323,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 		try:
 			conn = self._getDbConnection()
 			conn.execute("""
-				INSERT OR REPLACE INTO joue_dans (id_id_playlist, id_id_lecteur, date_diffusion)
+				INSERT OR REPLACE INTO joue_dans (id_playlist, id_lecteur, date_diffusion)
 				VALUES (?, ?, ?)
 			""", (id_playlist, id_lecteur, date_diffusion))
 			conn.commit()
@@ -340,8 +340,8 @@ class PlaylistDAO(PlaylistDAOInterface):
 			rows = conn.execute("""
 				SELECT l.*, jd.date_diffusion
 				FROM lecteur l
-				INNER JOIN joue_dans jd ON l.id_id_lecteur = jd.id_id_lecteur
-				WHERE jd.id_id_playlist = ?
+				INNER JOIN joue_dans jd ON l.id_lecteur = jd.id_lecteur
+				WHERE jd.id_playlist = ?
 			""", (id_playlist,)).fetchall()
 			conn.close()
 			
@@ -359,7 +359,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 		try:
 			conn = self._getDbConnection()
 			conn.execute("""
-				INSERT OR REPLACE INTO fait_partie_de (id_Fichier_audio, id_id_playlist, ordre)
+				INSERT OR REPLACE INTO fait_partie_de (id_Fichier_audio, id_playlist, ordre)
 				VALUES (?, ?, ?)
 			""", (id_fichier, id_playlist, ordre))
 			conn.commit()
@@ -381,7 +381,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 				conn.execute("""
 					UPDATE fait_partie_de
 					SET ordre = ?
-					WHERE id_Fichier_audio = ? AND id_id_playlist = ?
+					WHERE id_Fichier_audio = ? AND id_playlist = ?
 				""", (ordre, id_fichier, id_playlist))
 			
 			conn.commit()
@@ -399,7 +399,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 				SELECT f.*, fp.ordre
 				FROM Fichier_audio f
 				INNER JOIN fait_partie_de fp ON f.id_Fichier_audio = fp.id_Fichier_audio
-				WHERE fp.id_id_playlist = ?
+				WHERE fp.id_playlist = ?
 				ORDER BY fp.ordre ASC, f.nom ASC
 			""", (id_playlist,)).fetchall()
 			conn.close()

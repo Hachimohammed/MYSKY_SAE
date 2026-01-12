@@ -2,6 +2,8 @@ from flask import render_template, redirect, url_for, request, session, abort
 from functools import wraps 
 from app import app
 from app.services.UserService import UserService
+from app.models.UserDAO import UserSqliteDAO as UserDAO
+from app.models.BDDao import DatabaseInit as BDDao
 
 us = UserService()
 
@@ -33,7 +35,7 @@ def login():
             
             
             if user['role'] == "ADMIN":
-                return redirect(url_for("admin"))
+                return redirect(url_for("admin_page"))
             elif user['role'] == "COMMERCIAL":
                 return redirect(url_for("commercial"))
             else:
@@ -52,7 +54,8 @@ def logout():
 
 @app.route("/admin")
 @reqrole("ADMIN")
-def admin():
+def admin_page():
+    #users = UserDAO.getAllUsers()
     return render_template('admin.html')
 
 @app.route('/commercial')

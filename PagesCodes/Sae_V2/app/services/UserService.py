@@ -1,17 +1,17 @@
-
+from app.models.UserDAO import UserSqliteDAO as UserDAO
 import sqlite3
 import bcrypt
 from flask import current_app
 
 class UserService:
-    def _get_conn(self):
+    def _getDbconnection(self):
        
         conn = sqlite3.connect(current_app.root_path + '/musicapp.db')
         conn.row_factory = sqlite3.Row
         return conn
 
     def login(self, email, password):
-        conn = self._get_conn()
+        conn = self._getDbconnection()
         try:
             
             query = """
