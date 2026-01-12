@@ -35,7 +35,7 @@ def login():
             
             
             if user['role'] == "ADMIN":
-                return redirect(url_for("admin"))
+                return redirect(url_for("admin_page"))
             elif user['role'] == "COMMERCIAL":
                 return redirect(url_for("commercial"))
             else:

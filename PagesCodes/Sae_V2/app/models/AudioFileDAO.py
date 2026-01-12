@@ -224,7 +224,7 @@ class AudioFileDAO(AudioFileDAOInterface):
     
     def addToUser(self, id_fichier, id_utilisateur):
         """
-        ⚠️ DEPRECATED - Utiliser create() avec id_utilisateur directement
+
         Associe un fichier à un utilisateur dans la table Ajoute
         """
         conn = None
