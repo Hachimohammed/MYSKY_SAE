@@ -32,12 +32,13 @@ class DatabaseInit:
             """)
 
             # Initialisation de table Role avec 3 lignes seulement, 1 Admin, 2 Marketing, 3 Commercial
+            # Initialisation de table Role avec 3 lignes seulement, 1 Admin, 2 Marketing, 3 Commercial
             conn.execute("""
-                INSERT INTO Groupe_Role(nom_groupe, Description)
+                INSERT OR IGNORE INTO Groupe_Role(nom_groupe, Description)
                         VALUES
                             ('ADMIN', 'Administrateur Système'),
-                            ('MARKETING', Service marketing alimentant la playlist')
-                            ('COMMERCIAL', 'Service commercial ajoutant des pubs à la playlist)
+                            ('MARKETING', 'Service marketing alimentant la playlist'),
+                            ('COMMERCIAL', 'Service commercial ajoutant des pubs à la playlist')
                 """)
             
             # 2. Table Utilisateur 
@@ -62,9 +63,9 @@ class DatabaseInit:
                 )
             """)
 
-            # 4. Table id_localisation
+            # 4. Table localisation
             conn.execute("""
-                CREATE TABLE IF NOT EXISTS id_localisation (
+                CREATE TABLE IF NOT EXISTS localisation (
                     id_localisation INTEGER PRIMARY KEY AUTOINCREMENT,
                     ville TEXT NOT NULL,
                     latitude REAL,
@@ -121,7 +122,7 @@ class DatabaseInit:
                     adresse_ip TEXT UNIQUE NOT NULL,
                     statut TEXT DEFAULT 'DOWN',
                     id_localisation INTEGER,
-                    FOREIGN KEY (id_localisation) REFERENCES id_localisation(id_localisation)
+                    FOREIGN KEY (id_localisation) REFERENCES localisation(id_localisation)
                 )
             """)
             
@@ -188,20 +189,20 @@ class DatabaseInit:
             conn.close()
     
     def _createDefaultAdmin(self, conn):
-        """Crée les groupes par défaut et l'utilisateur LeadAdmin"""
+       # """Crée les groupes par défaut et l'utilisateur LeadAdmin"""
         try:
            
-            groupes_defaut = [
-                ('ADMIN', 'Administrateur Système'),
-                ('COMMERCIAL', 'Équipe Commerciale'),
-                ('MARKETING', 'Équipe Marketing')
-            ]
+          #  groupes_defaut = [
+           #     ('ADMIN', 'Administrateur Système'),
+             #   ('COMMERCIAL', 'Équipe Commerciale'),
+              #  ('MARKETING', 'Équipe Marketing')
+            #]
             
-            for nom_groupe, description in groupes_defaut:
-                conn.execute(
-                    'INSERT OR IGNORE INTO Groupe_Role (nom_groupe, Description) VALUES (?, ?)', 
-                    (nom_groupe, description)
-                )
+            #for nom_groupe, description in groupes_defaut:
+             #   conn.execute(
+              #      'INSERT OR IGNORE INTO Groupe_Role (nom_groupe, Description) VALUES (?, ?)', 
+               #     (nom_groupe, description)
+                #)
             
           
             res = conn.execute('SELECT id_Groupe FROM Groupe_Role WHERE nom_groupe = ?', ('ADMIN',)).fetchone()
