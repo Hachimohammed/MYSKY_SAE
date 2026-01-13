@@ -42,11 +42,6 @@ class lecteurDAOInterface():
         pass
 
     
-    def generateLog(self):
-        pass
-
-
-    
     def WhatPlayerPlaying(self):
         pass
 

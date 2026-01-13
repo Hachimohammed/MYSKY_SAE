@@ -295,7 +295,8 @@ def lecteurDAO(lecteurDAOInterface):
     def Ad(self,mp3):
 
             """
-            Methode pour mettre en pause un playlist et la relancer aprés
+            Methode pour mettre en pause un playlist jouer un mp3 pour 
+            le commercial relancer la playlist là ou elle en était 
 
             """
 
@@ -332,18 +333,104 @@ def lecteurDAO(lecteurDAOInterface):
             except Exception as e:
                 print(f"Erreur {e} dans la méthode Ad")
 
+
+    def WhatPlayerPlaying(self):
+
+        """
+        Retourne assez d'element qui nous indique ce que les lecteurs jouent et 
+        ou elles en sont 
+        """
+
+        try:
+
+                client = MPDClient()
+
+                conn = self.DatabaseInit._getDBConnection()
+                ip = conn.execute("SELECT adresse_ip FROM lecteur").fetchone()
+                if ip:
+                        client.connect(ip,6601)
+                        status = client.status()
+                        song = client.currentSong()
+                        elapsed = status["elapsed"][0]
+                        duration = song["time"][0]
+                        file = song["file"]
+                        name = song["title"]
+
+                        return {
+                            "file":file,
+                            "name":name,
+                            "elapsed":elapsed,
+                            "duration":duration
+                        }
+                
+        except Exception as e:
+            print(f"Erreur {e} dans la méthode WhatPlayersPlaying")
+
+
+    def getAllPlayer(self):
+
+        try:
+            players = {}
+            conn= self.DatabaseInit._getDBConnection()
+            hosts = conn.execute("SELECT * FROM lecteur").fetchAll()
+
+            for host in hosts:
+                if host not in players:
+                    players.append(dict[players])
+            
+        except Exception as e:
+            print(f"Erreur {e} dans getAllPlayer")
+
+    
+    def findByIP(self,adresse_ip):
+
+        try:
+            players = {}
+            conn= self.DatabaseInit._getDBConnection()
+            hosts = conn.execute("SELECT * FROM lecteur WHERE adresse_ip = (?)",(adresse_ip,)).fetchAll()
+
+            for host in hosts:
+                if host not in players:
+                    players.append(dict[players])
+            
+        except Exception as e:
+            print(f"Erreur {e} dans findByIP")
+
+        
+
+                
+
+
     
     def getAllUp(self):
+            
+            """
+            Retourne tout les lecteurs en état de marche et de synchronisité
 
-            up = []
-            conn = self.DatabaseInit._getDBConnection()
-            hosts = conn.execute('SELECT DISTINCT * FROM lecteur WHERE statut = UP').fetchall()
+            """
+            
+            try:
 
-            for host in host:
-                if host not in up:
-                    up.append(host)
+                up = []
+                conn = self.DatabaseInit._getDBConnection()
+                hosts = conn.execute('SELECT DISTINCT * FROM lecteur WHERE statut = UP').fetchall()
+
+                for host in host:
+                    if host not in up:
+                        up.append(host)
+
+            except Exception as e:
+                print(f"Erreur {e} dans getAllUp")
+
 
     def getAllDown(self):
+
+        """
+            Retourne tout les lecteurs qui ne sont âs en état de marche et de synchronisité
+            
+        """
+            
+        try:
 
             down = []
             conn = self.DatabaseInit._getDBConnection()
@@ -352,6 +439,9 @@ def lecteurDAO(lecteurDAOInterface):
             for host in host:
                 if host not in down:
                     down.append(host)
+
+        except Exception as e:
+            print(f"Erreir {e} dans getAllDown")
 
                  
 
