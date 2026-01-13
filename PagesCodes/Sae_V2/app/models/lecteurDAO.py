@@ -7,7 +7,7 @@ from pathlib import Path
 from mpd import MPDClient
 import datetime
 from app import app
-from app.models.lecteur import BDDAao
+from app.models.BDDao import BDDAao
 from app.models.lecteurDAOInterface import lecteurDAOInterface
 
 def lecteurDAO(lecteurDAOInterface):
@@ -137,7 +137,7 @@ def lecteurDAO(lecteurDAOInterface):
         except Exception as e:
             print(f'Erreur {e} dans Sync')
 
-    def SyncAll():
+    def SyncAll(self):
 
         """
         Synchronise tout les lecteurs
@@ -159,7 +159,7 @@ def lecteurDAO(lecteurDAOInterface):
 
                 if success:
                     if delay is not None and delay is not False:
-                        conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",(adresse_ip,))
+                        conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",(ip,))
                     else:
                         print('erreur ping')
                 else:
@@ -377,6 +377,8 @@ def lecteurDAO(lecteurDAOInterface):
             for host in hosts:
                 if host not in players:
                     players.append(dict[players])
+
+            return players
             
         except Exception as e:
             print(f"Erreur {e} dans getAllPlayer")
@@ -392,6 +394,8 @@ def lecteurDAO(lecteurDAOInterface):
             for host in hosts:
                 if host not in players:
                     players.append(dict[players])
+
+            return players
             
         except Exception as e:
             print(f"Erreur {e} dans findByIP")
@@ -419,6 +423,8 @@ def lecteurDAO(lecteurDAOInterface):
                     if host not in up:
                         up.append(host)
 
+                return up
+
             except Exception as e:
                 print(f"Erreur {e} dans getAllUp")
 
@@ -439,6 +445,8 @@ def lecteurDAO(lecteurDAOInterface):
             for host in host:
                 if host not in down:
                     down.append(host)
+
+            return down
 
         except Exception as e:
             print(f"Erreir {e} dans getAllDown")
