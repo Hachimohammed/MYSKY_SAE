@@ -28,9 +28,9 @@ class PlaylistDAO(PlaylistDAOInterface):
 			date_creation = datetime.now().isoformat()
 			
 			cursor = conn.execute("""
-				INSERT INTO playlist (nom_playlist, chemin_fichier_m3u, duree_total, id_planning)
-				VALUES (?, ?, ?, ?)
-			""", (nom_playlist, chemin_fichier_m3u, duree_total, id_planning))
+				INSERT INTO playlist (nom_playlist, chemin_fichier_m3u, duree_total, id_planning, jour_semaine)
+				VALUES (?, ?, ?, ?,?)
+			""", (nom_playlist, chemin_fichier_m3u, duree_total, id_planning, jour_semaine))
 			
 			id_playlist = cursor.lastrowid
 			conn.commit()

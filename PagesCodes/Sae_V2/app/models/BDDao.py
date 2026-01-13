@@ -92,6 +92,7 @@ class DatabaseInit:
                     chemin_fichier_m3u TEXT NOT NULL,
                     duree_total INTEGER,
                     id_planning INTEGER,
+                    jour_semaine TEXT,
                     FOREIGN KEY (id_planning) REFERENCES planning(id_planning)
                 )
             """)
