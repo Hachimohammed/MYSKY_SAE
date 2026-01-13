@@ -18,6 +18,10 @@ class lecteurDAOInterface():
         pass
 
 
+    def SyncAll(self):
+        pass
+
+
     def Pullmp3ToPlayers(self):
         pass
     
@@ -26,26 +30,15 @@ class lecteurDAOInterface():
         pass
 
 
-    def pauseSong(self):
+    def playm3ubydayandtimestamp(self):
         pass
 
     
-    def InterruptSong(self):
-        pass
-
-    
-    def startSong(self):
+    def Ad(self,mp3):
         pass
 
     
     def Log(self):
-        pass
-
-    
-    def generateLog(self):
-        pass
-    
-    def SyncAll(self):
         pass
 
     
@@ -64,8 +57,10 @@ class lecteurDAOInterface():
     def findByIP(self,adresse_ip):
         pass
 
+
     def getAllUP(self):
         pass
+    
 
     def getAllKO(self):
         pass
