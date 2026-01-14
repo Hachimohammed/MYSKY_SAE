@@ -7,7 +7,7 @@ from pathlib import Path
 from mpd import MPDClient
 import datetime
 from app import app
-from app.models.BDDao import BDDAao
+from app.models.BDDao import DatabaseInit
 from app.models.logDAO import logDAO
 from app.models.lecteurDAOInterface import lecteurDAOInterface
 
@@ -359,9 +359,9 @@ def lecteurDAO(lecteurDAOInterface):
                 client = MPDClient()
 
                 conn = self._getDBConnection()
-                ip = conn.execute("SELECT adresse_ip FROM lecteur").fetchone()
-                if ip:
-                        client.connect(ip,6601)
+                ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
+                for ip in ips:
+                        client.connect(ips,6601)
                         status = client.status()
                         song = client.currentSong()
                         elapsed = status["elapsed"][0]
@@ -370,6 +370,7 @@ def lecteurDAO(lecteurDAOInterface):
                         name = song["title"]
 
                         return {
+                            "ip":ip,
                             "file":file,
                             "name":name,
                             "elapsed":elapsed,

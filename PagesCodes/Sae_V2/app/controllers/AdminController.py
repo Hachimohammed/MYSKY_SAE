@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request ,jsonify
 from app.services.AdminService import AdminService 
 from app.controllers.LoginController import reqrole
-from app import app
+from app import *
 from app.models.BDDao import DatabaseInit
 
 
@@ -16,7 +16,7 @@ ass = AdminService()
 
 @app.route("/admin",methods=['GET'])
 @reqrole("ADMIN")
-def admin_page():
+def page():
     metadata = {"title" : " Admin Panel"}
     players = ass.getAllPlayer()
     return render_template('admin.html',metadata=metadata)

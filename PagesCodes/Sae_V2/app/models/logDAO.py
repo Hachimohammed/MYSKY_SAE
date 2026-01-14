@@ -1,5 +1,5 @@
 from app import app
-from log import log
+from app.models.log import log
 import sqlite3
 
 
