@@ -41,6 +41,9 @@ class AdminService():
     def findByIP(self,adresse_ip):
         return self.ld.findByIP()
     
+    def findByLocalisation(self,adresse_ip):
+        return self.ld.findByLocalisation()
+    
     def getAllUp(self):
         return self.ld.getAllUp()
     

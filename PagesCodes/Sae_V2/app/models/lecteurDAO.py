@@ -359,8 +359,8 @@ def lecteurDAO(lecteurDAOInterface):
                 client = MPDClient()
 
                 conn = _getDBConnection()
-                ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
-                for ip in ips:
+                ips = conn.execute("SELECT adresse_ip,localisation FROM lecteur").fetchall()
+                for ip,localisation in ips:
                         client.connect(ips,6601)
                         status = client.status()
                         song = client.currentSong()
@@ -371,6 +371,7 @@ def lecteurDAO(lecteurDAOInterface):
 
                         return {
                             "ip":ip,
+                            "localisation":localisation,
                             "file":file,
                             "name":name,
                             "elapsed":elapsed,

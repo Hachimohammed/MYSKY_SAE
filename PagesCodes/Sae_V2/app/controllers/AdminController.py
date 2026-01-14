@@ -23,10 +23,13 @@ def page():
     allUpLen = ass.lenGetAllUp()
     allDownLen = ass.lenGetAllDown()
     allplayersLen = ass.getAllPlayerLen()
-    down = ass.getAllDown
-    up = ass.getAllUp
-    find = ass.findByIP
+    down = ass.getAllDown()
+    up = ass.getAllUp()
+    find = ass.findByIP()
     ip = ass.findByIP()
+    localisation = ass.findByLocalisation()
+
+    
 
     return render_template('admin.html',metadata=metadata,allDownLen=allDownLen)
 
