@@ -403,6 +403,23 @@ class lecteurDAO(lecteurDAOInterface):
             print(f"Erreur {e} dans getAllPlayer")
 
     
+    def getAllPlayerWithTheirLocalisation(self):
+
+        try:
+            players = []
+            conn= self._getDBConnection()
+            hosts = conn.execute("SELECT * FROM lecteur JOIN localisation USING(id_localisation)").fetchall()
+
+            for host in hosts:
+                if host not in players:
+                    players.append(dict(host))
+
+            return players
+            
+        except Exception as e:
+            print(f"Erreur {e} dans getAllPlayer")
+
+    
     def findByIP(self,adresse_ip):
 
         try:
