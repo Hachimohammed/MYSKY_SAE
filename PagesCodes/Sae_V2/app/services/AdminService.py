@@ -35,6 +35,9 @@ class AdminService():
     def getAllPlayer(self):
         return self.ld.getAllPlayer()
     
+    def getAllPlayerWithTheirLocalisation(self):
+        return self.ld.getAllPlayerWithTheirLocalisation()
+    
     def getAllPlayerLen(self):
         return len(self.ld.getAllPlayer())
     
