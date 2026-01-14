@@ -376,6 +376,7 @@ class lecteurDAO(lecteurDAOInterface):
 
                         return {
                             "ip":ip,
+                            "localisation":localisation,
                             "file":file,
                             "name":name,
                             "elapsed":elapsed,
