@@ -2,3 +2,5 @@ bcrypt
 ping3
 requests
 flask
+mutagen
+python-mpd2
