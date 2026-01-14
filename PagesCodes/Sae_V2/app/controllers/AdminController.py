@@ -14,12 +14,14 @@ ass = AdminService()
 
 
 
-@app.route("/admin",methods=['GET'])
 @reqrole("ADMIN")
-def admin_page():
+def page():
     metadata = {"title" : " Admin Panel"}
-    players = ass.getAllPlayer()
+    players = ass.getAllPlayer()       
+    
+    
     return render_template('admin.html',metadata=metadata)
+
 
 
 
@@ -31,24 +33,24 @@ def admin_page():
 def PlayersView():
     try:
         players = ass.getAllPlayer()
-        playdict = {"status  " : True,"data : " : players}
+        playdict = {"status  " : True,"data  " : players}
         return jsonify(playdict)                     
     except Exception as e:
-        return jsonify({"status " : False, "Erreur : " : str(e)})             
+        return jsonify({"status " : False, "Erreur  " : str(e)})             
 
 
-@app.route("/api/v1/admin/down")
+@app.route("/api/v1/admin/view/down")
 @reqrole("ADMIN")
 def DownPlayersView():
     try:
         downed = ass.getAllDown()
-        downed_dict = {"status " : True, "data : " : downed}
+        downed_dict = {"status " : True, "data " : downed}
         return jsonify(downed_dict)
     except Exception as e:
-        return jsonify({"status : " : False, "Erreur : " : str(e)})    
+        return jsonify({"status  " : False, "Erreur  " : str(e)})    
 
 
-@app.route("/api/v1/admin/Up")
+@app.route("/api/v1/admin/view/Up")
 @reqrole("ADMIN")
 def UpPlayersView():
     try:
@@ -56,10 +58,10 @@ def UpPlayersView():
         Upped_dict = {"status " : True , "data : " : Upped}
         return jsonify(Upped_dict)
     except Exception as e:
-        return jsonify({"status :" : False, "Erreur : " : str(e)})
+        return jsonify({"status " : False, "Erreur  " : str(e)})
 
     
-@app.route("/api/v1/admin/<string:ip>")
+@app.route("/api/v1/admin/view/<string:ip>")
 @reqrole("ADMIN")
 def ViewLecteurStatus(ip : str):
     
@@ -68,7 +70,7 @@ def ViewLecteurStatus(ip : str):
         lect_name = lect.nom_lecteur
         lect_ip = lect.adresse_ip
         status = lect.statut
-        return jsonify({"status : "  : True , "lecteur_nom : "  : lect_name , "IP ": lect_ip," lecteur Status : " : status})
+        return jsonify({"status "  : True , "lecteur_nom "  : lect_name , "IP ": lect_ip," lecteur Status  " : status})
     except Exception as e:
         return jsonify({"status : " : False , "Erreur :" : str(e)})
              

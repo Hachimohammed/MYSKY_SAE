@@ -5,7 +5,7 @@ from app.models.UserDAO import UserSqliteDAO
 class AdminService():
 
     def __init__(self):
-        self.ld = lecteurDAO(lecteurDAOInterface)
+        self.ld = lecteurDAO()
         self.us = UserSqliteDAO()
 
     def findPlayer(self):
@@ -36,7 +36,7 @@ class AdminService():
         return self.ld.getAllPlayer()
     
     def findByIP(self,adresse_ip):
-        return self.ld.findByIP()
+        return self.ld.findByIP(adresse_ip)
     
     def getAllUp(self):
         return self.ld.getAllUp()

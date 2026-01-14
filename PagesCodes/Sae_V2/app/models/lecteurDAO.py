@@ -7,14 +7,15 @@ from pathlib import Path
 from mpd import MPDClient
 import datetime
 from app import app
-from app.models.BDDao import BDDAao
+from app.models.lecteur import lecteur
+from app.models.BDDao import DatabaseInit
 from app.models.lecteurDAOInterface import lecteurDAOInterface
 
-def lecteurDAO(lecteurDAOInterface):
+class lecteurDAO(lecteurDAOInterface):
 
     def __init__(self):
         self.database = app.root_path + '/musicapp.db'
-
+          
     
     def _getDBConnection(self):
         """Obtient une connexion à la base de données"""
@@ -157,7 +158,7 @@ def lecteurDAO(lecteurDAOInterface):
 
             success, output = self._execute_command(cmd)
 
-            ips = conn.execute("SELECT ip_adresse FROM lecteur").fetchAll()
+            ips = conn.execute("SELECT ip_adresse FROM lecteur").fetchall()
 
             for ip in ips:
 
@@ -207,7 +208,7 @@ def lecteurDAO(lecteurDAOInterface):
                     subprocess.run(update_mpd, capture_output=True)
 
                 else:
-                        findStatut()
+                    self.findStatut()
 
 
         except Exception as e:
@@ -224,7 +225,7 @@ def lecteurDAO(lecteurDAOInterface):
             get = requests.get(f"http://127.0.0.1:5000/api/v1/audio/list")
             json = get.json()
 
-            conn = self.DatabaseInit._getDBConnection()
+            conn = self._getDBConnection()
             hosts = conn.execute('SELECT DISTINCT nom,adresse_ip FROM lecteur').fetchall()
 
 
@@ -376,13 +377,13 @@ def lecteurDAO(lecteurDAOInterface):
     def getAllPlayer(self):
 
         try:
-            players = {}
+            players = []
             conn= self._getDBConnection()
-            hosts = conn.execute("SELECT * FROM lecteur").fetchAll()
+            hosts = conn.execute("SELECT * FROM lecteur").fetchall()
 
             for host in hosts:
                 if host not in players:
-                    players.append(dict[host])
+                    players.append(dict(host))
 
             return players
             
@@ -393,15 +394,11 @@ def lecteurDAO(lecteurDAOInterface):
     def findByIP(self,adresse_ip):
 
         try:
-            players = {}
+            
             conn= self._getDBConnection()
-            hosts = conn.execute("SELECT * FROM lecteur WHERE adresse_ip = (?)",(adresse_ip,)).fetchAll()
-
-            for host in hosts:
-                if host not in players:
-                    players.append(dict[host])
-
-            return players
+            host = conn.execute("SELECT * FROM lecteur WHERE adresse_ip = (?)",(adresse_ip,)).fetchone()
+            print(host)
+            return lecteur(dict(host))
             
         except Exception as e:
             print(f"Erreur {e} dans findByIP")
@@ -423,11 +420,11 @@ def lecteurDAO(lecteurDAOInterface):
 
                 up = []
                 conn = self._getDBConnection()
-                hosts = conn.execute('SELECT DISTINCT * FROM lecteur WHERE statut = UP').fetchall()
+                hosts = conn.execute("SELECT DISTINCT * FROM lecteur WHERE statut = 'UP'").fetchall()
 
-                for host in host:
+                for host in hosts:
                     if host not in up:
-                        up.append(host)
+                        up.append(dict(host))
 
                 return up
 
@@ -446,11 +443,11 @@ def lecteurDAO(lecteurDAOInterface):
 
             down = []
             conn = self._getDBConnection()
-            hosts = conn.execute('SELECT DISTINCT * FROM lecteur WHERE statut = DOWN').fetchall()
+            hosts = conn.execute("SELECT DISTINCT * FROM lecteur WHERE statut = 'KO'").fetchall()
 
-            for host in host:
+            for host in hosts:
                 if host not in down:
-                    down.append(host)
+                    down.append(dict(host))
 
             return down
 
