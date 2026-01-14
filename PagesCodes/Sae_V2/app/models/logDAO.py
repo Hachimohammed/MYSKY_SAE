@@ -1,5 +1,6 @@
 from app import app
 from app.models.log import log
+import datetime
 import sqlite3
 
 
@@ -20,3 +21,12 @@ class logDAO():
         conn = self._getDBConnection()
         conn.execute("INSERT OR IGNORE INTO log (type_evenement,message,DateDeLog,niveau,id_lecteur)" 
         "VALUES (?,?,?,?,?)",(type_evenement,message,DateDelog,niveau,id_lecteur))
+        conn.commit()
+        conn.close
+
+    def WriteLog(self,date_debut,date_fin):
+        conn = self._getDBConnection()
+        logs = conn.execute("SELECT * FROM Log WHERE (?) > date_debut AND DateDeLog < (?) ",(date_debut,date_fin)).fetchall()
+        with open(f"~/MYSKY_SAE/PagesCodes/Sae_V2/app/static/log_{datetime.now()}", 'w') as file:
+            for log in logs:
+                file.write(log)
