@@ -56,7 +56,9 @@ class lecteurDAO(lecteurDAOInterface):
                     players[name] = {
                         "name" : name,
                         "ip" : ip,
-                        "Localisation" : None
+                        "ville" : None,
+                        "latitude" : None,
+                        "longitude" : None
                     }
 
             for player in players:
@@ -65,18 +67,24 @@ class lecteurDAO(lecteurDAOInterface):
                     res = requests.get(f"https://ipinfo.io/{ip}/json")
                     loc_data = res.json()
                     players[player]['Localisation'] = loc_data['City']
+                    lat_long = loc_data["loc"]
+                    latitude, longitude = map(float, lat_long.split(','))
 
 
             for player in players:
-                conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,emplacement)" 
-                "VALUES (?,?,?)",players[player]['name'],players[player]['ip'],players[player]['Localisation'])
+                conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut)" 
+                "VALUES (?,?)",players[player]['name'],players[player]['ip'])
+                conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longtitude)" 
+                "VALUES (?,?,?)",players[player]['ville'],players[player]['latitude'],players[player]['longtitude'])
+                conn.commit()
+                conn.close()
                     
 
         except Exception as e:
             print(f"erreur {e} dans findPlayer")
 
 
-    def AppendPlayerManually(self,adresse_ip,nom_lecteur,emplacement):
+    def AppendPlayerManually(self,adresse_ip,nom_lecteur):
 
         """
         Fonction qui consiste en cas de par exemple non réponse de tailnet (ce qui peut peut-être arriver)
@@ -87,8 +95,11 @@ class lecteurDAO(lecteurDAOInterface):
 
         conn = self._getDBConnection()
 
-        conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,emplacement)" 
-        "VALUES (?,?,?)",nom_lecteur,adresse_ip,emplacement)
+        conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,emplacement,statut)" 
+        "VALUES (?,?,?)",nom_lecteur,adresse_ip)
+
+        conn.commit()
+        conn.close()
 
 
 
@@ -353,8 +364,8 @@ class lecteurDAO(lecteurDAOInterface):
                 client = MPDClient()
 
                 conn = self._getDBConnection()
-                ip = conn.execute("SELECT adresse_ip FROM lecteur").fetchone()
-                if ip:
+                ips = conn.execute("SELECT l.adresse_ip,lo.ville FROM lecteur l JOIN localisation lo USING(id_localisation)").fetchall()
+                for ip,localisation in ips:
                         client.connect(ip,6601)
                         status = client.status()
                         song = client.currentSong()
@@ -364,6 +375,7 @@ class lecteurDAO(lecteurDAOInterface):
                         name = song["title"]
 
                         return {
+                            "ip":ip,
                             "file":file,
                             "name":name,
                             "elapsed":elapsed,
@@ -403,10 +415,17 @@ class lecteurDAO(lecteurDAOInterface):
         except Exception as e:
             print(f"Erreur {e} dans findByIP")
 
-        
-
-                
-
+    
+    def findByEmplacement(self, emplacement):
+        try:
+            
+            conn= self._getDBConnection()
+            host = conn.execute("SELECT * FROM lecteur l JOIN localisation lo USING(id_localisation) WHERE ville = (?)",(emplacement,)).fetchall()
+            print(host)
+            return lecteur(dict(host))
+            
+        except Exception as e:
+            print(f"Erreur {e} dans findByLocalisation")
 
     
     def getAllUp(self):
