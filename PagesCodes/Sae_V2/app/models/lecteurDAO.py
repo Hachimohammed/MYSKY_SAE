@@ -8,12 +8,14 @@ from mpd import MPDClient
 import datetime
 from app import app
 from app.models.BDDao import BDDAao
+from app.models.logDAO import logDAO
 from app.models.lecteurDAOInterface import lecteurDAOInterface
 
 def lecteurDAO(lecteurDAOInterface):
 
     def __init__(self):
         self.database = app.root_path + '/musicapp.db'
+        self.log = logDAO()
 
     
     def _getDBConnection(self):
@@ -68,7 +70,10 @@ def lecteurDAO(lecteurDAOInterface):
 
             for player in players:
                 conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,emplacement)" 
-                "VALUES (?,?,?)",players[player]['name'],players[player]['ip'],players[player]['Localisation'])
+                "VALUES (?,?,?)",player['name'],player['ip'],player['Localisation'])
+                self.log.addEvent("joueur trouver",f"insertion de {player["name"]}",datetime.now(),)
+                conn.commit()
+                conn.close()
                     
 
         except Exception as e:
@@ -88,6 +93,8 @@ def lecteurDAO(lecteurDAOInterface):
 
         conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,emplacement)" 
         "VALUES (?,?,?)",nom_lecteur,adresse_ip,emplacement)
+        conn.commit()
+        conn.close()
 
 
 
