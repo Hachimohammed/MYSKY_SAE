@@ -19,7 +19,16 @@ ass = AdminService()
 def page():
     metadata = {"title" : " Admin Panel"}
     players = ass.getAllPlayer()
-    return render_template('admin.html',metadata=metadata)
+
+    allUpLen = ass.lenGetAllUp()
+    allDownLen = ass.lenGetAllDown()
+    allplayersLen = ass.getAllPlayerLen()
+    down = ass.getAllDown
+    up = ass.getAllUp
+    find = ass.findByIP
+    ip = ass.findByIP()
+
+    return render_template('admin.html',metadata=metadata,allDownLen=allDownLen)
 
 
 

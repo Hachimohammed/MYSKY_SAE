@@ -35,6 +35,9 @@ class AdminService():
     def getAllPlayer(self):
         return self.ld.getAllPlayer()
     
+    def getAllPlayerLen(self):
+        return len(self.ld.getAllPlayer())
+    
     def findByIP(self,adresse_ip):
         return self.ld.findByIP()
     
@@ -43,6 +46,12 @@ class AdminService():
     
     def getAllDown(self):
         return self.ld.getAllDown()
+    
+    def lenGetAllDown(self):
+        return len(self.ld.getAllDown())
+    
+    def lenGetAllUp(self):
+        return len(self.ld.getAllUp())
     
     def WhatPlayerPlaying(self):
         self.ld.WhatPlayerPlaying()
