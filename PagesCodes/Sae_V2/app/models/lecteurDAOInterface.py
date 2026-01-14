@@ -37,9 +37,6 @@ class lecteurDAOInterface():
     def Ad(self,mp3):
         pass
 
-    
-    def Log(self):
-        pass
 
     
     def WhatPlayerPlaying(self):
