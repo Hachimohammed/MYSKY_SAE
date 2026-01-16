@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request, session, abort
+from flask import render_template, redirect, url_for, request, session, abort, flash
 from functools import wraps 
 from app import app
 from app.services.UserService import UserService
@@ -19,51 +19,55 @@ def reqrole(*roles):
         return verifyRole
     return wrap
 
-@app.route("/", methods=["GET", "POST"]) 
-def login(): 
-    msg_error = None
-    if request.method == 'POST':
-        email = request.form.get('username')
-        pwd = request.form.get('password')
-        
-        user = us.login(email, pwd)
-        
-        if user:
-            session["logged"] = True
-            session['username'] = user['email']
-            session['role'] = user['role'] 
-            
-            
-            if user['role'] == "ADMIN":
-                return redirect(url_for("admin_page"))
-            elif user['role'] == "COMMERCIAL":
-                return redirect(url_for("commercial"))
+def reqlogged(f):
+	@wraps(f) # permet de conserver le nom de la fonction, la nouvelle doc et les arguments
+	def wrap(*args, **kwargs):
+		if 'logged' in session:
+			return f(*args, **kwargs)
+		else:
+			flash('Denied. You need to login.') # message flash
+			return redirect(url_for('login'))
+	return wrap
+
+class LoginController:
+
+    @app.route("/", methods=["GET", "POST"]) 
+    def login(): 
+        msg_error = None
+        if request.method == 'POST':
+            email = request.form["username"]
+            pwd = request.form['password']
+            user = us.login(email, pwd)
+
+            if user:
+                session["logged"] = True
+                session['username'] = user.email
+                session['role'] = user.nom_groupe
+
+                if user.nom_groupe == "ADMIN":
+                    return redirect(url_for("admin_page"))
+                elif user.nom_groupe == "COMMERCIAL":
+                    return redirect(url_for("commercial"))
+                elif user.nom_groupe=="MARKETING":
+                    return redirect(url_for("marketing"))
             else:
-                return redirect(url_for("marketing"))
-        else:
-            msg_error = "Identifiants invalides."
+                msg_error = "Identifiants invalides."
 
-    metadata = {"title": "MySky", "msg_error": msg_error}
-    return render_template('login.html', metadata=metadata)
+        metadata = {"title": "MySky", "msg_error": msg_error}
+        return render_template('login.html', metadata=metadata)
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("login"))
+    @app.route("/logout")
+    @reqlogged
+    def logout():
+        session.clear()
+        return redirect(url_for("login"))
 
+    @app.route('/commercial')
+    @reqrole("ADMIN", "COMMERCIAL")
+    def commercial():
+        return render_template('commercial.html')
 
-@app.route("/admin")
-@reqrole("ADMIN")
-def admin_page():
-    #users = UserDAO.getAllUsers()
-    return render_template('admin.html')
-
-@app.route('/commercial')
-@reqrole("ADMIN", "COMMERCIAL")
-def commercial():
-    return render_template('commercial.html')
-
-@app.route('/marketing')
-@reqrole("ADMIN" , "MARKETING")
-def marketing():
-    return redirect(url_for('marketing_dashboard'))
+    @app.route('/marketing')
+    @reqrole("ADMIN" , "MARKETING")
+    def marketing():
+        return redirect(url_for('marketing_dashboard'))

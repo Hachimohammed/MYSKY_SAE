@@ -1,32 +1,84 @@
 from app.models.BDDao import DatabaseInit as BDDao
+import sqlite3
+from app import app
+from app.models.User import User
+import bcrypt
 
 class UserSqliteDAO:
 
-    def addUser(prenom, nom, mail, mot_de_passe, id_groupe, self):
-        conn = BDDao._getDbConnection()
-        cursor = conn.cursor()
+    def __init__(self):
+        self.database = app.root_path + '/musicapp.db'
+    
+    def _getDbConnection(self):
+        conn = sqlite3.connect(self.database)
+        conn.execute("PRAGMA foreign_keys = ON;") 
+        conn.row_factory = sqlite3.Row
+        return conn
 
-        cursor.execute("""
-            INSERT INTO Utilisateur (nom, prenom, email, mdp, id_Groupe)
-            VALUES (?, ?, ?, ?, ?)
-        """, (prenom, nom, mail, mot_de_passe, id_groupe))
+    def _generatePwdHash(self, mot_de_passe):
+        mot_de_passe_bits = mot_de_passe.encode('utf-8')
+        bits_hachage = bcrypt.hashpw(mot_de_passe_bits, bcrypt.gensalt())
+        mot_de_passe_hache = bits_hachage.decode('utf-8')
+        return mot_de_passe_hache
 
-        conn.commit()
+    def addUser(prenom, nom, email, mot_de_passe, id_groupe, self):
+        conn = self._getDbConnection()
+        mdp_hache=bcrypt.hashpw(mot_de_passe, bcrypt.gensalt())
+
+        try:
+            conn.execute(
+                "INSERT INTO Utilisateur (nom, prenom, email, mdp, id_Groupe)VALUES (:nom, :prenom, :email, :mdp, :id_Groupe)", 
+                {"prenom":prenom, "nom":nom, "email":email, "mdp":mdp_hache, "id_Groupe":id_groupe}
+            )
+
+        except sqlite3.IntegrityError:
+            return False
+        
+        finally:
+            conn.close()
+            return True
+
+    def findByEmail(self, email):
+        """
+		Récupère un utilisateur par son username
+		Cette version est faite pour rendre l'instance, donc sans mot de passe
+		"""
+        conn = self._getDbConnection()
+        user = conn.execute("SELECT * FROM Utilisateur WHERE email = :email", {"email": email}).fetchone()
         conn.close()
+        if user:
+            user = User(user)
+        return user
 
+    def verifyUser(self, email, mdp):
+        conn = self._getDbConnection()
+        user = conn.execute("SELECT * FROM Utilisateur JOIN Groupe_Role USING(id_Groupe) WHERE email = :email", {"email": email}).fetchone()
+        conn.close()
+		
+        if user:
+			# verif mot de passe et comparaison
+            mdp_bits = mdp.encode('utf-8')
+            bits_haches_stocke = user['mdp'].encode('utf-8')
+			
+            if bcrypt.checkpw(mdp_bits, bits_haches_stocke):
+				# dictionnaire pour les données de la session dans login controller
+                return User(user)
+				
+        return None # echec de connexion
 
-    def getGroupes():
-        conn = BDDao._getDbConnection()
+    def findGroupes(self):
+        conn = self._getDbConnection()
         cursor = conn.cursor()
-
         cursor.execute("SELECT id_Groupe, nom_groupe FROM Groupe_Role")
         groupes = cursor.fetchall()
-
         conn.close()
-        return groupes
+        instances_groupes=list()
+        for g in groupes:
+            instances_groupes.append(g)
+        return instances_groupes
 
-    def getAllUsers():
-        conn = BDDao._getDbConnection()
+    def findAllUsers(self):
+        conn = self._getDbConnection()
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -34,22 +86,33 @@ class UserSqliteDAO:
                 u.id_utilisateur,
                 u.prenom,
                 u.nom,
-                u.mail,
+                u.email,
+                u.id_Groupe,
                 g.nom_groupe
             FROM Utilisateur u
-            JOIN Groupe g ON u.id_groupe = g.id_groupe
+            JOIN Groupe_Role g ON u.id_groupe = g.id_groupe
         """)
 
         users = cursor.fetchall()
         conn.close()
-        return users
-    
-    def deleteUser(user_id):
-        conn = BDDao._getDbConnection()
+        instances_users=list()
+        for user in users:
+            instances_users.append(User(dict(user)))
+        return instances_users
+
+    def deleteByEmail(self, email):
+        conn = self._getDbConnection()
+        res = conn.execute("DELETE FROM users WHERE email = ?", (email,))
+        conn.commit()
+        conn.close()
+        return True
+
+    def deleteUser(self,email):
+        conn = self._getDbConnection()
         cursor = conn.cursor()
         groupe=cursor.execute(
-            "SELECT nom_groupe FROM Utilisateur JOIN Groupe_Role USING(id_Groupe) WHERE id_utilisateur = ?",
-            (user_id,)
+            "SELECT nom_groupe FROM Utilisateur JOIN Groupe_Role USING(id_Groupe) WHERE email = ?",
+            (email,)
         )
 
         if groupe=="ADMIN":
@@ -58,8 +121,8 @@ class UserSqliteDAO:
         #un admin ne peut supprimer un autre admin
         
         cursor.execute(
-            "DELETE FROM Utilisateur WHERE id_utilisateur = ?",
-            (user_id,)
+            "DELETE FROM Utilisateur WHERE email = ?",
+            (email,)
         )
 
         conn.commit()

@@ -3,24 +3,20 @@ from app.services.AdminService import AdminService
 from app.controllers.LoginController import reqrole
 from app import app
 from app.models.BDDao import DatabaseInit
+from app.services.UserService import UserService
 
-
-
+us = UserService()
 ass = AdminService()
 
-
-
-
-
-
-
+@app.route('/admin', methods=['GET'])
 @reqrole("ADMIN")
-def page():
+def admin_page():
     metadata = {"title" : " Admin Panel"}
     players = ass.getAllPlayer()       
+    users=us.getAllUsers()
+    groupes=us.getAllGroupes()
     
-    
-    return render_template('admin.html',metadata=metadata)
+    return render_template('admin.html',metadata=metadata, users=users, groupes=groupes, players=players)
 
 
 
