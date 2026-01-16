@@ -48,9 +48,9 @@ class lecteurDAO(lecteurDAOInterface):
 
             data = json.loads(cmd.stdout)
 
-            for peer in data['Peer'].values:
-                name = peer['Hostname']
-                ip = peer['TailscalesIPs'][0]
+            for peer in data['Peer'].values():
+                name = peer['HostName']
+                ip = peer['TailscaleIPs'][0]
 
                 if name not in players:
                     players[name] = {
@@ -62,11 +62,11 @@ class lecteurDAO(lecteurDAOInterface):
                     }
 
             for player in players:
-                if players[player]['Localisation'] == None:
+                if players[player]['ville'] == None:
 
                     curl = 'curl -s https://api.ipify.org'
 
-                    ssh_curl = f"ssh {players[player]["name"]}@{players[player]["ip"]} '{curl}'"
+                    ssh_curl = f'ssh {players[player]["name"]}@{players[player]["ip"]} "{curl}"'
 
                     curl_res = subprocess.run(ssh_curl,shell=True,capture_output=True,text=True,timeout=35)
 
@@ -77,18 +77,18 @@ class lecteurDAO(lecteurDAOInterface):
                     ip = players[player]['ip']
                     res = requests.get(f"https://ipinfo.io/{public_ip}/json")
                     loc_data = res.json()
-                    players[player]['Localisation'] = loc_data['City']
+                    players[player]['ville'] = loc_data['city']
                     lat_long = loc_data["loc"]
                     latitude, longitude = map(float, lat_long.split(','))
                     players[player]['latitude'] = latitude
-                    players[player]['longitude'] = longitude
+                    players[player]['longitude'] =longitude
 
 
             for player in players:
                 conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut)" 
-                "VALUES (?,?)",(players[player]['name'],players[player]['ip']))
-                conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)
-                VALUES (?,?,?)",(players[player]['ville'],players[player]['latitude'],players[player]['longtitude']))
+                "VALUES (?,?,?)",(players[player]['name'],players[player]['ip'],"UP"))
+                conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)"
+                "VALUES (?,?,?)",(players[player]['ville'],players[player]['latitude'],players[player]['longitude']))
                 conn.commit()
                 conn.close()
                     

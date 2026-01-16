@@ -17,7 +17,9 @@ def admin_page():
     metadata = {"title" : " Admin Panel"}
     ass.findPlayer()
     metadata = {"title": "Admin Panel"}
+    ass.findPlayer()
     print("hello")
+
     players = ass.getAllPlayerWithTheirLocalisation() 
     up = ass.getAllUp()
     groupes = us.getAllGroupes()
