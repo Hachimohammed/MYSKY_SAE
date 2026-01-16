@@ -1,19 +1,15 @@
 from app.models.UserDAO import UserSqliteDAO as UserDAO
-from flask import current_app
 
 class UserService:
 
     def __init__(self):
-        self.udao=UserDAO()
+        self.udao = UserDAO()
 
     def getUserByEmail(self, email):
-        res = self.udao.findByEmail(email)
-        if type(res) is not list: 
-            res = [res] 
-        return res
+        return self.udao.findByEmail(email)
 
-    def signin(self, email, password):
-        return self.udao.addUser(email, password)
+    def createUser(self, prenom, nom, email, password, id_groupe):
+        return self.udao.addUser(prenom, nom, email, password, id_groupe)
 
     def login(self, email, password):
         return self.udao.verifyUser(email, password)
