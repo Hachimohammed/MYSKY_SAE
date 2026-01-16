@@ -66,7 +66,7 @@ class lecteurDAO(lecteurDAOInterface):
 
                     curl = 'curl -s https://api.ipify.org'
 
-                    ssh_curl = f"ssh {players[player]["name"]}@{players[player]["ip]} '{curl}'"
+                    ssh_curl = f"ssh {players[player]["name"]}@{players[player]["ip"]} '{curl}'"
 
                     curl_res = subprocess.run(ssh_curl,shell=True,capture_output=True,text=True,timeout=35)
 
@@ -88,7 +88,7 @@ class lecteurDAO(lecteurDAOInterface):
                 conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut)" 
                 "VALUES (?,?)",(players[player]['name'],players[player]['ip']))
                 conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)"
-                "VALUES (?,?,?)"(,players[player]['ville'],players[player]['latitude'],players[player]['longtitude']))
+                "VALUES (?,?,?)"(players[player]['ville'],players[player]['latitude'],players[player]['longtitude']))
                 conn.commit()
                 conn.close()
                     
