@@ -20,14 +20,14 @@ def reqrole(*roles):
     return wrap
 
 def reqlogged(f):
-	@wraps(f) # permet de conserver le nom de la fonction, la nouvelle doc et les arguments
-	def wrap(*args, **kwargs):
-		if 'logged' in session:
-			return f(*args, **kwargs)
-		else:
-			flash('Denied. You need to login.') # message flash
-			return redirect(url_for('login'))
-	return wrap
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Denied. You need to login.')
+            return redirect(url_for('login'))
+    return wrap
 
 class LoginController:
 
@@ -40,15 +40,26 @@ class LoginController:
             user = us.login(email, pwd)
 
             if user:
+                # ✅ STOCKER TOUTES LES INFOS UTILISATEUR DANS LA SESSION
                 session["logged"] = True
+                session['user_id'] = user.id  # ✅ CORRIGÉ : user.id au lieu de user.id_utilisateur
                 session['username'] = user.email
+                session['prenom'] = user.prenom  # ✅ BONUS : pratique pour l'affichage
+                session['nom'] = user.nom  # ✅ BONUS
                 session['role'] = user.nom_groupe
+
+                # Debug pour vérifier
+                print(f"✅ Connexion réussie:")
+                print(f"   ID: {user.id}")
+                print(f"   Email: {user.email}")
+                print(f"   Nom: {user.prenom} {user.nom}")
+                print(f"   Rôle: {user.nom_groupe}")
 
                 if user.nom_groupe == "ADMIN":
                     return redirect(url_for("admin_page"))
                 elif user.nom_groupe == "COMMERCIAL":
                     return redirect(url_for("commercial"))
-                elif user.nom_groupe=="MARKETING":
+                elif user.nom_groupe == "MARKETING":
                     return redirect(url_for("marketing"))
             else:
                 msg_error = "Identifiants invalides."
@@ -59,6 +70,7 @@ class LoginController:
     @app.route("/logout")
     @reqlogged
     def logout():
+        print(f"🚪 Déconnexion de l'utilisateur ID: {session.get('user_id')}")
         session.clear()
         return redirect(url_for("login"))
 
@@ -68,7 +80,6 @@ class LoginController:
         return render_template('commercial.html')
 
     @app.route('/marketing')
-    @reqrole("ADMIN" , "MARKETING")
+    @reqrole("ADMIN", "MARKETING")
     def marketing():
         return redirect(url_for('marketing_dashboard'))
-
