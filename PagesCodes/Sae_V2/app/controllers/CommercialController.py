@@ -27,7 +27,7 @@ class CommercialController:
     
     @app.route('/commercial/upload', methods=['POST'])
     @reqrole("ADMIN", "COMMERCIAL")
-    def commercialUpload():
+    def commercialUpload(upload):
         metadata = {"title": "Upload Audio File"}
         if request.method == 'POST':
             # Gérer le téléchargement du fichier audio
@@ -77,7 +77,11 @@ class CommercialController:
     @app.route('/commercial/playlist/stop')
     @reqrole("ADMIN", "COMMERCIAL")
     def commercialStopPlaylist():
-        if PlaylistService.is_playlist_running():
-            PlaylistService.stop_playlist()
-            
+        upload = upload.commercialUpload()
+        if upload == True:
+            if PlaylistService.is_playlist_running():
+                PlaylistService.stop_playlist()
+                print("Playlist arrêtée.")
+            else:
+                print("Aucune playlist en cours d'exécution.")
         return redirect(url_for('commercialView'))

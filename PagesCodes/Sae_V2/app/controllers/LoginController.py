@@ -71,3 +71,4 @@ class LoginController:
     @reqrole("ADMIN" , "MARKETING")
     def marketing():
         return redirect(url_for('marketing_dashboard'))
+

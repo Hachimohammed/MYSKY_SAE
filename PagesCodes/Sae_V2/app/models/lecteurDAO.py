@@ -286,7 +286,7 @@ class lecteurDAO(lecteurDAOInterface):
             get = requests.get(f"http://127.0.0.1:5000/api/v1/playlists")
             json = get.json
 
-            now = datetime.datetime.now()
+            now = datetime.datetime.now() 
             jour_actuel = jours[now.weekday()] 
             str_date = datetime.now().strftime("%Y%m%d")
 

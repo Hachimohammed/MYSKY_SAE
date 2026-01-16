@@ -23,10 +23,13 @@ class logDAO():
         "VALUES (?,?,?,?,?)",(type_evenement,message,DateDelog,niveau,id_lecteur))
         conn.commit()
         conn.close
-
+    
+            
+    
     def WriteLog(self,date_debut,date_fin):
         conn = self._getDBConnection()
-        logs = conn.execute("SELECT * FROM Log WHERE (?) > date_debut AND DateDeLog < (?) ",(date_debut,date_fin)).fetchall()
+        logs = conn.execute("SELECT * FROM Log WHERE (?) > DateDeLog AND DateDeLog < (?) ",(date_debut,date_fin)).fetchall()
         with open(f"~/MYSKY_SAE/PagesCodes/Sae_V2/app/static/log_{datetime.now()}", 'w') as file:
             for log in logs:
                 file.write(log)
+        conn.close()  

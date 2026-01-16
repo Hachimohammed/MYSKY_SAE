@@ -184,21 +184,33 @@ def marketing_get_fichiers_ordre(jour):
 
 @app.route('/marketing/jour/<jour>/sauvegarder-ordre', methods=['POST'])
 def marketing_save_ordre(jour):
-    """Sauvegarde l'ordre des fichiers"""
+    """Sauvegarde l'ordre des fichiers avec date/heure"""
     try:
         jour = jour.upper()
         data = request.get_json()
         fichiers_ordre = data.get('fichiers_ordre', [])
+        date_diffusion = data.get('date_diffusion')  
+        heure_diffusion = data.get('heure_diffusion')  
         
         if not fichiers_ordre:
             return jsonify({'success': False, 'error': 'Aucun fichier fourni'}), 400
         
         ordre_folder = os.path.join(app.root_path, 'static', 'ordre')
-        audio_service.savePlaybackOrder(jour, fichiers_ordre, ordre_folder)
+        
+      
+        audio_service.savePlaybackOrder(
+            jour, 
+            fichiers_ordre, 
+            ordre_folder,
+            date_diffusion=date_diffusion,
+            heure_diffusion=heure_diffusion
+        )
         
         return jsonify({
             'success': True,
-            'message': f'Ordre sauvegardé pour {jour} ({len(fichiers_ordre)} fichiers)'
+            'message': f'Ordre et date/heure sauvegardés pour {jour} ({len(fichiers_ordre)} fichiers)',
+            'date_diffusion': date_diffusion,  
+            'heure_diffusion': heure_diffusion  
         }), 200
         
     except Exception as e:
@@ -209,9 +221,9 @@ def marketing_save_ordre(jour):
 
 @app.route('/marketing/playlist/generate/week', methods=['POST'])
 def marketing_generate_playlist_week():
-    """Génère les playlists M3U en respectant l'ordre sauvegardé"""
+    """Génère les playlists M3U avec dates/heures de diffusion"""
     try:
-        # Créer le planning
+        
         planning = planning_service.createPlanning(
             nom_planning=f"Planning_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             date_debut=datetime.now().isoformat(),
@@ -221,12 +233,23 @@ def marketing_generate_playlist_week():
         if not planning:
             return jsonify({'success': False, 'error': 'Erreur création planning'}), 500
 
-        # Déléguer toute la logique au service
+     
+        ordre_folder = os.path.join(app.root_path, 'static', 'ordre')
+        jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
+        
+        dates_diffusion = {}
+        for jour in jours:
+            date_heure = audio_service.getDateHeureDiffusion(jour, ordre_folder)
+            if date_heure:
+                dates_diffusion[jour] = date_heure
+
+      
         playlists_created, errors = playlist_service.generateWeekPlaylistsWithOrder(
             id_planning=planning.id_planning,
             audio_service=audio_service,
             app_root_path=app.root_path,
-            use_http_urls=True
+            use_http_urls=True,
+            dates_diffusion=dates_diffusion  
         )
 
         return jsonify({
@@ -241,7 +264,6 @@ def marketing_generate_playlist_week():
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-
 
 @app.route('/api/v1/playlist/download/<int:id_playlist>')
 def api_download_playlist(id_playlist):
@@ -289,14 +311,15 @@ def api_get_all_playlists():
                 })
             
             result.append({
-                'id_playlist': pl.id_playlist,
-                'nom_playlist': pl.nom_playlist,
-                'jour_semaine': pl.jour_semaine,
-                'duree_totale': pl.duree_total,
-                'nombre_fichiers': len(fichiers),
-                'fichiers': fichiers_data,
-                'download_m3u_url': url_for('api_download_playlist', id_playlist=pl.id_playlist, _external=True),
-            })
+                    'id_playlist': pl.id_playlist,
+                    'nom_playlist': pl.nom_playlist,
+                    'jour_semaine': pl.jour_semaine,
+                    'duree_totale': pl.duree_total,
+                    'date_heure_diffusion': pl.date_heure_diffusion,  
+                    'nombre_fichiers': len(fichiers),
+                    'fichiers': fichiers_data,
+                    'download_m3u_url': url_for('api_download_playlist', id_playlist=pl.id_playlist, _external=True),
+                })
         
         return jsonify({
             'success': True,
@@ -341,11 +364,11 @@ def api_get_playlist_details(id_playlist):
                 'nom_playlist': playlist.nom_playlist,
                 'jour_semaine': playlist.jour_semaine,
                 'duree_totale': playlist.duree_total,
+                'date_heure_diffusion': playlist.date_heure_diffusion,
                 'duree_totale_formattee': f"{playlist.duree_total // 60} minutes",
                 'nombre_fichiers': len(fichiers),
                 'fichiers': fichiers_data,
                 'download_m3u_url': url_for('api_download_playlist', id_playlist=playlist.id_playlist, _external=True),
-                'download_zip_url': url_for('api_download_playlist_zip', id_playlist=playlist.id_playlist, _external=True),
                 'stream_url': url_for('api_stream_playlist', id_playlist=playlist.id_playlist, _external=True)
             }
         }), 200
@@ -381,6 +404,7 @@ def api_get_playlists_by_day(jour):
                 'id_playlist': pl.id_playlist,
                 'nom_playlist': pl.nom_playlist,
                 'duree_totale': pl.duree_total,
+                'date_heure_diffusion': pl.date_heure_diffusion,
                 'nombre_fichiers': len(fichiers),
                 'fichiers': fichiers_data,
                 'download_m3u_url': url_for('api_download_playlist', id_playlist=pl.id_playlist, _external=True)
