@@ -11,6 +11,7 @@ class Playlist:
         self.id_planning = dico.get('id_planning')
         self.jour_semaine = dico.get('jour_semaine')
         self.date_creation = dico.get('date_creation')
+        self.date_heure_diffusion = dico.get('date_heure_diffusion')
     
     def to_dict(self):
         """Convertit l'objet en dictionnaire"""
@@ -21,5 +22,6 @@ class Playlist:
             'duree_total': self.duree_total,
             'id_planning': self.id_planning,
             'jour_semaine': self.jour_semaine,
-            'date_creation': self.date_creation
+            'date_creation': self.date_creation,
+            'date_heure_diffusion': self.date_heure_diffusion
         }

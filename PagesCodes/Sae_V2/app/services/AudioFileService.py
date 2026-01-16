@@ -223,18 +223,21 @@ class AudioFileService:
     
     # ==================== GESTION DE L'ORDRE ====================
     
-    def savePlaybackOrder(self, jour_semaine, fichiers_ordre, ordre_folder):
+    def savePlaybackOrder(self, jour_semaine, fichiers_ordre, ordre_folder,date_diffusion=None, heure_diffusion=None):
         """Sauvegarde l'ordre de lecture des fichiers pour un jour"""
         os.makedirs(ordre_folder, exist_ok=True)
         
         ordre_file = os.path.join(ordre_folder, f"ordre_{jour_semaine}.json")
+        data = {
+            'jour': jour_semaine,
+            'fichiers_ordre': fichiers_ordre,
+            'date_sauvegarde': datetime.now().isoformat()
+    }
+        if date_diffusion and heure_diffusion:
+            data['date_heure_diffusion'] = f"{date_diffusion} {heure_diffusion}"
         
         with open(ordre_file, 'w', encoding='utf-8') as f:
-            json.dump({
-                'jour': jour_semaine,
-                'fichiers_ordre': fichiers_ordre,
-                'date_sauvegarde': datetime.now().isoformat()
-            }, f, indent=2)
+            json.dump(data, f, indent=2, ensure_ascii=False)
         
         print(f" Ordre sauvegardé dans {ordre_file}")
         return True
@@ -264,6 +267,20 @@ class AudioFileService:
         
         return fichiers_ordonnes
     
+    def getDateHeureDiffusion(self, jour_semaine, ordre_folder):
+        """Récupère la date/heure de diffusion sauvegardée pour un jour"""
+        ordre_file = os.path.join(ordre_folder, f"ordre_{jour_semaine}.json")
+    
+        if not os.path.exists(ordre_file):
+            return None
+        
+        try:
+            with open(ordre_file, 'r', encoding='utf-8') as f:
+                ordre_data = json.load(f)
+                return ordre_data.get('date_heure_diffusion')
+        except Exception as e:
+            print(f" Erreur getDateHeureDiffusion: {e}")
+            return None
     # ==================== FORMATAGE POUR API ====================
     
     def formatAudioFileForApi(self, audio_file, include_download_url=True):

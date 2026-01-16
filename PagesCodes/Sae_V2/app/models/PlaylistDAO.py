@@ -21,16 +21,16 @@ class PlaylistDAO(PlaylistDAOInterface):
 		conn.row_factory = sqlite3.Row
 		return conn
 	
-	def create(self, nom_playlist, chemin_fichier_m3u, duree_total=0, id_planning=None, jour_semaine=None):
+	def create(self, nom_playlist, chemin_fichier_m3u, duree_total=0, id_planning=None, jour_semaine=None, date_heure_diffusion=None):
 		"""Crée une nouvelle playlist M3U"""
 		try:
 			conn = self._getDbConnection()
 			date_creation = datetime.now().isoformat()
 			
 			cursor = conn.execute("""
-				INSERT INTO playlist (nom_playlist, chemin_fichier_m3u, duree_total, id_planning, jour_semaine)
-				VALUES (?, ?, ?, ?,?)
-			""", (nom_playlist, chemin_fichier_m3u, duree_total, id_planning, jour_semaine))
+				INSERT INTO playlist (nom_playlist, chemin_fichier_m3u, duree_total, id_planning, jour_semaine,date_heure_diffusion)
+				VALUES (?, ?, ?, ?,?,?)
+			""", (nom_playlist, chemin_fichier_m3u, duree_total, id_planning, jour_semaine,date_heure_diffusion))
 			
 			id_playlist = cursor.lastrowid
 			conn.commit()
@@ -43,6 +43,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 				'duree_total': duree_total,
 				'id_planning': id_planning,
 				'jour_semaine': jour_semaine,
+				'date_heure_diffusion': date_heure_diffusion,
 				'date_creation': date_creation
 			})
 		except Exception as e:
