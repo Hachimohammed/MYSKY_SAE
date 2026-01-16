@@ -14,6 +14,8 @@ us = UserService()
 @app.route("/admin")
 @reqrole("ADMIN")
 def admin_page():
+    metadata = {"title" : " Admin Panel"}
+    ass.findPlayer()
     metadata = {"title": "Admin Panel"}
     print("hello")
     players = ass.getAllPlayerWithTheirLocalisation() 
@@ -29,6 +31,16 @@ def admin_page():
                          devices=players,
                          up_devices=up,
                          down_devices=down)
+
+@app.route("/get-devices")
+@reqrole("ADMIN")
+def send_devices_to_js():
+    
+    devices = ass.getAllPlayerWithTheirLocalisation()
+    return jsonify([
+        {"adresse_ip": d.adresse_ip, "ville": d.ville, "statut": d.statut} 
+        for d in devices
+    ])
 
 
 # ======================== GESTION UTILISATEURS ======================== #
@@ -137,8 +149,6 @@ def sync_all_players():
 def sync_player():
     data = request.json
     device_ip = data.get('ip')
-    
-    print(f"est ce que j'ai reçu {device_ip} ? ")
     ass.Sync(device_ip)
     
     return jsonify({
@@ -154,7 +164,6 @@ def sync_selected_players():
     selected = data.get('selected', [])
     
     for device in selected:
-        print(device['ip'])
         ass.Sync(device['ip']) # let's goooo     
     
     return jsonify({
@@ -173,7 +182,6 @@ def load_logs():
     dateFin = datetime.strptime(data['dates'][1], "%Y-%m-%d") 
     
     if(dateDebut > dateFin):
-        print("c'est un fail")
         return jsonify({
             "status": "failure",
             "message": "La date de debut ne doit pas être supérieur a la date de fin"
