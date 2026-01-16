@@ -63,19 +63,32 @@ class lecteurDAO(lecteurDAOInterface):
 
             for player in players:
                 if players[player]['Localisation'] == None:
+
+                    curl = 'curl -s https://api.ipify.org'
+
+                    ssh_curl = f"ssh {players[player]["name"]}@{players[player]["ip]} '{curl}'"
+
+                    curl_res = subprocess.run(ssh_curl,shell=True,capture_output=True,text=True,timeout=35)
+
+                    public_ip = curl_res.stdout.strip()
+
+
+
                     ip = players[player]['ip']
-                    res = requests.get(f"https://ipinfo.io/{ip}/json")
+                    res = requests.get(f"https://ipinfo.io/{public_ip}/json")
                     loc_data = res.json()
                     players[player]['Localisation'] = loc_data['City']
                     lat_long = loc_data["loc"]
                     latitude, longitude = map(float, lat_long.split(','))
+                    players[player]['latitude'] = latitude
+                    players[player]['longitude'] = longitude
 
 
             for player in players:
                 conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut)" 
-                "VALUES (?,?)",players[player]['name'],players[player]['ip'])
-                conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longtitude)" 
-                "VALUES (?,?,?)",players[player]['ville'],players[player]['latitude'],players[player]['longtitude'])
+                "VALUES (?,?)",(players[player]['name'],players[player]['ip']))
+                conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)"
+                "VALUES (?,?,?)"(,players[player]['ville'],players[player]['latitude'],players[player]['longtitude']))
                 conn.commit()
                 conn.close()
                     
@@ -490,6 +503,9 @@ class lecteurDAO(lecteurDAOInterface):
 
         except Exception as e:
             print(f"Erreir {e} dans getAllDown")
+
+
+
 
                  
 
