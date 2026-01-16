@@ -88,7 +88,7 @@ class lecteurDAO(lecteurDAOInterface):
                 conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut)" 
                 "VALUES (?,?)",(players[player]['name'],players[player]['ip']))
                 conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)
-                VALUES (?,?,?)"(players[player]['ville'],players[player]['latitude'],players[player]['longtitude']))
+                VALUES (?,?,?)",(players[player]['ville'],players[player]['latitude'],players[player]['longtitude']))
                 conn.commit()
                 conn.close()
                     
