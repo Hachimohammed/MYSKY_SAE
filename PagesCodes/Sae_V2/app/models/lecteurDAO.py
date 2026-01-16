@@ -66,7 +66,7 @@ class lecteurDAO(lecteurDAOInterface):
 
                     curl = 'curl -s https://api.ipify.org'
 
-                    ssh_curl = f"ssh {players[player]["name"]}@{players[player]["ip]} '{curl}'"
+                    ssh_curl = f"ssh {players[player]["name"]}@{players[player]["ip"]} '{curl}'"
 
                     curl_res = subprocess.run(ssh_curl,shell=True,capture_output=True,text=True,timeout=35)
 
