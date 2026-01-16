@@ -45,6 +45,9 @@ class lecteurDAOInterface():
 
     def getAllPlayer(self):
         pass
+
+    def getAllPlayerWithTheirLocalisation(self):
+        pass
     
     
     def findByEmplacement(self,emplacement):
