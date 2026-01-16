@@ -20,10 +20,11 @@ def admin_page():
     print("hello")
     players = ass.getAllPlayerWithTheirLocalisation() 
     up = ass.getAllUp()
+    groupes=us.getAllGroupes()
     users=us.getAllUsers()
     down = ass.getAllDown()
         
-    return render_template('admin.html', users=users,metadata=metadata,devices=players,up_devices=up,down_devices=down)
+    return render_template('admin.html', groupes=groupes, users=users,metadata=metadata,devices=players,up_devices=up,down_devices=down)
 
 
 #================== Synchronisations des lecteurs =====================#
