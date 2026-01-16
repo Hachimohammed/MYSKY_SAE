@@ -51,12 +51,15 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
-
+"""
 @app.route("/admin")
 @reqrole("ADMIN")
-def admin_page():
-    #users = UserDAO.getAllUsers()
-    return render_template('admin.html')
+def admin():
+    # users = UserDAO.getAllUsers()
+    print("test")
+    return render_template('admin.html')"""
+
+
 
 @app.route('/commercial')
 @reqrole("ADMIN", "COMMERCIAL")
