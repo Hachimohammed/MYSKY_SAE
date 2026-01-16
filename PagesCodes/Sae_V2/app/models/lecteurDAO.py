@@ -491,6 +491,9 @@ class lecteurDAO(lecteurDAOInterface):
         except Exception as e:
             print(f"Erreir {e} dans getAllDown")
 
+
+
+
                  
 
     
