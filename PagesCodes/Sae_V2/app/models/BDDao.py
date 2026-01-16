@@ -93,6 +93,7 @@ class DatabaseInit:
                     duree_total INTEGER,
                     id_planning INTEGER,
                     jour_semaine TEXT,
+                    date_heure_diffusion TEXT,
                     FOREIGN KEY (id_planning) REFERENCES planning(id_planning)
                 )
             """)
