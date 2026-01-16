@@ -91,7 +91,7 @@ def load_logs():
     print(dateDebut)
     print(dateFin)
         
-    # lgd.WriteLog(dateDebut,dateFin) # problème vers la requête sql 
+    lgd.WriteLog(dateDebut,dateFin) 
     return jsonify({
         "status" : "success",
         "message" :f"j'ai bien reçu les logs merci les dates sont {data}"
