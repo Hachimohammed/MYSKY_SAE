@@ -306,6 +306,7 @@ class lecteurDAO(lecteurDAOInterface):
             conn = self._getDBConnection()
             ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
 
+
             for file in json['playlists'].values():
                 
                     f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file["nom_playlist"]}"
