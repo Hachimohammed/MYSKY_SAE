@@ -433,16 +433,34 @@
                     <tbody>
                         {% for user in users %}
                         <tr>
-                            <td>{{ user[1] }}</td>
-                            <td>{{ user[2] }}</td>
-                            <td>{{ user[3] }}</td>
-                            <td>{{ user[4] }}</td>
+                            <td class="user-name-cell">{{ user.prenom }}</td>
+                            <td class="user-name-cell">{{ user.nom }}</td>
+                            <td>{{ user.email }}</td>
                             <td>
-                                <form method="POST" action="">
-                                    <button class="btn btn-danger btn-sm">
-                                        Supprimer
+                                <span class="role-badge {% if user.nom_groupe == 'ADMIN' %}role-badge-admin{% elif user.nom_groupe == 'COMMERCIAL' %}role-badge-commercial{% else %}role-badge-marketing{% endif %}">
+                                    {% if user.nom_groupe == 'ADMIN' %}
+                                        <i class="bi bi-shield-fill-check"></i>
+                                    {% elif user.nom_groupe == 'COMMERCIAL' %}
+                                        <i class="bi bi-briefcase-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-megaphone-fill"></i>
+                                    {% endif %}
+                                    {{ user.nom_groupe }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.nom_groupe != 'ADMIN' %}
+                                <form method="POST" action="{{ url_for('delete_user') }}" style="display: inline;">
+                                    <input type="hidden" name="email" value="{{ user.email }}">
+                                    <button type="submit" class="delete-user-btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer {{ user.prenom }} {{ user.nom }} ?')">
+                                        <i class="bi bi-trash3-fill"></i> Supprimer
                                     </button>
                                 </form>
+                                {% else %}
+                                <span class="protected-badge">
+                                    <i class="bi bi-shield-lock-fill"></i> Protégé
+                                </span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -666,34 +684,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
        
-        const devices = {{ devices | tojson | safe }}.map(device => ({
+        let devices = []
 
-            ip: device.adresse_ip,
-            lieu: device.ville,
-            statut : device.statut,
-            fichier : 'Aucun',
-            selected : false 
-        })) // vs code va dire qu'il ya un probleme mais tkt c'est bon 
-        
+        async function loadDevices() {
+            const response = await fetch('/get-devices');
+            const data = await response.json();
+            
+            devices = data.map(device => ({
+                ip: device.adresse_ip,
+                lieu: device.ville,
+                statut: device.statut,
+                fichier: 'Aucun',
+                selected: false 
+            }));
+    
+        }
+        loadDevices();
         console.log(devices)
-        const lieux = ['Châtelet', 'La Défense', 'République', 'Bastille', 'Nation', 'Gare du Nord', 'Montparnasse', 'Saint-Lazare', 'Opéra', 'Concorde'];
-        const fichiers = ['jazz_lounge.mp3', 'ambiance_matinale.mp3', 'soft_piano.mp3', 'lounge_mix.mp3', 'friday_energy.mp3'];
-
-       /* function generateDevices() {
-            devices = [];
-            for (let i = 0; i < 250; i++) {
-                const isUp = i < 205;
-                devices.push({
-                    ip: `192.168.${Math.floor(i / 255)}.${i % 255}`,
-                    lieu: lieux[i % lieux.length] + (i > 9 ? ` - Boutique ${Math.floor(i / 10)}` : ''),
-                    fichier: isUp ? fichiers[i % fichiers.length] : '?',
-                    status: isUp ? 'UP' : 'KO',
-                    selected: false
-                });
-            }
-            renderDevices();
-            updateStats();
-        } */
 
        function renderDevices() {
             const table = document.getElementById('deviceTable');
@@ -703,7 +710,7 @@
             const filteredDevices = devices.filter(device => {
                 const matchSearch = device.ip.toLowerCase().includes(searchTerm) || 
                                    device.lieu.toLowerCase().includes(searchTerm);
-                const matchStatus = filterStatus === 'all' || device.status === filterStatus;
+                const matchStatus = filterStatus === 'all' || device.statut === filterStatus;
                 return matchSearch && matchStatus;
             });
 
@@ -750,7 +757,7 @@
             fetch('/sync-device', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ip: device.ip }) // On envoie l'IP à Python
+                body: JSON.stringify({ ip: device.ip })
         })
         .then(response => response.json()).then(data => {
        
@@ -878,8 +885,8 @@
 
         function updateStats() {
             const total = devices.length;
-            const up = devices.filter(d => d.status === 'UP').length;
-            const ko = devices.filter(d => d.status === 'KO').length;
+            const up = devices.filter(d => d.statut === 'UP').length;
+            const ko = devices.filter(d => d.statut === 'KO').length;
 
             document.getElementById('totalDevices').textContent = total;
             document.getElementById('upDevices').textContent = up;
@@ -890,12 +897,8 @@
             const dateDebut = document.getElementById('dateDebut').value;
             const dateFin = document.getElementById('dateFin').value;
 
-
-            
-
-
             if (!dateDebut || !dateFin) {
-                alert('⚠️ Veuillez sélectionner les deux dates');
+                alert(' Veuillez sélectionner les deux dates');
                 return;
             }
 
@@ -911,7 +914,7 @@
                 const rep_json  = await response.json()
                 console.log(rep_json) 
                 if(rep_json.status === "failure"){
-                    alert("⚠️ Date de début doit être inférieur a la date de fin");
+                    alert(" Date de début doit être inférieur a la date de fin");
                     return;
                 }
                 
@@ -958,7 +961,6 @@ Adresse IP       | Lieu                  | Fichier             | État
         window.onload = function() {
             console.log("mon reuf?")
             renderDevices();
-            renderUsers();
         };
     </script>
 </body>
