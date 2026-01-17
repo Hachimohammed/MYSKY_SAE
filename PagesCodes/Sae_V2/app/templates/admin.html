@@ -611,53 +611,54 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
+                <form id="addUserForm" method="POST" action="{{ url_for('signin') }}">
                 <div class="modal-body">
-                    <form id="addUserForm" method="POST" action="/">
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-person-badge"></i> Nom
-                            </label>
-                            <input type="text" class="form-control" id="username" name="firstname" placeholder="Ex: Dupont" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-person"></i> Prénom
-                            </label>
-                            <input type="text" class="form-control" id="userfirstname" name="name" placeholder="Ex: Jean" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-person"></i> Email
-                            </label>
-                            <input type="text" class="form-control" id="useremail" name="email" placeholder="Ex: jean.dupont@gmail.com" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-person"></i> Mot de passe
-                            </label>
-                            <input type="text" class="form-control" id="userpassword" name="password" placeholder="" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-award"></i> Rôle
-                            </label>
-                            <select class="form-select" id="userRole" name="role" required>
-                                <option value="">Sélectionner un rôle...</option>
-                                {% for g in groupes %}
-                                    <option value="{{ g[0] }}">{{ g[1] }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </form>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person-badge"></i> Nom
+                        </label>
+                        <input type="text" class="form-control" id="username" name="nom" placeholder="Ex: Dupont" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person"></i> Prénom
+                        </label>
+                        <input type="text" class="form-control" id="userfirstname" name="prenom" placeholder="Ex: Jean" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person"></i> Email
+                        </label>
+                        <input type="email" class="form-control" id="useremail" name="email" placeholder="Ex: jean.dupont@gmail.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person"></i> Mot de passe
+                        </label>
+                        <input type="password" class="form-control" id="userpassword" name="mot_de_passe" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-award"></i> Rôle
+                        </label>
+                        <select class="form-select" id="userRole" name="id_groupe" required>
+                            <option value="">Sélectionner un rôle...</option>
+                            {% for g in groupes %}
+                                <option value="{{ g[0] }}">{{ g[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Annuler
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="addUser()">
+                    <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-circle-fill"></i> Créer l'utilisateur
                     </button>
                 </div>
+            </form>
             </div>
         </div>
     </div>
@@ -678,14 +679,6 @@
         const lieux = ['Châtelet', 'La Défense', 'République', 'Bastille', 'Nation', 'Gare du Nord', 'Montparnasse', 'Saint-Lazare', 'Opéra', 'Concorde'];
         const fichiers = ['jazz_lounge.mp3', 'ambiance_matinale.mp3', 'soft_piano.mp3', 'lounge_mix.mp3', 'friday_energy.mp3'];
 
-        let users = [
-            { id: 1, nom: 'Dupont', prenom: 'Jean', role: 'Admin', dateCreation: '2024-01-15' },
-            { id: 2, nom: 'Martin', prenom: 'Sophie', role: 'Service Commercial', dateCreation: '2024-02-20' },
-            { id: 3, nom: 'Bernard', prenom: 'Luc', role: 'Service Marketing', dateCreation: '2024-03-10' },
-            { id: 4, nom: 'Dubois', prenom: 'Marie', role: 'Admin', dateCreation: '2024-01-20' }
-        ];
-        let nextUserId = 5;
-
        /* function generateDevices() {
             devices = [];
             for (let i = 0; i < 250; i++) {
@@ -701,86 +694,6 @@
             renderDevices();
             updateStats();
         } */
-
-        function renderUsers() {
-            const table = document.getElementById('usersTable');
-            
-            table.innerHTML = users.map(user => {
-                let roleClass = '', roleIcon = '';
-                
-                if (user.role === 'Admin') {
-                    roleClass = 'role-badge-admin';
-                    roleIcon = '<i class="bi bi-shield-fill-check"></i>';
-                } else if (user.role === 'Service Commercial') {
-                    roleClass = 'role-badge-commercial';
-                    roleIcon = '<i class="bi bi-briefcase-fill"></i>';
-                } else {
-                    roleClass = 'role-badge-marketing';
-                    roleIcon = '<i class="bi bi-megaphone-fill"></i>';
-                }
-                
-                const roleBadge = `<span class="role-badge ${roleClass}">${roleIcon} ${user.role}</span>`;
-                const deleteBtn = user.role !== 'Admin' 
-                    ? `<button onclick="deleteUser(${user.id})" class="delete-user-btn">
-                        <i class="bi bi-trash3-fill"></i> Supprimer
-                       </button>`
-                    : '<span class="protected-badge"><i class="bi bi-shield-lock-fill"></i> Protégé</span>';
-
-                return `
-                    <tr>
-                        <td class="user-name-cell">${user.nom}</td>
-                        <td class="user-name-cell">${user.prenom}</td>
-                        <td>${roleBadge}</td>
-                        <td class="user-date-cell"><i class="bi bi-calendar3"></i> ${new Date(user.dateCreation).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
-                        <td>${deleteBtn}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function addUser() {
-            const nom = document.getElementById('userName').value.trim();
-            const prenom = document.getElementById('userFirstName').value.trim();
-            const role = document.getElementById('userRole').value;
-
-            if (!nom || !prenom || !role) {
-                alert('⚠️ Veuillez remplir tous les champs');
-                return;
-            }
-
-            const newUser = {
-                id: nextUserId++,
-                nom: nom,
-                prenom: prenom,
-                role: role,
-                dateCreation: new Date().toISOString().split('T')[0]
-            };
-
-            users.push(newUser);
-            renderUsers();
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
-            modal.hide();
-
-            document.getElementById('addUserForm').reset();
-
-            alert(`✅ Utilisateur ${prenom} ${nom} créé avec succès !`);
-        }
-
-        function deleteUser(userId) {
-            const user = users.find(u => u.id === userId);
-            
-            if (user.role === 'Admin') {
-                alert('❌ Vous ne pouvez pas supprimer un administrateur !');
-                return;
-            }
-
-            if (confirm(`Êtes-vous sûr de vouloir supprimer ${user.prenom} ${user.nom} ?`)) {
-                users = users.filter(u => u.id !== userId);
-                renderUsers();
-                alert('✅ Utilisateur supprimé avec succès');
-            }
-        }
 
        function renderDevices() {
             const table = document.getElementById('deviceTable');

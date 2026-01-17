@@ -35,13 +35,13 @@ class LoginController:
     def login(): 
         msg_error = None
         if request.method == 'POST':
-            email = request.form["username"]
-            pwd = request.form['password']
+            email = request.form["email"]
+            pwd = request.form['mot_de_passe']
             user = us.login(email, pwd)
 
             if user:
                 session["logged"] = True
-                session['username'] = user.email
+                session['email'] = user.email
                 session['role'] = user.nom_groupe
 
                 if user.nom_groupe == "ADMIN":
@@ -61,6 +61,26 @@ class LoginController:
     def logout():
         session.clear()
         return redirect(url_for("login"))
+    
+    @app.route("/signin", methods=['GET', 'POST'])
+    @reqrole("ADMIN")
+    @reqlogged
+    def signin():
+        if request.method == "POST":
+            email = request.form["email"]
+            prenom = request.form["prenom"]
+            nom = request.form["nom"]
+            mot_de_passe = request.form['mot_de_passe']
+            id_Groupe = request.form["id_groupe"]
+            result = us.signin(prenom,nom,email,mot_de_passe,id_Groupe)
+            if result:
+                flash("Compte créé avec succés")
+                return render_template("admin.html")
+            else:
+                flash("Erreur lors de la création du compte")
+                return render_template("admin.html")
+        else:
+            return render_template("admin.html")
 
     @app.route('/commercial')
     @reqrole("ADMIN", "COMMERCIAL")

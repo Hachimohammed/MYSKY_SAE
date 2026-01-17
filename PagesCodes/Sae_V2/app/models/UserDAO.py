@@ -21,15 +21,17 @@ class UserSqliteDAO:
         mot_de_passe_hache = bits_hachage.decode('utf-8')
         return mot_de_passe_hache
 
-    def addUser(prenom, nom, email, mot_de_passe, id_groupe, self):
+    def addUser(self, prenom, nom, email, mot_de_passe, id_groupe):
+
         conn = self._getDbConnection()
-        mdp_hache=bcrypt.hashpw(mot_de_passe, bcrypt.gensalt())
+        mdp_hache=self._generatePwdHash(mot_de_passe)
 
         try:
             conn.execute(
                 "INSERT INTO Utilisateur (nom, prenom, email, mdp, id_Groupe)VALUES (:nom, :prenom, :email, :mdp, :id_Groupe)", 
                 {"prenom":prenom, "nom":nom, "email":email, "mdp":mdp_hache, "id_Groupe":id_groupe}
             )
+            conn.commit()
 
         except sqlite3.IntegrityError:
             return False
