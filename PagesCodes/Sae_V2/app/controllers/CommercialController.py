@@ -4,8 +4,8 @@ import os
 from mutagen.mp3 import MP3 as mp3
 from app.services.AudioFileService import AudioFileService
 from app.services.PlaylistService import PlaylistService
+from app.services.AdminService import AdminService
 from app.controllers.LoginController import reqrole
-from app.controllers.AdminController import sync_selected_players
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'audio')
@@ -16,6 +16,7 @@ def allowed_file(filename):
 
 audio_service = AudioFileService()
 playlist_service = PlaylistService()
+admin_service = AdminService()
 
 class CommercialController:
 
@@ -53,44 +54,55 @@ class CommercialController:
             
         return render_template('commercial.html', metadata=metadata)
     
+    
+    @app.route('/commercial/file/<int:file_id>', methods=['DELETE'])
+    @reqrole("ADMIN", "COMMERCIAL")
+    def commercialDeleteFile(id_fichier):
+        try:
+            success, error = audio_service.deleteAudioFile(id_fichier)
 
-    @app.route('/commercial/files')
+            if success:
+                return jsonify({'success': True}), 200
+            else:
+                return jsonify({'success': False, 'error': error}), 404 if error == 'Fichier introuvable' else 500
+            
+        except Exception as e:
+            print(f"Erreur lors de la suppression du fichier : {e}")
+            return jsonify({'success': False, 'error': str(e)}), 500
+    
+    
+    @app.route('/commercial/files/generate', methods=['POST'])
     @reqrole("ADMIN", "COMMERCIAL")
-    def commercialFiles():
-        metadata = {"title": "Audio Files List"}
-        audio_files = audio_service.getAllAudioFiles()
-        return render_template('commercial_files.html', metadata=metadata, audio_files=audio_files)
-    
-    
-    @app.route('/commercial/play/<int:file_id>')
-    @reqrole("ADMIN", "COMMERCIAL")
-    def commercialPlayFile(file_id):
-        metadata = {"title": "Play Audio File"}
-        audio_file = audio_service.getAudioFileById(id_fichier=file_id)
-        return render_template('commercial_play.html', metadata=metadata, audio_file=audio_file)
-    
+    def generateFileLecture():
+            file_upload = audio_service.createAudioFile()
+            if file_upload == True:
+                try:
+                    admin_service.pullMP3toplayers()
+                    print("Fichiers MP3 envoyés aux players.")
 
-    @app.route('/commercial/delete/<int:file_id>', methods=['DELETE'])
-    @reqrole("ADMIN", "COMMERCIAL")
-    def commercialDeleteFile(file_id):
-        audio_service.deleteAudioFile(id_fichier=file_id)
-        return redirect(url_for('commercialFiles'))
-    
-    
+                except Exception as e:
+                    print(f"Erreur lors de l'envoi des fichiers MP3 aux players : {e}")
+                    return jsonify({"error": str(e)}), 500
+            return redirect(url_for('commercialView'))
+
+
     @app.route('/commercial/playlist/stop')
     @reqrole("ADMIN", "COMMERCIAL")
     def commercialStopPlaylist():
-        upload = upload.commercialUpload()
-        if upload == True:
-            if playlist_service.is_playlist_running():
-                playlist_service.stop_playlist()
-                print("Playlist arrêtée.")
-            else:
-                print("Aucune playlist en cours d'exécution.")
+        try:
+            admin_service.WhatPlayerPlaying()
+            if admin_service.WhatPlayerPlaying() == True:
+                admin_service.getAllDown()
+                print("Lecture en cours arrêtée sur tous les players.")
+                
+        except Exception as e:
+            print(f"Aucune playlist en cours d'exécution. : {e}")
+            return jsonify({"error": str(e)}), 500
+        
         return redirect(url_for('commercialView'))
     
 
-    @app.route('/api/v1/files/download/<int:file_id>')
+    @app.route('/api/v1/files/download/<int:id_fichier>')
     @reqrole("ADMIN", "COMMERCIAL")
     def api_download_audio_file(id_fichier):
         try:
@@ -99,9 +111,12 @@ class CommercialController:
             if not audio_ficher:
                 return jsonify({"error": "Fichier non trouvé"}), 404
             
+            if not audio_ficher.chemin_fichier or not os.path.exists(audio_ficher.chemin_fichier):
+                return jsonify({"error": "Chemin du fichier invalide"}), 404
+            
             return send_file(
                 audio_ficher.chemin_fichier,
-                mimetype='audio/mpeg',
+                mimetype='audio/mp3',
                 as_attachment=True,
                 download_name=f"{audio_ficher.nom}.mp3"
             )
@@ -141,12 +156,14 @@ class CommercialController:
     
         
     
-    @app.route('/api/v1/players/sync', methods=['POST'])
-    @reqrole("ADMIN", "COMMERCIAL")
-    def api_sync_players():
-        data = request.get_json()
-        player_ids = data.get('player_ids', [])
-        sync_selected_players(player_ids)
-        return jsonify({"status": "success", "message": "Players synchronized successfully."})
-        
-    
+    #@app.route('/api/v1/players/sync', methods=['POST'])
+    #@reqrole("ADMIN", "COMMERCIAL")
+    #def api_sync_players():
+    #    try:
+    #        data = request.get_json()
+    #        selected_ips = data.get('selected_ips', [])
+    #        sync_selected_players(selected_ips)
+    #        return jsonify({"message": "Players synchronized successfully."}), 200
+    #    except Exception as e:
+    #        print(f"Erreur lors de la synchronisation des players : {e}")
+    #        return jsonify({"error": str(e)}), 500
