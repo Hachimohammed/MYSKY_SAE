@@ -298,23 +298,31 @@ class lecteurDAO(lecteurDAOInterface):
             now = datetime.datetime.now() 
             jour_actuel = jours[now.weekday()] 
             str_date = datetime.now().strftime("%Y%m%d")
+            date_et_temps = datetime.now().strftime("%Y-%m-%d %H:%M")
+
 
 
 
             conn = self._getDBConnection()
             ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
 
-            for file in json['playlists'].values:
+            for file in json['playlists'].values():
                 
                     f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file["nom_playlist"]}"
                     
                     for ip in ips:
                         client.connect(ip,6601)
+                        if file["date_heure_diffusion"] != null and file["date_heure_diffusion"] == date_et_temps:
+                            MPDClient.load(f)
+                            MPDClient.play(1)
+                            client.close()
+                            client.disconnect()
+
                         if file["jour_semaine"] == jour_actuel :
                             MPDClient.load(f)
                             MPDClient.play(1)
-                        client.close()
-                        client.disconnect()
+                            client.close()
+                            client.disconnect()
 
         except Exception as e:
             print(f"Erreur {e} dans la méthode playm3ubydayandtimestamp")
