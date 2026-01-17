@@ -40,17 +40,17 @@ class LoginController:
             user = us.login(email, pwd)
 
             if user:
-                # ✅ STOCKER TOUTES LES INFOS UTILISATEUR DANS LA SESSION
+                
                 session["logged"] = True
                 session['email'] = user.email
-                session['user_id'] = user.id  # ✅ CORRIGÉ : user.id au lieu de user.id_utilisateur
+                session['user_id'] = user.id  
                 session['username'] = user.email
-                session['prenom'] = user.prenom  # ✅ BONUS : pratique pour l'affichage
-                session['nom'] = user.nom  # ✅ BONUS
+                session['prenom'] = user.prenom  #
+                session['nom'] = user.nom  
                 session['role'] = user.nom_groupe
 
                 # Debug pour vérifier
-                print(f"✅ Connexion réussie:")
+                print(f" Connexion réussie:")
                 print(f"   ID: {user.id}")
                 print(f"   Email: {user.email}")
                 print(f"   Nom: {user.prenom} {user.nom}")
@@ -71,7 +71,7 @@ class LoginController:
     @app.route("/logout")
     @reqlogged
     def logout():
-        print(f"🚪 Déconnexion de l'utilisateur ID: {session.get('user_id')}")
+        print(f" Déconnexion de l'utilisateur ID: {session.get('user_id')}")
         session.clear()
         return redirect(url_for("login"))
 
