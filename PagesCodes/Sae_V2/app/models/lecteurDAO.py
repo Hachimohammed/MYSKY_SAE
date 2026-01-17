@@ -49,7 +49,8 @@ class lecteurDAO(lecteurDAOInterface):
             data = json.loads(cmd.stdout)
 
             for peer in data['Peer'].values():
-                name = peer['HostName']
+                name_before_split = peer['HostName']
+                name = name_before_split.split('-')[0]
                 ip = peer['TailscaleIPs'][0]
 
                 if name not in players:
