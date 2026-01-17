@@ -629,53 +629,54 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
+                <form id="addUserForm" method="POST" action="{{ url_for('signin') }}">
                 <div class="modal-body">
-                    <form id="addUserForm" method="POST" action="{{ url_for('add_user') }}">
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-person-badge"></i> Nom
-                            </label>
-                            <input type="text" class="form-control" id="username" name="firstname" placeholder="Ex: Dupont" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-person"></i> Prénom
-                            </label>
-                            <input type="text" class="form-control" id="userfirstname" name="name" placeholder="Ex: Jean" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-envelope"></i> Email
-                            </label>
-                            <input type="email" class="form-control" id="useremail" name="email" placeholder="Ex: jean.dupont@gmail.com" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-lock"></i> Mot de passe
-                            </label>
-                            <input type="password" class="form-control" id="userpassword" name="password" placeholder="********" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-award"></i> Rôle
-                            </label>
-                            <select class="form-select" id="userRole" name="role" required>
-                                <option value="">Sélectionner un rôle...</option>
-                                {% for g in groupes %}
-                                    <option value="{{ g[0] }}">{{ g[1] }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </form>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person-badge"></i> Nom
+                        </label>
+                        <input type="text" class="form-control" id="username" name="nom" placeholder="Ex: Dupont" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person"></i> Prénom
+                        </label>
+                        <input type="text" class="form-control" id="userfirstname" name="prenom" placeholder="Ex: Jean" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person"></i> Email
+                        </label>
+                        <input type="email" class="form-control" id="useremail" name="email" placeholder="Ex: jean.dupont@gmail.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-person"></i> Mot de passe
+                        </label>
+                        <input type="password" class="form-control" id="userpassword" name="mot_de_passe" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-award"></i> Rôle
+                        </label>
+                        <select class="form-select" id="userRole" name="id_groupe" required>
+                            <option value="">Sélectionner un rôle...</option>
+                            {% for g in groupes %}
+                                <option value="{{ g[0] }}">{{ g[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle"></i> Annuler
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="addUser()">
+                    <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-circle-fill"></i> Créer l'utilisateur
                     </button>
                 </div>
+            </form>
             </div>
         </div>
     </div>
@@ -700,12 +701,6 @@
         }
         loadDevices();
         console.log(devices)
-        
-
-        function addUser() {
-           
-            document.getElementById('addUserForm').submit();
-        }
 
        function renderDevices() {
             const table = document.getElementById('deviceTable');

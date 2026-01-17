@@ -35,13 +35,14 @@ class LoginController:
     def login(): 
         msg_error = None
         if request.method == 'POST':
-            email = request.form["username"]
-            pwd = request.form['password']
+            email = request.form["email"]
+            pwd = request.form['mot_de_passe']
             user = us.login(email, pwd)
 
             if user:
                 # ✅ STOCKER TOUTES LES INFOS UTILISATEUR DANS LA SESSION
                 session["logged"] = True
+                session['email'] = user.email
                 session['user_id'] = user.id  # ✅ CORRIGÉ : user.id au lieu de user.id_utilisateur
                 session['username'] = user.email
                 session['prenom'] = user.prenom  # ✅ BONUS : pratique pour l'affichage

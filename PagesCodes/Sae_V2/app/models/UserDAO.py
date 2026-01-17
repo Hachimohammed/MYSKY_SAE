@@ -22,18 +22,20 @@ class UserSqliteDAO:
         return mot_de_passe_hache
 
     def addUser(self, prenom, nom, email, mot_de_passe, id_groupe):
+
         conn = self._getDbConnection()
-        
-        
+        conn.execute("PRAGMA foreign_keys = ON")
         mdp_hache = self._generatePwdHash(mot_de_passe)
 
         try:
+            print("Debut insertion bdd")
             conn.execute(
                 "INSERT INTO Utilisateur (nom, prenom, email, mdp, id_Groupe) VALUES (?, ?, ?, ?, ?)", 
-                (nom, prenom, email, mdp_hache, id_groupe)
+                (nom, prenom, email, mdp_hache, int(id_groupe))
             )
+            print("avt commit")
             conn.commit()
-            return True
+            print("apres commmit")
 
         except sqlite3.IntegrityError as e:
             print(f" Erreur lors de l'ajout utilisateur: {e}")
@@ -41,6 +43,7 @@ class UserSqliteDAO:
         
         finally:
             conn.close()
+            return True
 
     def findByEmail(self, email):
         """Récupère un utilisateur par son email"""

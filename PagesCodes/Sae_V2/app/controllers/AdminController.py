@@ -11,13 +11,17 @@ ass = AdminService()
 lgd = logDAO()
 us = UserService()
 
+
+
 @app.route("/admin")
 @reqrole("ADMIN")
 def admin_page():
     metadata = {"title" : " Admin Panel"}
     ass.findPlayer()
     metadata = {"title": "Admin Panel"}
+    ass.findPlayer()
     print("hello")
+
     players = ass.getAllPlayerWithTheirLocalisation() 
     up = ass.getAllUp()
     groupes = us.getAllGroupes()
@@ -25,12 +29,12 @@ def admin_page():
     down = ass.getAllDown()
         
     return render_template('admin.html', 
-                         groupes=groupes, 
-                         users=users,
-                         metadata=metadata,
-                         devices=players,
-                         up_devices=up,
-                         down_devices=down)
+                        groupes=groupes, 
+                        users=users,
+                        metadata=metadata,
+                        devices=players,
+                        up_devices=up,
+                        down_devices=down)
 
 @app.route("/get-devices")
 @reqrole("ADMIN")
@@ -45,17 +49,17 @@ def send_devices_to_js():
 
 # ======================== GESTION UTILISATEURS ======================== #
 
-@app.route("/admin/user/add", methods=['POST'])
+@app.route("/signin", methods=['POST'])
 @reqrole("ADMIN")
-def add_user():
+def signin():
     """Créer un nouvel utilisateur"""
     try:
         
-        prenom = request.form.get('name')  
-        nom = request.form.get('firstname')  
-        email = request.form.get('email')
-        password = request.form.get('password')
-        role = request.form.get('role')
+        prenom = request.form['prenom'] 
+        nom = request.form['nom'] 
+        email = request.form['email']
+        password = request.form['mot_de_passe']
+        role = request.form["id_groupe"]
         
         
         print(f" Données reçues:")
@@ -79,14 +83,14 @@ def add_user():
                 "message": f"Champs manquants: {', '.join(missing)}"
             }), 400
         
-       
-        result = us.createUser(prenom, nom, email, password, int(role))
+    
+        result = us.signin(prenom, nom, email, password, int(role))
         
         if result:
             print(f" Utilisateur {prenom} {nom} créé avec succès")
             return redirect(url_for('admin_page'))
         else:
-            print(f" Échec création utilisateur (email déjà utilisé ?)")
+            print(f" Échec création utilisateur")
             return jsonify({
                 "success": False,
                 "message": "Email déjà utilisé ou erreur lors de la création"
