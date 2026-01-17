@@ -9,7 +9,8 @@ from app import app
 from app.services.AudioFileService import AudioFileService
 from app.services.PlaylistService import PlaylistService
 from app.services.PlanningService import PlanningService
-from app.controllers.LoginController import reqrole  
+from app.services.AdminService import AdminService
+from app.controllers.LoginController import reqrole
 
 # ==================== CONFIG ====================
 
@@ -24,6 +25,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 audio_service = AudioFileService(app)
 playlist_service = PlaylistService()
 planning_service = PlanningService()
+admin_service = AdminService()
 
 # ==================== UTILS ====================
 
@@ -60,17 +62,14 @@ def marketing_upload_multiple():
         if not files or not jour:
             return jsonify({'success': False, 'error': "Données manquantes"}), 400
 
-       
         valid_files = [f for f in files if f.filename and allowed_file(f.filename)]
         
         if not valid_files:
             return jsonify({'success': False, 'error': "Aucun fichier valide"}), 400
 
-        
         current_user_id = get_current_user_id()
         print(f"📤 Upload par utilisateur ID: {current_user_id}")
 
-        
         uploaded_count, errors = audio_service.uploadMultipleFiles(
             valid_files, 
             jour, 
@@ -239,11 +238,11 @@ def marketing_save_ordre(jour):
 @app.route('/marketing/playlist/generate/week', methods=['POST'])
 @reqrole("ADMIN", "MARKETING")
 def marketing_generate_playlist_week():
-    """Génère les playlists M3U avec dates/heures de diffusion"""
+    """Génère les playlists M3U et envoie tout aux lecteurs"""
     try:
-        # ✅ Récupérer l'utilisateur connecté
         current_user_id = get_current_user_id()
-        print(f"🎵 Génération playlist par utilisateur ID: {current_user_id}")
+        print(f" Génération playlist par utilisateur ID: {current_user_id}")
+        
         
         planning = planning_service.createPlanning(
             nom_planning=f"Planning_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
@@ -254,6 +253,7 @@ def marketing_generate_playlist_week():
         if not planning:
             return jsonify({'success': False, 'error': 'Erreur création planning'}), 500
 
+        
         ordre_folder = os.path.join(app.root_path, 'static', 'ordre')
         jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
         
@@ -263,6 +263,7 @@ def marketing_generate_playlist_week():
             if date_heure:
                 dates_diffusion[jour] = date_heure
 
+        
         playlists_created, errors = playlist_service.generateWeekPlaylistsWithOrder(
             id_planning=planning.id_planning,
             audio_service=audio_service,
@@ -270,6 +271,16 @@ def marketing_generate_playlist_week():
             use_http_urls=True,
             dates_diffusion=dates_diffusion
         )
+
+        
+        if playlists_created:
+            try:
+                admin_service.pullMP3toplayers()
+                admin_service.Pullm3uToPlayers()
+                print("Fichiers envoyés aux lecteurs")
+            except Exception as e:
+                print(f"Erreur envoi: {e}")
+                errors.append(f"Erreur envoi lecteurs: {str(e)}")
 
         return jsonify({
             'success': True,
@@ -279,12 +290,13 @@ def marketing_generate_playlist_week():
         }), 201
 
     except Exception as e:
-        print(f"Erreur génération playlist: {e}")
+        print(f"❌ Erreur génération playlist: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# Reste du code identique...
+# ==================== RESTE DES ROUTES ====================
+
 @app.route('/api/v1/playlist/download/<int:id_playlist>')
 def api_download_playlist(id_playlist):
     """Télécharge un fichier M3U"""

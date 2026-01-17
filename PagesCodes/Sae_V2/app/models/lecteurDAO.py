@@ -212,7 +212,7 @@ class lecteurDAO(lecteurDAOInterface):
             conn = self._getDBConnection()
 
             get = requests.get(f"http://127.0.0.1:5000/api/v1/audio/list")
-            json = get.json
+            json = get.json()
 
             hosts= conn.execute("SELECT nom_lecteur,adresse_ip FROM lecteur").fetchall()
 
@@ -250,7 +250,7 @@ class lecteurDAO(lecteurDAOInterface):
             json = get.json()
 
             conn = self._getDBConnection()
-            hosts = conn.execute('SELECT DISTINCT nom,adresse_ip FROM lecteur').fetchall()
+            hosts = conn.execute('SELECT DISTINCT nom_lecteur,adresse_ip FROM lecteur').fetchall()
 
 
 
