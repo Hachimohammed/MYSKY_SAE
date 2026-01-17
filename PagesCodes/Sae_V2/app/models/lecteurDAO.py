@@ -61,7 +61,8 @@ class lecteurDAO(lecteurDAOInterface):
                         "longitude" : None
                     }
 
-            for player in players:
+
+           for player in players:
                 if players[player]['ville'] == None:
 
                     curl = 'curl -s https://api.ipify.org'
@@ -84,13 +85,20 @@ class lecteurDAO(lecteurDAOInterface):
                     players[player]['longitude'] =longitude
 
 
-            for player in players:
-                conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut)" 
-                "VALUES (?,?,?)",(players[player]['name'],players[player]['ip'],"UP"))
-                conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)"
-                "VALUES (?,?,?)",(players[player]['ville'],players[player]['latitude'],players[player]['longitude']))
-                conn.commit()
-                conn.close()
+                    pointeur = 1
+                    for player in players:
+
+                                conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)"
+                                "VALUES (?,?,?)",(players[player]['ville'],players[player]['latitude'],players[player]['longitude']))
+
+                                id_localisation = conn.execute("SELECT id_localisation FROM localisation").fetchall()
+
+                                conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut,id_localisation)"
+                                "VALUES (?,?,?,?)",(players[player]['name'],players[player]['ip'],"UP",id_localisation[pointeur]))
+
+                                pointeur += 1
+                                conn.commit()
+                                conn.close()
                     
 
         except Exception as e:
