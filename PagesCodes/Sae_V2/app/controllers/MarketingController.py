@@ -1,6 +1,6 @@
 from flask import (
     render_template, request, jsonify, send_file,
-    redirect, url_for, flash, session  # ✅ Ajouter session
+    redirect, url_for, flash, session  
 )
 import os
 from datetime import datetime
@@ -9,7 +9,7 @@ from app import app
 from app.services.AudioFileService import AudioFileService
 from app.services.PlaylistService import PlaylistService
 from app.services.PlanningService import PlanningService
-from app.controllers.LoginController import reqrole  # ✅ Ajouter si pas déjà importé
+from app.controllers.LoginController import reqrole  
 
 # ==================== CONFIG ====================
 
@@ -32,13 +32,13 @@ def allowed_file(filename):
 
 def get_current_user_id():
     """Récupère l'ID de l'utilisateur connecté depuis la session"""
-    return session.get('user_id', 1)  # Fallback sur 1 si pas trouvé
+    return session.get('user_id', 1) 
 
 # ==================== PAGE PRINCIPALE ====================
 
 @app.route('/marketing')
 @app.route('/marketing/dashboard')
-@reqrole("MARKETING")  # ✅ Ajouter la protection
+@reqrole("ADMIN", "MARKETING")
 def marketing_dashboard():
     try:
         jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
@@ -51,7 +51,7 @@ def marketing_dashboard():
 # ==================== UPLOAD ====================
 
 @app.route('/marketing/upload/multiple', methods=['POST'])
-@reqrole("MARKETING")  # ✅ Ajouter la protection
+@reqrole("ADMIN", "MARKETING")
 def marketing_upload_multiple():
     try:
         files = request.files.getlist('files[]')
@@ -60,22 +60,22 @@ def marketing_upload_multiple():
         if not files or not jour:
             return jsonify({'success': False, 'error': "Données manquantes"}), 400
 
-        # Filtrer les fichiers valides
+       
         valid_files = [f for f in files if f.filename and allowed_file(f.filename)]
         
         if not valid_files:
             return jsonify({'success': False, 'error': "Aucun fichier valide"}), 400
 
-        # ✅ RÉCUPÉRER L'UTILISATEUR CONNECTÉ
+        
         current_user_id = get_current_user_id()
         print(f"📤 Upload par utilisateur ID: {current_user_id}")
 
-        # Déléguer au service
+        
         uploaded_count, errors = audio_service.uploadMultipleFiles(
             valid_files, 
             jour, 
             app.root_path,
-            id_utilisateur=current_user_id  # ✅ Utiliser l'utilisateur connecté
+            id_utilisateur=current_user_id  
         )
 
         return jsonify({
@@ -85,7 +85,7 @@ def marketing_upload_multiple():
         }), 201
 
     except Exception as e:
-        print(f"❌ Erreur upload: {e}")
+        print(f" Erreur upload: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -93,7 +93,7 @@ def marketing_upload_multiple():
 # ==================== SUPPRESSION ====================
 
 @app.route('/marketing/jour/<jour>/delete', methods=['DELETE'])
-@reqrole("MARKETING")
+@reqrole("ADMIN", "MARKETING")
 def marketing_delete_jour(jour):
     """Supprime tous les fichiers d'un jour"""
     try:
@@ -111,7 +111,7 @@ def marketing_delete_jour(jour):
 
 
 @app.route('/marketing/musique/<int:id_fichier>', methods=['DELETE'])
-@reqrole("MARKETING")
+@reqrole("ADMIN", "MARKETING")
 def marketing_delete_musique(id_fichier):
     """Supprime une musique spécifique"""
     try:
@@ -167,7 +167,7 @@ def api_download_audio(id_fichier):
 # ==================== STATISTIQUES ====================
 
 @app.route('/marketing/stats/semaine')
-@reqrole("MARKETING")
+@reqrole("ADMIN", "MARKETING")
 def marketing_stats_semaine():
     """Retourne les statistiques de toute la semaine"""
     try:
@@ -181,7 +181,7 @@ def marketing_stats_semaine():
 # ==================== ORDRE DES FICHIERS ====================
 
 @app.route('/marketing/jour/<jour>/fichiers-ordre')
-@reqrole("MARKETING")
+@reqrole("ADMIN", "MARKETING")
 def marketing_get_fichiers_ordre(jour):
     """Récupère les fichiers d'un jour pour les ordonner"""
     try:
@@ -200,7 +200,7 @@ def marketing_get_fichiers_ordre(jour):
 
 
 @app.route('/marketing/jour/<jour>/sauvegarder-ordre', methods=['POST'])
-@reqrole("MARKETING")
+@reqrole("ADMIN", "MARKETING")
 def marketing_save_ordre(jour):
     """Sauvegarde l'ordre des fichiers avec date/heure"""
     try:
@@ -237,7 +237,7 @@ def marketing_save_ordre(jour):
 # ==================== PLAYLIST ====================
 
 @app.route('/marketing/playlist/generate/week', methods=['POST'])
-@reqrole("MARKETING")
+@reqrole("ADMIN", "MARKETING")
 def marketing_generate_playlist_week():
     """Génère les playlists M3U avec dates/heures de diffusion"""
     try:
