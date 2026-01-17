@@ -62,43 +62,48 @@ class lecteurDAO(lecteurDAOInterface):
                     }
 
 
-           for player in players:
-                if players[player]['ville'] == None:
 
-                    curl = 'curl -s https://api.ipify.org'
+                for player in players:
+                    if players[player]['ville'] == None:
 
-                    ssh_curl = f'ssh {players[player]["name"]}@{players[player]["ip"]} "{curl}"'
+                        curl = 'curl -s https://api.ipify.org'
 
-                    curl_res = subprocess.run(ssh_curl,shell=True,capture_output=True,text=True,timeout=35)
+                        ssh_curl = f'ssh {players[player]["name"]}@{players[player]["ip"]} "{curl}"'
 
-                    public_ip = curl_res.stdout.strip()
+                        curl_res = subprocess.run(ssh_curl,shell=True,capture_output=True,text=True,timeout=35)
 
-
-
-                    ip = players[player]['ip']
-                    res = requests.get(f"https://ipinfo.io/{public_ip}/json")
-                    loc_data = res.json()
-                    players[player]['ville'] = loc_data['city']
-                    lat_long = loc_data["loc"]
-                    latitude, longitude = map(float, lat_long.split(','))
-                    players[player]['latitude'] = latitude
-                    players[player]['longitude'] =longitude
+                        public_ip = curl_res.stdout.strip()
 
 
-                    pointeur = 1
-                    for player in players:
 
-                                conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)"
-                                "VALUES (?,?,?)",(players[player]['ville'],players[player]['latitude'],players[player]['longitude']))
+                        ip = players[player]['ip']
+                        res = requests.get(f"https://ipinfo.io/{public_ip}/json")
+                        loc_data = res.json()
+                        players[player]['ville'] = loc_data['city']
+                        lat_long = loc_data["loc"]
+                        latitude, longitude = map(float, lat_long.split(','))
+                        players[player]['latitude'] = latitude
+                        players[player]['longitude'] =longitude
 
-                                id_localisation = conn.execute("SELECT id_localisation FROM localisation").fetchall()
 
-                                conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut,id_localisation)"
-                                "VALUES (?,?,?,?)",(players[player]['name'],players[player]['ip'],"UP",id_localisation[pointeur]))
 
-                                pointeur += 1
-                                conn.commit()
-                                conn.close()
+
+                        conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)"
+                        "VALUES (?,?,?)",(players[player]['ville'],players[player]['latitude'],
+                        players[player]['longitude']))
+
+                        conn.commit()
+
+                        id_localisation = conn.execute("SELECT id_localisation FROM localisation WHERE ville =  (?)",
+                        (players[player]['ville'],)).fetchone()
+
+                        conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut,id_localisation)"
+                        "VALUES (?,?,?,?)",
+                        (players[player]['name'],players[player]['ip'],"UP",id_localisation[0]))
+
+                        conn.commit()
+
+                    conn.close()
                     
 
         except Exception as e:
@@ -135,6 +140,7 @@ class lecteurDAO(lecteurDAOInterface):
         
         conn = self._getDBConnection()
         try:
+
             ip_adresse = conn.execute('SELECT DISTINCT adresse_ip FROM lecteur').fetchall()
             for ip in ip_adresse:
                 delay = ping(ip,timeout=4)
