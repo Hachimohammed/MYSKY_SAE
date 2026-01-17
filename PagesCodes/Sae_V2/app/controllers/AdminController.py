@@ -16,7 +16,6 @@ us = UserService()
 def admin_page():
     metadata = {"title" : " Admin Panel"}
     ass.findPlayer()
-    metadata = {"title": "Admin Panel"}
     print("hello")
     players = ass.getAllPlayerWithTheirLocalisation() 
     up = ass.getAllUp()
@@ -38,7 +37,7 @@ def send_devices_to_js():
     
     devices = ass.getAllPlayerWithTheirLocalisation()
     return jsonify([
-        {"adresse_ip": d.adresse_ip, "ville": d.ville, "statut": d.statut} 
+        {"adresse_ip": d['adresse_ip'], "ville": d['ville'], "statut": d['statut']} 
         for d in devices
     ])
 
