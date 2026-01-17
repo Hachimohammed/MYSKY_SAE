@@ -8,9 +8,9 @@ class UserService:
     def getUserByEmail(self, email):
         return self.udao.findByEmail(email)
 
-    def createUser(self, prenom, nom, email, password, id_groupe):
-        return self.udao.addUser(prenom, nom, email, password, id_groupe)
-
+    def signin(self, prenom, nom, email, mot_de_passe, id_groupe):
+        return self.udao.addUser(prenom, nom, email, mot_de_passe, id_groupe)
+    
     def login(self, email, password):
         return self.udao.verifyUser(email, password)
     

@@ -1,6 +1,6 @@
 from flask import (
     render_template, request, jsonify, send_file,
-    redirect, url_for, flash
+    redirect, url_for, flash, session  
 )
 import os
 from datetime import datetime
@@ -9,6 +9,8 @@ from app import app
 from app.services.AudioFileService import AudioFileService
 from app.services.PlaylistService import PlaylistService
 from app.services.PlanningService import PlanningService
+from app.services.AdminService import AdminService
+from app.controllers.LoginController import reqrole
 
 # ==================== CONFIG ====================
 
@@ -23,16 +25,22 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 audio_service = AudioFileService(app)
 playlist_service = PlaylistService()
 planning_service = PlanningService()
+admin_service = AdminService()
 
 # ==================== UTILS ====================
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def get_current_user_id():
+    """Récupère l'ID de l'utilisateur connecté depuis la session"""
+    return session.get('user_id', 1) 
+
 # ==================== PAGE PRINCIPALE ====================
 
 @app.route('/marketing')
 @app.route('/marketing/dashboard')
+@reqrole("ADMIN", "MARKETING")
 def marketing_dashboard():
     try:
         jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
@@ -45,6 +53,7 @@ def marketing_dashboard():
 # ==================== UPLOAD ====================
 
 @app.route('/marketing/upload/multiple', methods=['POST'])
+@reqrole("ADMIN", "MARKETING")
 def marketing_upload_multiple():
     try:
         files = request.files.getlist('files[]')
@@ -53,18 +62,19 @@ def marketing_upload_multiple():
         if not files or not jour:
             return jsonify({'success': False, 'error': "Données manquantes"}), 400
 
-        # Filtrer les fichiers valides
         valid_files = [f for f in files if f.filename and allowed_file(f.filename)]
         
         if not valid_files:
             return jsonify({'success': False, 'error': "Aucun fichier valide"}), 400
 
-        # Déléguer au service (passer app.root_path directement)
+        current_user_id = get_current_user_id()
+        print(f"📤 Upload par utilisateur ID: {current_user_id}")
+
         uploaded_count, errors = audio_service.uploadMultipleFiles(
             valid_files, 
             jour, 
             app.root_path,
-            id_utilisateur=1
+            id_utilisateur=current_user_id  
         )
 
         return jsonify({
@@ -74,12 +84,15 @@ def marketing_upload_multiple():
         }), 201
 
     except Exception as e:
-        print(f"Erreur upload: {e}")
+        print(f" Erreur upload: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ==================== SUPPRESSION ====================
 
 @app.route('/marketing/jour/<jour>/delete', methods=['DELETE'])
+@reqrole("ADMIN", "MARKETING")
 def marketing_delete_jour(jour):
     """Supprime tous les fichiers d'un jour"""
     try:
@@ -97,6 +110,7 @@ def marketing_delete_jour(jour):
 
 
 @app.route('/marketing/musique/<int:id_fichier>', methods=['DELETE'])
+@reqrole("ADMIN", "MARKETING")
 def marketing_delete_musique(id_fichier):
     """Supprime une musique spécifique"""
     try:
@@ -152,6 +166,7 @@ def api_download_audio(id_fichier):
 # ==================== STATISTIQUES ====================
 
 @app.route('/marketing/stats/semaine')
+@reqrole("ADMIN", "MARKETING")
 def marketing_stats_semaine():
     """Retourne les statistiques de toute la semaine"""
     try:
@@ -165,6 +180,7 @@ def marketing_stats_semaine():
 # ==================== ORDRE DES FICHIERS ====================
 
 @app.route('/marketing/jour/<jour>/fichiers-ordre')
+@reqrole("ADMIN", "MARKETING")
 def marketing_get_fichiers_ordre(jour):
     """Récupère les fichiers d'un jour pour les ordonner"""
     try:
@@ -183,6 +199,7 @@ def marketing_get_fichiers_ordre(jour):
 
 
 @app.route('/marketing/jour/<jour>/sauvegarder-ordre', methods=['POST'])
+@reqrole("ADMIN", "MARKETING")
 def marketing_save_ordre(jour):
     """Sauvegarde l'ordre des fichiers avec date/heure"""
     try:
@@ -197,7 +214,6 @@ def marketing_save_ordre(jour):
         
         ordre_folder = os.path.join(app.root_path, 'static', 'ordre')
         
-      
         audio_service.savePlaybackOrder(
             jour, 
             fichiers_ordre, 
@@ -220,9 +236,13 @@ def marketing_save_ordre(jour):
 # ==================== PLAYLIST ====================
 
 @app.route('/marketing/playlist/generate/week', methods=['POST'])
+@reqrole("ADMIN", "MARKETING")
 def marketing_generate_playlist_week():
-    """Génère les playlists M3U avec dates/heures de diffusion"""
+    """Génère les playlists M3U et envoie tout aux lecteurs"""
     try:
+        current_user_id = get_current_user_id()
+        print(f" Génération playlist par utilisateur ID: {current_user_id}")
+        
         
         planning = planning_service.createPlanning(
             nom_planning=f"Planning_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
@@ -233,7 +253,7 @@ def marketing_generate_playlist_week():
         if not planning:
             return jsonify({'success': False, 'error': 'Erreur création planning'}), 500
 
-     
+        
         ordre_folder = os.path.join(app.root_path, 'static', 'ordre')
         jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
         
@@ -243,14 +263,24 @@ def marketing_generate_playlist_week():
             if date_heure:
                 dates_diffusion[jour] = date_heure
 
-      
+        
         playlists_created, errors = playlist_service.generateWeekPlaylistsWithOrder(
             id_planning=planning.id_planning,
             audio_service=audio_service,
             app_root_path=app.root_path,
             use_http_urls=True,
-            dates_diffusion=dates_diffusion  
+            dates_diffusion=dates_diffusion
         )
+
+        
+        if playlists_created:
+            try:
+                admin_service.pullMP3toplayers()
+                admin_service.Pullm3uToPlayers()
+                print("Fichiers envoyés aux lecteurs")
+            except Exception as e:
+                print(f"Erreur envoi: {e}")
+                errors.append(f"Erreur envoi lecteurs: {str(e)}")
 
         return jsonify({
             'success': True,
@@ -260,10 +290,12 @@ def marketing_generate_playlist_week():
         }), 201
 
     except Exception as e:
-        print(f"Erreur génération playlist: {e}")
+        print(f"❌ Erreur génération playlist: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
+
+# ==================== RESTE DES ROUTES ====================
 
 @app.route('/api/v1/playlist/download/<int:id_playlist>')
 def api_download_playlist(id_playlist):
@@ -287,8 +319,6 @@ def api_download_playlist(id_playlist):
         print(f"Erreur download playlist: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== API JSON PLAYLISTS ====================
-
 @app.route('/api/v1/playlists')
 def api_get_all_playlists():
     """Retourne toutes les playlists en JSON"""
@@ -311,15 +341,15 @@ def api_get_all_playlists():
                 })
             
             result.append({
-                    'id_playlist': pl.id_playlist,
-                    'nom_playlist': pl.nom_playlist,
-                    'jour_semaine': pl.jour_semaine,
-                    'duree_totale': pl.duree_total,
-                    'date_heure_diffusion': pl.date_heure_diffusion,  
-                    'nombre_fichiers': len(fichiers),
-                    'fichiers': fichiers_data,
-                    'download_m3u_url': url_for('api_download_playlist', id_playlist=pl.id_playlist, _external=True),
-                })
+                'id_playlist': pl.id_playlist,
+                'nom_playlist': pl.nom_playlist,
+                'jour_semaine': pl.jour_semaine,
+                'duree_totale': pl.duree_total,
+                'date_heure_diffusion': pl.date_heure_diffusion,
+                'nombre_fichiers': len(fichiers),
+                'fichiers': fichiers_data,
+                'download_m3u_url': url_for('api_download_playlist', id_playlist=pl.id_playlist, _external=True),
+            })
         
         return jsonify({
             'success': True,
@@ -330,7 +360,6 @@ def api_get_all_playlists():
     except Exception as e:
         print(f"Erreur API playlists: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
 
 @app.route('/api/v1/playlist/<int:id_playlist>')
 def api_get_playlist_details(id_playlist):
@@ -376,7 +405,6 @@ def api_get_playlist_details(id_playlist):
     except Exception as e:
         print(f"Erreur API playlist detail: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
 
 @app.route('/api/v1/playlists/jour/<jour>')
 def api_get_playlists_by_day(jour):
