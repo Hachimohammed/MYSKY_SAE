@@ -49,7 +49,8 @@ class lecteurDAO(lecteurDAOInterface):
             data = json.loads(cmd.stdout)
 
             for peer in data['Peer'].values():
-                name = peer['HostName']
+                name_before_split = peer['HostName']
+                name = name_before_split.split('-')[0]
                 ip = peer['TailscaleIPs'][0]
 
                 if name not in players:
@@ -143,12 +144,14 @@ class lecteurDAO(lecteurDAOInterface):
 
             ip_adresse = conn.execute('SELECT DISTINCT adresse_ip FROM lecteur').fetchall()
             for ip in ip_adresse:
+
+                ip_t = ip_tuple[0]
                 delay = ping(ip,timeout=4)
 
                 if delay is not None and delay is not False:
-                    conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",ip)
+                    conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",(ip_t,))
                 else:
-                    conn.execute("UPDATE lecteur SET statut = 'DOWN' WHERE adresse_ip = (?)",ip)
+                    conn.execute("UPDATE lecteur SET statut = 'DOWN' WHERE adresse_ip = (?)",(ip_t,))
             print("Programme executer à la perfection")
         except Exception as e:
             print(f"Erreur {e} dans findStatut")
@@ -225,28 +228,23 @@ class lecteurDAO(lecteurDAOInterface):
 
             conn = self._getDBConnection()
 
-            get = requests.get(f"http://127.0.0.1:5000/api/v1/audio/list")
-            json = get.json()
+            dir = "/home/servermysky/MYSKY_SAE/PagesCodes/Sae_V2/app/static/audio"
 
             hosts= conn.execute("SELECT nom_lecteur,adresse_ip FROM lecteur").fetchall()
 
-            for file in json['data']['chemin_fichier'].values:
-                for nom_lecteur,adresse_ip in hosts:
+            for nom_lecteur,adresse_ip in hosts:
                     cmd = [
                     "rsync", "-avz", "--progress",
-                    f"{file}/",
+                    f"{dir}/",
                     f"{nom_lecteur}@{adresse_ip}:~/musique/"]
 
                     res = subprocess.run(cmd, capture_output=True, text=True)
 
-                if res.returncode == 0: 
+                    if res.returncode == 0:
                     # tout va bien
                     
-                    update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
-                    subprocess.run(update_mpd, capture_output=True)
-
-                else:
-                    self.findStatut()
+                        update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
+                        subprocess.run(update_mpd, capture_output=True)
 
 
         except Exception as e:
@@ -259,38 +257,22 @@ class lecteurDAO(lecteurDAOInterface):
         """
         try:
             conn = self._getDBConnection()
-
-            get = requests.get(f"http://127.0.0.1:5000/api/v1/audio/list")
-            json = get.json()
-
-            conn = self._getDBConnection()
             hosts = conn.execute('SELECT DISTINCT nom_lecteur,adresse_ip FROM lecteur').fetchall()
 
+            f = "/home/servermysky/MYSKY_SAE/PagesCodes/Sae_V2/app/static/playlists"
 
-
-            for file in json['playlists']['nom_playlist'].values:
-            
-                f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file}"
-
- 
-
-                for nom,adresse_ip in hosts:
+            for nom_lecteur,adresse_ip in hosts:
                     cmd = [
                     "rsync", "-avz", "--progress",
                     f"{f}/",
-                    f"{nom}@{adresse_ip}:~/musique/"]
+                    f"{nom_lecteur}@{adresse_ip}:~/musique/"]
 
-                    res = subprocess.run(cmd, capture_output=True, text=True)
+                    subprocess.run(cmd, capture_output=True, text=True)
 
-                    if res.returncode == 0: 
-                        # tout va bien
                         
-                        update_mpd = ["ssh", f"{nom}@{adresse_ip}", "mpc -p 6601 update"]
-                        subprocess.run(update_mpd, capture_output=True)
+                    update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
+                    subprocess.run(update_mpd, capture_output=True)
                     
-                    else:
-
-                        self.findStatut()
 
         except Exception as e:
             print(f"erreur {e} dans Pullm3uToPlayers")
@@ -316,23 +298,32 @@ class lecteurDAO(lecteurDAOInterface):
             now = datetime.datetime.now() 
             jour_actuel = jours[now.weekday()] 
             str_date = datetime.now().strftime("%Y%m%d")
+            date_et_temps = datetime.now().strftime("%Y-%m-%d %H:%M")
+
 
 
 
             conn = self._getDBConnection()
             ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
 
-            for file in json['playlists'].values:
+
+            for file in json['playlists'].values():
                 
                     f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file["nom_playlist"]}"
                     
                     for ip in ips:
                         client.connect(ip,6601)
+                        if file["date_heure_diffusion"] != null and file["date_heure_diffusion"] == date_et_temps:
+                            MPDClient.load(f)
+                            MPDClient.play(1)
+                            client.close()
+                            client.disconnect()
+
                         if file["jour_semaine"] == jour_actuel :
                             MPDClient.load(f)
                             MPDClient.play(1)
-                        client.close()
-                        client.disconnect()
+                            client.close()
+                            client.disconnect()
 
         except Exception as e:
             print(f"Erreur {e} dans la méthode playm3ubydayandtimestamp")
@@ -434,6 +425,7 @@ class lecteurDAO(lecteurDAOInterface):
     def getAllPlayerWithTheirLocalisation(self):
 
         try:
+
             players = []
             conn= self._getDBConnection()
             hosts = conn.execute("SELECT * FROM lecteur JOIN localisation USING(id_localisation)").fetchall()
