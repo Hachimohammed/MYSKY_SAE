@@ -1,7 +1,8 @@
 from app import app
 from app.models.log import log
-import datetime
+from pathlib import Path
 import sqlite3
+import os
 
 
 class logDAO():
@@ -29,7 +30,18 @@ class logDAO():
     def WriteLog(self,date_debut,date_fin):
         conn = self._getDBConnection()
         logs = conn.execute("SELECT * FROM Log WHERE (?) > DateDeLog AND DateDeLog < (?) ",(date_debut,date_fin)).fetchall()
-        with open(f"~/MYSKY_SAE/PagesCodes/Sae_V2/app/static/log_{datetime.now()}", 'w') as file:
+        
+        date_range = f"{date_debut:%Y-%m-%d_%H-%M-%S}---{date_fin:%Y-%m-%d_%H-%M-%S}"
+        # Expres pour qu'il puissent retrouver le projet n'importe ou 
+        model_dir = Path(__file__).resolve().parent # "~app/model"
+        static_dir = model_dir.parent / "static" # "~app/static" 
+        static_dir.mkdir(parents=True, exist_ok=True)
+        
+        path  = static_dir / f"log_{date_range}.txt" # Open() comprend pas le '~' donc j'ai du utiliser le module os 
+        with open(path, 'w') as file:
+            file.write("========================================\n\n")
+            file.write(date_range)
+            file.write("\n\n========================================\n\n")
             for log in logs:
-                file.write(log)
+                file.write(log , "\n\n")
         conn.close()  
