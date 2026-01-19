@@ -145,7 +145,7 @@ class lecteurDAO(lecteurDAOInterface):
             ip_adresse = conn.execute('SELECT DISTINCT adresse_ip FROM lecteur').fetchall()
             for ip in ip_adresse:
 
-                ip_t = ip_tuple[0]
+                ip_t = ip[0]
                 delay = ping(ip,timeout=4)
 
                 if delay is not None and delay is not False:
@@ -313,7 +313,7 @@ class lecteurDAO(lecteurDAOInterface):
                     
                     for ip in ips:
                         client.connect(ip,6601)
-                        if file["date_heure_diffusion"] != null and file["date_heure_diffusion"] == date_et_temps:
+                        if file["date_heure_diffusion"] != None and file["date_heure_diffusion"] == date_et_temps:
                             MPDClient.load(f)
                             MPDClient.play(1)
                             client.close()
