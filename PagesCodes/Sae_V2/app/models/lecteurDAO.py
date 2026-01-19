@@ -32,6 +32,7 @@ class lecteurDAO(lecteurDAOInterface):
         et leurs adresse iP soient récuperer et intégrer à une liste de machines , ensuite il manque la localisation 
         on va utiliser le site 'ipinfo.ip' pour tout sa on va récuperer la ville données par le site
         ensuite on intégre tout sa à la bdd
+        git
         
         """
 
