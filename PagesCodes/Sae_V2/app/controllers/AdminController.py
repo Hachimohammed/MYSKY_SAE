@@ -42,7 +42,7 @@ def send_devices_to_js():
     
     devices = ass.getAllPlayerWithTheirLocalisation()
     return jsonify([
-        {"adresse_ip": d.adresse_ip, "ville": d.ville, "statut": d.statut} 
+        {"adresse_ip": d['adresse_ip'], "ville": d['ville'], "statut": d['statut']} 
         for d in devices
     ])
 

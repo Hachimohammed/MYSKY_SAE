@@ -809,6 +809,14 @@
     
         }
         loadDevices();
+
+        const fichiers = ['jazz_lounge.mp3', 'ambiance_matinale.mp3', 'soft_piano.mp3', 'lounge_mix.mp3', 'friday_energy.mp3'];
+
+        function addUser() {
+           
+            document.getElementById('addUserForm').submit();
+        }
+
         console.log(devices)
 
        function renderDevices() {
@@ -1020,6 +1028,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ dates })
                 })
+                console.log(response)
                 const rep_json  = await response.json()
                 console.log(rep_json) 
                 if(rep_json.status === "failure"){
@@ -1027,7 +1036,7 @@
                     return;
                 }
                 
-            let content = `═══════════════════════════════════════════════════════
+           /* let content = `═══════════════════════════════════════════════════════
 MySky Audio - Historique des Appareils
 Le ciel n'est plus une limite
 ═══════════════════════════════════════════════════════
@@ -1038,7 +1047,7 @@ Adresse IP       | Lieu                  | Fichier             | État
 ────────────────────────────────────────────────────────────────────
 `;
 
-             devices.slice(0, 50).forEach(device => {
+            devices.slice(0, 50).forEach(device => {
                 content += `${device.ip.padEnd(16)} | ${device.lieu.padEnd(21)} | ${device.fichier.padEnd(19)} | ${device.statut}\n`;
             });
             console.log(devices.length)
@@ -1060,9 +1069,10 @@ Adresse IP       | Lieu                  | Fichier             | État
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            window.URL.revokeObjectURL(url); */
+
             } catch(error){
-                console.log("Erreur : " , error)
+                console.log("Erreur : " + error)
                 alert("Nous avons pas pu récuperer les logs")
             }
         }
