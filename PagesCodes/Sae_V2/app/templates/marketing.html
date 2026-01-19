@@ -4,13 +4,233 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service Marketing - MySky Audio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #1e3a8a 50%, #1e293b 100%);
+            min-height: 100vh;
         }
+
+        /* Header */
+        .custom-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-title {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            color: #bfdbfe;
+            font-size: 0.75rem;
+            margin: 0;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Titres principaux */
+        .main-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .main-subtitle {
+            text-align: center;
+            color: #bfdbfe;
+            font-size: 1.125rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Carte des jours */
+        .days-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            max-width: 960px;
+            margin: 0 auto 2rem;
+        }
+
+        .day-row {
+            padding: 1.5rem 2rem;
+            transition: background 0.3s;
+        }
+
+        .day-row:nth-child(even) {
+            background: #f3f4f6;
+        }
+
+        .day-row:hover {
+            background: #e5e7eb;
+        }
+
+        .day-row:nth-child(even):hover {
+            background: #d1d5db;
+        }
+
+        .day-row:last-child {
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+        }
+
+        .day-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .btn-custom {
+            padding: 10px 24px;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: none;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+
+        .btn-custom:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+        }
+
+        .btn-details {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-details:hover {
+            background: #2563eb;
+        }
+
+        .btn-planifier {
+            background: #a855f7;
+            color: white;
+        }
+
+        .btn-planifier:hover {
+            background: #9333ea;
+        }
+
+        .btn-add {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #059669;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .music-badge {
+            background: #f3e8ff;
+            color: #7c3aed;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .no-music-text {
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-style: italic;
+        }
+
+        /* Boutons d'action principaux */
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn-action-main {
+            padding: 16px 40px;
+            font-weight: bold;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border: none;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-action-main:hover {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(1.05);
+        }
+
+        .btn-planning {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-planning:hover {
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+        }
+
+        .btn-generate {
+            background: linear-gradient(to right, #14b8a6, #0d9488);
+            color: white;
+        }
+
+        .btn-generate:hover {
+            background: linear-gradient(to right, #0d9488, #0f766e);
+        }
+
+        /* Modales */
         .modal {
             display: none;
             position: fixed;
@@ -23,117 +243,269 @@
             justify-content: center;
             align-items: center;
         }
+
         .modal.active {
             display: flex;
         }
+
+        .modal-custom {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-custom-lg {
+            max-width: 1000px;
+            max-height: 90vh;
+        }
+
+        .modal-header-custom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title-custom {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #374151;
+        }
+
+        /* Drag and Drop */
         .fichier-item {
             cursor: move;
             transition: all 0.2s;
         }
+
         .fichier-item:hover {
             transform: translateX(5px);
         }
+
         .fichier-item.dragging {
             opacity: 0.5;
             transform: scale(0.95);
         }
+
         .fichier-item.drag-over {
             border-color: #8b5cf6 !important;
-            background: linear-gradient(to right, #faf5ff, #f3e8ff);
+            background: linear-gradient(to right, #faf5ff, #f3e8ff) !important;
+        }
+
+        /* Cards personnalisées */
+        .info-card {
+            background: linear-gradient(to right, #f3e8ff, #ede9fe);
+            border: 2px solid #e9d5ff;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .fichier-card {
+            background: linear-gradient(to right, #f3e8ff, #ede9fe);
+            border: 2px solid #e9d5ff;
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .fichier-card:hover {
+            border-color: #d8b4fe;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .music-icon-container {
+            width: 40px;
+            height: 40px;
+            background: #a855f7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .music-icon-lg {
+            width: 80px;
+            height: 80px;
+            background: #a855f7;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .date-time-section {
+            background: linear-gradient(to right, #eff6ff, #dbeafe);
+            border: 2px solid #bfdbfe;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .progress-custom {
+            height: 8px;
+            border-radius: 4px;
+            background: #bfdbfe;
+        }
+
+        .progress-bar-custom {
+            height: 100%;
+            border-radius: 4px;
+            background: #2563eb;
+            transition: width 0.3s;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #bfdbfe;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-action-main {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .day-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 min-h-screen">
+<body>
     
     <!-- Header avec logo -->
-    <div class="bg-white/10 backdrop-blur-sm border-b border-white/20">
-        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl overflow-hidden">
-                    <img 
-                        src="{{ url_for('static', filename='Logo3.png') }}" 
-                        alt="MySky Audio Logo" 
-                        class="w-full h-full object-contain"
-                    />
+    <div class="custom-header">
+        <div class="container py-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="logo-container">
+                        <img 
+                            src="{{ url_for('static', filename='Logo3.png') }}" 
+                            alt="MySky Audio Logo"
+                        />
+                    </div>
+                    <div>
+                        <h1 class="header-title">MySky Audio</h1>
+                        <p class="header-subtitle">Service Marketing - Gestion Musique d'Ambiance</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-xl font-bold text-white">MySky Audio</h1>
-                    <p class="text-xs text-blue-200">Service Marketing - Gestion Musique d'Ambiance</p>
-                </div>
+                <a href="{{ url_for('logout') }}">
+                    <button class="btn-logout">Déconnexion</button>
+                </a>
             </div>
-                    <a href="{{ url_for('logout') }}">
-            <button class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors text-sm font-medium">
-                Déconnexion
-            </button>
-                                </a>
         </div>
     </div>
 
-    <div class="container mx-auto px-6 py-8">
+    <div class="container py-5">
         <!-- Titre principal -->
-        <div class="mb-10">
-            <h2 class="text-5xl font-bold text-white mb-2 text-center">SERVICE MARKETING</h2>
-            <p class="text-center text-blue-200 text-lg">Gestion de la musique d'ambiance hebdomadaire</p>
+        <div class="mb-5">
+            <h2 class="main-title">SERVICE MARKETING</h2>
+            <p class="main-subtitle">Gestion de la musique d'ambiance hebdomadaire</p>
         </div>
 
         <!-- Liste des jours de la semaine -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8 max-w-5xl mx-auto">
-            
+        <div class="days-card">
             {% set jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'] %}
             {% for jour in jours %}
-            <div class="px-8 py-6 {% if loop.index % 2 == 0 %}bg-gray-100 hover:bg-gray-200{% else %}bg-white hover:bg-gray-50{% endif %} transition-colors {% if loop.last %}rounded-b-3xl{% endif %}">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-xl font-bold text-gray-900">{{ jour }}</span>
-                    <div class="flex items-center gap-3">
+            <div class="day-row">
+                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                    <span class="day-name">{{ jour }}</span>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
                         {% if stats_jours.get(jour, {}).get('count', 0) > 0 %}
-                        <button onclick="showDetails('{{ jour }}')" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                        <button onclick="showDetails('{{ jour }}')" class="btn btn-custom btn-details">
                             Détails
                         </button>
                         
-                       
-                        <button onclick="showPlanifier('{{ jour }}')" class="px-6 py-2.5 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
-                             Planifier
+                        <button onclick="showPlanifier('{{ jour }}')" class="btn btn-custom btn-planifier">
+                            Planifier
                         </button>
                         {% endif %}
                         
-                        <button onclick="showUploadModal('{{ jour }}')" class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                        <button onclick="showUploadModal('{{ jour }}')" class="btn btn-custom btn-add">
                             Ajouter musique
                         </button>
                         {% if stats_jours.get(jour, {}).get('count', 0) > 0 %}
-                        <button onclick="deleteMp3('{{ jour }}')" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all text-sm">
+                        <button onclick="deleteMp3('{{ jour }}')" class="btn btn-custom btn-delete">
                             Supprimer
                         </button>
                         {% endif %}
                     </div>
                 </div>
-                <div class="flex flex-wrap gap-2 mt-2">
+                <div class="d-flex flex-wrap gap-2 mt-2">
                     {% set count = stats_jours.get(jour, {}).get('count', 0) %}
                     {% if count > 0 %}
-                    <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <span class="music-badge">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
                         </svg>
                         {{ count }} musique{{ 's' if count > 1 else '' }}
                     </span>
                     {% else %}
-                    <p class="text-gray-500 text-sm italic">Aucune musique programmée</p>
+                    <p class="no-music-text mb-0">Aucune musique programmée</p>
                     {% endif %}
                 </div>
             </div>
             {% endfor %}
-
         </div>
 
         <!-- Boutons d'action principaux -->
-        <div class="flex items-center justify-center gap-6 mt-10">
-            <button onclick="showPlanning()" class="px-10 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 text-lg flex items-center gap-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="action-buttons">
+            <button onclick="showPlanning()" class="btn btn-action-main btn-planning">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Voir planning musical
             </button>
-            <button onclick="generatePlaylist()" class="px-10 py-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 text-lg flex items-center gap-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button onclick="generatePlaylist()" class="btn btn-action-main btn-generate">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
                 </svg>
                 Générer playlist
@@ -143,47 +515,45 @@
 
     <!-- Modal Upload -->
     <div id="uploadModal" class="modal">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full mx-4">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-3xl font-bold text-gray-900" id="uploadModalTitle">Ajouter des musiques</h3>
-                <button onclick="closeUploadModal()" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">×</button>
+        <div class="modal-custom">
+            <div class="modal-header-custom">
+                <h3 class="modal-title-custom" id="uploadModalTitle">Ajouter des musiques</h3>
+                <button onclick="closeUploadModal()" class="modal-close">×</button>
             </div>
 
             <form id="uploadForm" enctype="multipart/form-data">
                 <input type="hidden" id="jour_upload" name="jour_semaine">
                 
-                <div class="mb-6">
-                    <label class="block text-gray-700 font-semibold mb-2">
-                        Sélectionner des fichiers MP3
-                    </label>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Sélectionner des fichiers MP3</label>
                     <input 
                         type="file" 
                         id="fileInput" 
                         name="files[]"
                         accept=".mp3,audio/mpeg"
                         multiple
-                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none"
+                        class="form-control"
                     >
-                    <p class="text-sm text-gray-500 mt-2">Vous pouvez sélectionner plusieurs fichiers MP3</p>
+                    <small class="text-muted">Vous pouvez sélectionner plusieurs fichiers MP3</small>
                 </div>
 
-                <div id="uploadProgress" class="mb-6 hidden">
-                    <div class="bg-blue-100 rounded-lg p-4">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                            <span class="text-blue-700 font-semibold">Upload en cours...</span>
+                <div id="uploadProgress" class="mb-4" style="display: none;">
+                    <div class="p-3 rounded" style="background: #dbeafe;">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <div class="spinner"></div>
+                            <span class="fw-semibold" style="color: #1d4ed8;">Upload en cours...</span>
                         </div>
-                        <div class="w-full bg-blue-200 rounded-full h-2">
-                            <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        <div class="progress-custom">
+                            <div id="progressBar" class="progress-bar-custom" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex gap-3">
-                    <button type="button" onclick="uploadFiles()" class="flex-1 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-xl transition-all">
+                <div class="d-flex gap-2">
+                    <button type="button" onclick="uploadFiles()" class="btn btn-primary flex-fill fw-bold">
                         Télécharger
                     </button>
-                    <button type="button" onclick="closeUploadModal()" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors">
+                    <button type="button" onclick="closeUploadModal()" class="btn btn-secondary">
                         Annuler
                     </button>
                 </div>
@@ -193,114 +563,102 @@
 
     <!-- Modal Détails des MP3 -->
     <div id="detailsModal" class="modal">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-3xl font-bold text-gray-900" id="modalTitle">Détails</h3>
-                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">×</button>
+        <div class="modal-custom">
+            <div class="modal-header-custom">
+                <h3 class="modal-title-custom" id="modalTitle">Détails</h3>
+                <button onclick="closeModal()" class="modal-close">×</button>
             </div>
 
-            <p class="text-gray-600 mb-6" id="modalDescription"></p>
+            <p class="text-muted mb-4" id="modalDescription"></p>
 
-            <div id="mp3List" class="space-y-4">
-                
-            </div>
+            <div id="mp3List" class="mb-4"></div>
 
-            <div class="mt-6 flex justify-end">
-                <button onclick="closeModal()" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors">
-                    Fermer
-                </button>
+            <div class="text-end">
+                <button onclick="closeModal()" class="btn btn-secondary">Fermer</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Planifier avec Date/Heure -->
     <div id="planifierModal" class="modal">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-6">
+        <div class="modal-custom modal-custom-lg">
+            <div class="modal-header-custom">
                 <div>
-                    <h3 class="text-3xl font-bold text-gray-900">📋 Planifier l'ordre</h3>
-                    <p class="text-gray-600" id="planifierJour"></p>
+                    <h3 class="modal-title-custom">📋 Planifier l'ordre</h3>
+                    <p class="text-muted mb-0" id="planifierJour"></p>
                 </div>
-                <button onclick="closePlanifierModal()" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">×</button>
+                <button onclick="closePlanifierModal()" class="modal-close">×</button>
             </div>
 
             <!-- Formulaire de date/heure de diffusion -->
-            <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6 mb-6 border-2 border-blue-200">
-                <h4 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="date-time-section">
+                <h4 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                     Date et heure de diffusion
                 </h4>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Date de diffusion</label>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Date de diffusion</label>
                         <input 
                             type="date" 
                             id="dateDiffusion"
-                            class="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:border-blue-500 focus:outline-none text-gray-900 font-medium"
+                            class="form-control"
                         />
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Heure de diffusion</label>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Heure de diffusion</label>
                         <input 
                             type="time" 
                             id="heureDiffusion"
-                            class="w-full px-4 py-3 border-2 border-blue-300 rounded-xl focus:border-blue-500 focus:outline-none text-gray-900 font-medium"
+                            class="form-control"
                         />
                     </div>
                 </div>
-                <p class="text-sm text-blue-700 mt-3 flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <p class="small mt-3 mb-0 d-flex align-items-center gap-2" style="color: #1d4ed8;">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                     </svg>
                     Définissez la date et l'heure de début de diffusion de cette playlist
                 </p>
             </div>
 
-            <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-6 mb-6 border-2 border-purple-200">
-                <p class="text-purple-900 font-semibold flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <div class="info-card mb-4">
+                <p class="mb-0 fw-semibold d-flex align-items-center gap-2" style="color: #581c87;">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
                     </svg>
                     Glissez-déposez les fichiers pour définir l'ordre de lecture
                 </p>
             </div>
 
-            <div id="fichiersOrdreListe" class="space-y-3 mb-6">
-               
-            </div>
+            <div id="fichiersOrdreListe" class="mb-4"></div>
 
-            
-            <div class="flex gap-3 pt-6 border-t">
-                <button onclick="savePlanification()" class="flex-1 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="d-flex gap-2 pt-3 border-top">
+                <button onclick="savePlanification()" class="btn btn-success flex-fill fw-bold d-flex align-items-center justify-content-center gap-2">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                     Sauvegarder la planification
                 </button>
-                <button onclick="closePlanifierModal()" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors">
-                    Annuler
-                </button>
+                <button onclick="closePlanifierModal()" class="btn btn-secondary">Annuler</button>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        
         const API_BASE = window.location.origin;
-
-        
         let currentPlanifierJour = '';
         let fichiersOrdre = [];
         let draggedElement = null;
 
-        
         function showUploadModal(jour) {
             document.getElementById('uploadModalTitle').textContent = `Ajouter des musiques - ${jour}`;
             document.getElementById('jour_upload').value = jour;
             document.getElementById('fileInput').value = '';
-            document.getElementById('uploadProgress').classList.add('hidden');
+            document.getElementById('uploadProgress').style.display = 'none';
             document.getElementById('uploadModal').classList.add('active');
         }
 
@@ -308,7 +666,6 @@
             document.getElementById('uploadModal').classList.remove('active');
         }
 
-   
         async function uploadFiles() {
             const fileInput = document.getElementById('fileInput');
             const jour = document.getElementById('jour_upload').value;
@@ -326,7 +683,7 @@
                 formData.append('files[]', file);
             }
 
-            document.getElementById('uploadProgress').classList.remove('hidden');
+            document.getElementById('uploadProgress').style.display = 'block';
             document.getElementById('progressBar').style.width = '50%';
 
             try {
@@ -352,11 +709,10 @@
                 console.error('Erreur:', error);
                 alert('Erreur lors du téléchargement des fichiers');
             } finally {
-                document.getElementById('uploadProgress').classList.add('hidden');
+                document.getElementById('uploadProgress').style.display = 'none';
             }
         }
 
-        
         async function showDetails(jour) {
             const modal = document.getElementById('detailsModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -376,20 +732,20 @@
                     modalDescription.textContent = 'Cliquez sur une musique pour voir ses informations détaillées :';
                     
                     mp3List.innerHTML = data.data.map((fichier, index) => `
-                        <div onclick='showMp3Details(${JSON.stringify(fichier)})' class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-5 border-2 border-purple-200 hover:border-purple-400 transition-all hover:shadow-lg cursor-pointer">
-                            <div class="flex items-center justify-between gap-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <div onclick='showMp3Details(${JSON.stringify(fichier).replace(/'/g, "&apos;")})' class="fichier-card mb-3">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <div class="d-flex align-items-center gap-3 flex-fill">
+                                    <div class="music-icon-container">
+                                        <svg width="20" height="20" fill="white" viewBox="0 0 20 20">
                                             <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
                                         </svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-bold text-gray-900">${fichier.nom}</h4>
-                                        <p class="text-sm text-gray-600">${fichier.artiste || 'Inconnu'}</p>
+                                        <h4 class="h6 fw-bold mb-0">${fichier.nom}</h4>
+                                        <p class="small text-muted mb-0">${fichier.artiste || 'Inconnu'}</p>
                                     </div>
                                 </div>
-                                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg width="20" height="20" fill="none" stroke="#a855f7" viewBox="0 0 24 24"><svg width="20" height="20" fill="none" stroke="#a855f7" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
                             </div>
@@ -397,12 +753,12 @@
                     `).join('');
                 } else {
                     modalDescription.textContent = '';
-                    mp3List.innerHTML = '<p class="text-gray-500 italic">Aucune musique disponible pour ce jour</p>';
+                    mp3List.innerHTML = '<p class="text-muted fst-italic">Aucune musique disponible pour ce jour</p>';
                 }
             } catch (error) {
                 console.error('Erreur:', error);
                 modalDescription.textContent = '';
-                mp3List.innerHTML = '<p class="text-red-500">Erreur lors du chargement des données</p>';
+                mp3List.innerHTML = '<p class="text-danger">Erreur lors du chargement des données</p>';
             }
         }
 
@@ -419,44 +775,48 @@
             const tailleMB = (fichier.taille / (1024 * 1024)).toFixed(2);
             
             mp3List.innerHTML = `
-                <div class="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-8 border-2 border-purple-200">
-                    <div class="flex items-start gap-6 mb-6">
-                        <div class="w-20 h-20 bg-purple-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <div class="p-4 rounded-3" style="background: linear-gradient(to right, #f3e8ff, #ede9fe); border: 2px solid #e9d5ff;">
+                    <div class="d-flex align-items-start gap-4 mb-4">
+                        <div class="music-icon-lg flex-shrink-0">
+                            <svg width="40" height="40" fill="white" viewBox="0 0 20 20">
                                 <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
                             </svg>
                         </div>
-                        <div class="flex-1">
-                            <h4 class="text-2xl font-bold text-gray-900 mb-2">${fichier.nom}</h4>
-                            <p class="text-gray-700 text-base mb-3">${fichier.artiste || 'Artiste inconnu'}</p>
-                            <span class="inline-block px-3 py-1 bg-purple-200 text-purple-800 rounded-full text-sm font-semibold">${fichier.album || 'Album inconnu'}</span>
+                        <div class="flex-fill">
+                            <h4 class="h4 fw-bold mb-2">${fichier.nom}</h4>
+                            <p class="mb-3 text-secondary">${fichier.artiste || 'Artiste inconnu'}</p>
+                            <span class="badge" style="background: #e9d5ff; color: #6b21a8; font-size: 0.875rem; padding: 0.5rem 0.75rem;">
+                                ${fichier.album || 'Album inconnu'}
+                            </span>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4 bg-white rounded-xl p-5">
-                        <div class="flex flex-col">
-                            <span class="text-gray-500 text-sm font-medium mb-1">Type</span>
-                            <span class="text-gray-900 font-bold text-lg">${fichier.type_fichier.toUpperCase()}</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-gray-500 text-sm font-medium mb-1">Durée</span>
-                            <span class="text-gray-900 font-bold text-lg">${dureeMin}:${dureeSec.toString().padStart(2, '0')}</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-gray-500 text-sm font-medium mb-1">Taille</span>
-                            <span class="text-gray-900 font-bold text-lg">${tailleMB} MB</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-gray-500 text-sm font-medium mb-1">Date d'ajout</span>
-                            <span class="text-gray-900 font-bold text-lg">${new Date(fichier.date_ajout).toLocaleDateString('fr-FR')}</span>
+                    <div class="info-box">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="text-muted small fw-medium mb-1">Type</div>
+                                <div class="fw-bold h5 mb-0">${fichier.type_fichier.toUpperCase()}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small fw-medium mb-1">Durée</div>
+                                <div class="fw-bold h5 mb-0">${dureeMin}:${dureeSec.toString().padStart(2, '0')}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small fw-medium mb-1">Taille</div>
+                                <div class="fw-bold h5 mb-0">${tailleMB} MB</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small fw-medium mb-1">Date d'ajout</div>
+                                <div class="fw-bold h5 mb-0">${new Date(fichier.date_ajout).toLocaleDateString('fr-FR')}</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="mt-6 flex gap-3">
-                        <a href="${fichier.download_url}" class="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-center transition-colors">
+                    <div class="d-flex gap-2 mt-4">
+                        <a href="${fichier.download_url}" class="btn btn-success flex-fill fw-bold">
                             Télécharger
                         </a>
-                        <button onclick="confirmDeleteMp3(${fichier.id_fichier}, '${fichier.nom}')" class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors">
+                        <button onclick="confirmDeleteMp3(${fichier.id_fichier}, '${fichier.nom}')" class="btn btn-danger fw-bold">
                             Supprimer
                         </button>
                     </div>
@@ -502,328 +862,320 @@
                 if (data.success) {
                     alert(`${data.count} musique(s) supprimée(s) avec succès`);
                     location.reload();
-} else {
-alert('Erreur lors de la suppression: ' + data.error);
-}
-} catch (error) {
-console.error('Erreur:', error);
-alert('Erreur lors de la suppression');
-}
-}
-    function closeModal() {
-        document.getElementById('detailsModal').classList.remove('active');
-    }
-
-   
-    async function showPlanifier(jour) {
-        currentPlanifierJour = jour;
-        document.getElementById('planifierJour').textContent = `Organisez l'ordre de lecture pour ${jour}`;
-        
-        // Réinitialiser les champs de date et heure
-        document.getElementById('dateDiffusion').value = '';
-        document.getElementById('heureDiffusion').value = '';
-        
-        try {
-            const response = await fetch(`${API_BASE}/marketing/jour/${jour}/fichiers-ordre`);
-            const data = await response.json();
-            
-            if (data.success) {
-                fichiersOrdre = data.fichiers;
-                renderFichiersOrdre();
-                document.getElementById('planifierModal').classList.add('active');
-            } else {
-                alert('Erreur: ' + data.error);
+                } else {
+                    alert('Erreur lors de la suppression: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression');
             }
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert('Erreur lors du chargement des fichiers');
         }
-    }
 
-    function closePlanifierModal() {
-        document.getElementById('planifierModal').classList.remove('active');
-    }
-
-  
-    function renderFichiersOrdre() {
-        const container = document.getElementById('fichiersOrdreListe');
-        
-        if (fichiersOrdre.length === 0) {
-            container.innerHTML = '<p class="text-gray-500 italic text-center py-8">Aucun fichier disponible</p>';
-            return;
+        function closeModal() {
+            document.getElementById('detailsModal').classList.remove('active');
         }
-        
-        container.innerHTML = fichiersOrdre.map((fichier, index) => `
-            <div 
-                class="fichier-item bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-5 border-2 border-purple-200"
-                draggable="true"
-                data-id="${fichier.id}"
-                data-index="${index}"
-                ondragstart="handleDragStart(event)"
-                ondragover="handleDragOver(event)"
-                ondrop="handleDrop(event)"
-                ondragend="handleDragEnd(event)"
-                ondragenter="handleDragEnter(event)"
-                ondragleave="handleDragLeave(event)"
-            >
-                <div class="flex items-center gap-4">
-                    <!-- Numéro d'ordre -->
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-                            <span class="text-white text-xl font-bold">${index + 1}</span>
+
+        async function showPlanifier(jour) {
+            currentPlanifierJour = jour;
+            document.getElementById('planifierJour').textContent = `Organisez l'ordre de lecture pour ${jour}`;
+            
+            document.getElementById('dateDiffusion').value = '';
+            document.getElementById('heureDiffusion').value = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/marketing/jour/${jour}/fichiers-ordre`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    fichiersOrdre = data.fichiers;
+                    renderFichiersOrdre();
+                    document.getElementById('planifierModal').classList.add('active');
+                } else {
+                    alert('Erreur: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors du chargement des fichiers');
+            }
+        }
+
+        function closePlanifierModal() {
+            document.getElementById('planifierModal').classList.remove('active');
+        }
+
+        function renderFichiersOrdre() {
+            const container = document.getElementById('fichiersOrdreListe');
+            
+            if (fichiersOrdre.length === 0) {
+                container.innerHTML = '<p class="text-muted fst-italic text-center py-4">Aucun fichier disponible</p>';
+                return;
+            }
+            
+            container.innerHTML = fichiersOrdre.map((fichier, index) => `
+                <div 
+                    class="fichier-item fichier-card mb-3"
+                    draggable="true"
+                    data-id="${fichier.id}"
+                    data-index="${index}"
+                    ondragstart="handleDragStart(event)"
+                    ondragover="handleDragOver(event)"
+                    ondrop="handleDrop(event)"
+                    ondragend="handleDragEnd(event)"
+                    ondragenter="handleDragEnter(event)"
+                    ondragleave="handleDragLeave(event)"
+                >
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="flex-shrink-0">
+                            <div class="d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: #a855f7; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                <span class="text-white h5 fw-bold mb-0">${index + 1}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-shrink-0" style="color: #c084fc;">
+                            <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                            </svg>
+                        </div>
+                        
+                        <div class="flex-fill">
+                            <h4 class="h6 fw-bold mb-0">${fichier.nom}</h4>
+                            <p class="small text-muted mb-0">${fichier.artiste} • ${fichier.duree_formattee}</p>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button 
+                                onclick="moveUp(${index}); event.stopPropagation();" 
+                                class="btn btn-primary btn-sm d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px; border-radius: 8px;"
+                                ${index === 0 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}
+                            >
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                </svg>
+                            </button>
+                            <button 
+                                onclick="moveDown(${index}); event.stopPropagation();" 
+                                class="btn btn-primary btn-sm d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px; border-radius: 8px;"
+                                ${index === fichiersOrdre.length - 1 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}
+                            >
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                    
-                    <!-- Icône drag -->
-                    <div class="flex-shrink-0 text-purple-400">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-                        </svg>
-                    </div>
-                    
-                    <!-- Info fichier -->
-                    <div class="flex-1">
-                        <h4 class="text-lg font-bold text-gray-900">${fichier.nom}</h4>
-                        <p class="text-sm text-gray-600">${fichier.artiste} • ${fichier.duree_formattee}</p>
-                    </div>
-                    
-                    <!-- Boutons de contrôle -->
-                    <div class="flex gap-2">
-                        <button 
-                            onclick="moveUp(${index}); event.stopPropagation();" 
-                            class="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center"
-                            ${index === 0 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                            </svg>
-                        </button>
-                        <button 
-                            onclick="moveDown(${index}); event.stopPropagation();" 
-                            class="w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center"
-                            ${index === fichiersOrdre.length - 1 ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                    </div>
                 </div>
-            </div>
-        `).join('');
-    }
+            `).join('');
+        }
 
-  
-    function moveUp(index) {
-        if (index > 0) {
-            const temp = fichiersOrdre[index];
-            fichiersOrdre[index] = fichiersOrdre[index - 1];
-            fichiersOrdre[index - 1] = temp;
-            renderFichiersOrdre();
-        }
-    }
-
-   
-    function moveDown(index) {
-        if (index < fichiersOrdre.length - 1) {
-            const temp = fichiersOrdre[index];
-            fichiersOrdre[index] = fichiersOrdre[index + 1];
-            fichiersOrdre[index + 1] = temp;
-            renderFichiersOrdre();
-        }
-    }
-
-    
-    function handleDragStart(e) {
-        draggedElement = e.target;
-        e.target.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', e.target.innerHTML);
-    }
-
-    function handleDragOver(e) {
-        if (e.preventDefault) {
-            e.preventDefault();
-        }
-        e.dataTransfer.dropEffect = 'move';
-        return false;
-    }
-
-    function handleDragEnter(e) {
-        if (e.target.classList.contains('fichier-item') && e.target !== draggedElement) {
-            e.target.classList.add('drag-over');
-        }
-    }
-
-    function handleDragLeave(e) {
-        if (e.target.classList.contains('fichier-item')) {
-            e.target.classList.remove('drag-over');
-        }
-    }
-
-    function handleDrop(e) {
-        if (e.stopPropagation) {
-            e.stopPropagation();
-        }
-        
-        if (draggedElement !== e.target && e.target.classList.contains('fichier-item')) {
-            const draggedIndex = parseInt(draggedElement.getAttribute('data-index'));
-            const targetIndex = parseInt(e.target.getAttribute('data-index'));
-            
-            
-            const draggedItem = fichiersOrdre[draggedIndex];
-            fichiersOrdre.splice(draggedIndex, 1);
-            fichiersOrdre.splice(targetIndex, 0, draggedItem);
-            
-            renderFichiersOrdre();
-        }
-        
-        return false;
-    }
-
-    function handleDragEnd(e) {
-        e.target.classList.remove('dragging');
-        document.querySelectorAll('.fichier-item').forEach(item => {
-            item.classList.remove('drag-over');
-        });
-    }
-
-    
-    async function savePlanification() {
-        if (fichiersOrdre.length === 0) {
-            alert('Aucun fichier à sauvegarder');
-            return;
-        }
-        
-        
-        const dateDiffusion = document.getElementById('dateDiffusion').value;
-        const heureDiffusion = document.getElementById('heureDiffusion').value;
-        
-        
-        if (!dateDiffusion || !heureDiffusion) {
-            alert(' Veuillez saisir la date et l\'heure de diffusion');
-            return;
-        }
-        
-       
-        const datetimeDiffusion = `${dateDiffusion} ${heureDiffusion}`;
-        
-        if (!confirm(` Sauvegarder l'ordre de lecture pour ${currentPlanifierJour} ?\n\n${fichiersOrdre.length} fichiers seront ordonnés.\n Date de diffusion: ${dateDiffusion}\n  Heure de diffusion: ${heureDiffusion}\n\nVous devrez ensuite cliquer sur "Générer playlist" pour créer les fichiers M3U.`)) {
-            return;
-        }
-        
-        try {
-            const fichiersIds = fichiersOrdre.map(f => f.id);
-            
-            const response = await fetch(`${API_BASE}/marketing/jour/${currentPlanifierJour}/sauvegarder-ordre`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fichiers_ordre: fichiersIds,
-                    date_diffusion: dateDiffusion,
-                    heure_diffusion: heureDiffusion,
-                    datetime_diffusion: datetimeDiffusion
-                })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                alert(` Ordre sauvegardé pour ${currentPlanifierJour} !\n\n ${fichiersOrdre.length} fichiers ordonnés\n  Diffusion prévue le ${dateDiffusion} à ${heureDiffusion}\n\n Pour créer la playlist M3U, cliquez maintenant sur le bouton "Générer playlist" en bas de la page.`);
-                closePlanifierModal();
-            } else {
-                alert(' Erreur: ' + data.error);
+        function moveUp(index) {
+            if (index > 0) {
+                const temp = fichiersOrdre[index];
+                fichiersOrdre[index] = fichiersOrdre[index - 1];
+                fichiersOrdre[index - 1] = temp;
+                renderFichiersOrdre();
             }
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert(' Erreur lors de la sauvegarde');
         }
-    }
 
-    document.getElementById('detailsModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
+        function moveDown(index) {
+            if (index < fichiersOrdre.length - 1) {
+                const temp = fichiersOrdre[index];
+                fichiersOrdre[index] = fichiersOrdre[index + 1];
+                fichiersOrdre[index + 1] = temp;
+                renderFichiersOrdre();
+            }
         }
-    });
+
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.innerHTML);
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('fichier-item') && e.target !== draggedElement) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('fichier-item')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (draggedElement !== e.target && e.target.classList.contains('fichier-item')) {
+                const draggedIndex = parseInt(draggedElement.getAttribute('data-index'));
+                const targetIndex = parseInt(e.target.getAttribute('data-index'));
+                
+                const draggedItem = fichiersOrdre[draggedIndex];
+                fichiersOrdre.splice(draggedIndex, 1);
+                fichiersOrdre.splice(targetIndex, 0, draggedItem);
+                
+                renderFichiersOrdre();
+            }
+            
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.fichier-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+        }
+
+        async function savePlanification() {
+            if (fichiersOrdre.length === 0) {
+                alert('Aucun fichier à sauvegarder');
+                return;
+            }
+            
+            const dateDiffusion = document.getElementById('dateDiffusion').value;
+            const heureDiffusion = document.getElementById('heureDiffusion').value;
+            
+            if (!dateDiffusion || !heureDiffusion) {
+                alert('⚠️ Veuillez saisir la date et l\'heure de diffusion');
+                return;
+            }
+            
+            const datetimeDiffusion = `${dateDiffusion} ${heureDiffusion}`;
+            
+            if (!confirm(`✅ Sauvegarder l'ordre de lecture pour ${currentPlanifierJour} ?\n\n${fichiersOrdre.length} fichiers seront ordonnés.\n📅 Date de diffusion: ${dateDiffusion}\n🕐 Heure de diffusion: ${heureDiffusion}\n\nVous devrez ensuite cliquer sur "Générer playlist" pour créer les fichiers M3U.`)) {
+                return;
+            }
+            
+            try {
+                const fichiersIds = fichiersOrdre.map(f => f.id);
+                
+                const response = await fetch(`${API_BASE}/marketing/jour/${currentPlanifierJour}/sauvegarder-ordre`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fichiers_ordre: fichiersIds,
+                        date_diffusion: dateDiffusion,
+                        heure_diffusion: heureDiffusion,
+                        datetime_diffusion: datetimeDiffusion
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`✅ Ordre sauvegardé pour ${currentPlanifierJour} !\n\n📝 ${fichiersOrdre.length} fichiers ordonnés\n📅 Diffusion prévue le ${dateDiffusion} à ${heureDiffusion}\n\n💡 Pour créer la playlist M3U, cliquez maintenant sur le bouton "Générer playlist" en bas de la page.`);
+                    closePlanifierModal();
+                } else {
+                    alert('❌ Erreur: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de la sauvegarde');
+            }
+        }
+
+        document.getElementById('detailsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
 
     async function showPlanning() {
-        const modal = document.getElementById('detailsModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
-        const mp3List = document.getElementById('mp3List');
-        
-        modalTitle.textContent = 'Statistiques de la semaine';
-        modalDescription.textContent = 'Chargement...';
-        mp3List.innerHTML = '';
-        modal.classList.add('active');
+    const modal = document.getElementById('detailsModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const mp3List = document.getElementById('mp3List');
+    
+    modalTitle.textContent = 'Statistiques de la semaine';
+    modalDescription.textContent = 'Chargement...';
+    mp3List.innerHTML = '';
+    modal.classList.add('active');
 
-        try {
-            const response = await fetch(`${API_BASE}/marketing/stats/semaine`);
-            const data = await response.json();
+    try {
+        const response = await fetch(`${API_BASE}/marketing/stats/semaine`);
+        const data = await response.json();
 
-            if (data.success) {
-                modalDescription.textContent = 'Aperçu des musiques par jour :';
-                
-                const jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'];
-                const couleurs = ['blue', 'indigo', 'purple', 'pink', 'rose', 'orange', 'green'];
-                
-                mp3List.innerHTML = `
-                    <div class="grid grid-cols-2 gap-4">
-                        ${jours.map((jour, idx) => {
-                            const stats = data.data.par_jour[jour];
-                            return `
-                                <div onclick="showDetails('${jour}')" class="bg-gradient-to-br from-${couleurs[idx]}-50 to-${couleurs[idx]}-100 rounded-2xl p-6 border-2 border-${couleurs[idx]}-200 hover:border-${couleurs[idx]}-400 transition-all hover:shadow-xl cursor-pointer transform hover:scale-105">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <h4 class="text-xl font-bold text-gray-900">${jour}</h4>
-                                        <svg class="w-6 h-6 text-${couleurs[idx]}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        if (data.success) {
+            modalDescription.textContent = 'Aperçu des musiques par jour :';
+            
+            const jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE'];
+            const couleurs = ['primary', 'info', 'purple', 'pink', 'danger', 'warning', 'success'];
+            
+            mp3List.innerHTML = `
+                <div class="row g-3">
+                    ${jours.map((jour, idx) => {
+                        // LE PROBLÈME ÉTAIT ICI : la clé est 'count' pas 'nombre_musiques'
+                        const stats = data.data.par_jour[jour] || { count: 0, duree_totale: 0 };
+                        const nombreMusiques = stats.count || 0;  // 'count' au lieu de 'nombre_musiques'
+                        const dureeTotale = stats.duree_totale || 0;
+                        
+                        const bgColor = idx === 2 ? 'linear-gradient(135deg, #f3e8ff, #ede9fe)' : 
+                                      idx === 3 ? 'linear-gradient(135deg, #fce7f3, #fbcfe8)' :
+                                      `var(--bs-${couleurs[idx]}-bg-subtle)`;
+                        return `
+                            <div class="col-md-6">
+                                <div onclick="showDetails('${jour}')" class="p-4 rounded-3 border-2 h-100" style="background: ${bgColor}; border: 2px solid var(--bs-${couleurs[idx]}-border-subtle); cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h4 class="h5 fw-bold mb-0">${jour}</h4>
+                                        <svg width="24" height="24" fill="none" stroke="var(--bs-${couleurs[idx]})" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                         </svg>
                                     </div>
-                                    <div class="space-y-2">
-                                        <div class="flex items-center gap-2">
-                                            <svg class="w-5 h-5 text-${couleurs[idx]}-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <svg width="20" height="20" fill="var(--bs-${couleurs[idx]})" viewBox="0 0 20 20">
                                                 <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
                                             </svg>
-                                            <span class="text-${couleurs[idx]}-700 font-semibold">
-                                                ${stats.nombre_musiques} musique${stats.nombre_musiques !== 1 ? 's' : ''}
-                                            </span>
+                                            <span class="fw-semibold">${nombreMusiques} musique${nombreMusiques !== 1 ? 's' : ''}</span>
                                         </div>
-                                        <div class="text-sm text-gray-600">
-                                            Durée: ${Math.floor(stats.duree_totale / 60)}min
-                                        </div>
+                                        <div class="small text-muted">Durée: ${Math.floor(dureeTotale / 60)}min</div>
                                     </div>
                                 </div>
-                            `;
-                        }).join('')}
-                    </div>
-                    <div class="mt-6 bg-gradient-to-r from-teal-50 to-teal-100 rounded-2xl p-6 border-2 border-teal-200">
-                        <h4 class="text-xl font-bold text-gray-900 mb-4">Total de la semaine</h4>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <div class="text-3xl font-bold text-teal-600">${data.data.totaux.nombre_musiques}</div>
-                                <div class="text-sm text-gray-600">Musiques</div>
                             </div>
-                            <div>
-                                <div class="text-3xl font-bold text-teal-600">${Math.floor(data.data.totaux.duree_totale / 60)}</div>
-                                <div class="text-sm text-gray-600">Minutes</div>
-                            </div>
-                            <div>
-                                <div class="text-3xl font-bold text-teal-600">${(data.data.totaux.taille_totale / (1024 * 1024)).toFixed(1)}</div>
-                                <div class="text-sm text-gray-600">MB</div>
-                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <div class="mt-4 p-4 rounded-3" style="background: linear-gradient(to right, #f0fdfa, #ccfbf1); border: 2px solid #99f6e4;">
+                    <h4 class="h5 fw-bold mb-3">Total de la semaine</h4>
+                    <div class="row g-3">
+                        <div class="col-4">
+                            <div class="display-6 fw-bold text-primary">${data.data.totaux.nombre_musiques || 0}</div>
+                            <div class="small text-muted">Musiques</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="display-6 fw-bold text-primary">${Math.floor((data.data.totaux.duree_totale || 0) / 60)}</div>
+                            <div class="small text-muted">Minutes</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="display-6 fw-bold text-primary">${((data.data.totaux.taille_totale || 0) / (1024 * 1024)).toFixed(1)}</div>
+                            <div class="small text-muted">MB</div>
                         </div>
                     </div>
-                `;
-            }
-        } catch (error) {
-            console.error('Erreur:', error);
-            modalDescription.textContent = '';
-            mp3List.innerHTML = '<p class="text-red-500">Erreur lors du chargement des statistiques</p>';
+                </div>
+            `;
         }
+    } catch (error) {
+        console.error('Erreur:', error);
+        modalDescription.textContent = '';
+        mp3List.innerHTML = '<p class="text-danger">Erreur lors du chargement des statistiques</p>';
     }
-
+}
     async function generatePlaylist() {
         if (!confirm('Générer les playlists pour toute la semaine ?')) {
             return;
@@ -851,64 +1203,61 @@ alert('Erreur lors de la suppression');
         }
     }
 
-    function showPlaylistsGenerated(playlists) {
-        const modal = document.getElementById('detailsModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
-        const mp3List = document.getElementById('mp3List');
-        
-        modalTitle.textContent = 'Playlists générées';
-        modalDescription.textContent = `${playlists.length} playlist(s) M3U créée(s) avec succès :`;
-        
-        mp3List.innerHTML = `
-            <div class="space-y-4">
-                ${playlists.map(playlist => {
-                    const dureeMin = Math.floor(playlist.duree_total / 60);
-                    return `
-                        <div class="bg-gradient-to-r from-teal-50 to-teal-100 rounded-xl p-6 border-2 border-teal-200">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
-                                        </svg>
+        function showPlaylistsGenerated(playlists) {
+            const modal = document.getElementById('detailsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+            const mp3List = document.getElementById('mp3List');
+            
+            modalTitle.textContent = 'Playlists générées';
+            modalDescription.textContent = `${playlists.length} playlist(s) M3U créée(s) avec succès :`;
+            
+            mp3List.innerHTML = `
+                <div class="d-flex flex-column gap-3">
+                    ${playlists.map(playlist => {
+                        const dureeMin = Math.floor(playlist.duree_total / 60);
+                        return `
+                            <div class="p-4 rounded-3" style="background: linear-gradient(to right, #f0fdfa, #ccfbf1); border: 2px solid #99f6e4;">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: #14b8a6; border-radius: 12px;">
+                                            <svg width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="h6 fw-bold mb-0">${playlist.nom_playlist}</h4>
+                                            <p class="small text-muted mb-0">Durée: ${dureeMin} minutes</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 class="text-lg font-bold text-gray-900">${playlist.nom_playlist}</h4>
-                                        <p class="text-sm text-gray-600">Durée: ${dureeMin} minutes</p>
-                                    </div>
+                                    <a href="${API_BASE}/api/v1/playlist/download/${playlist.id_playlist}" class="btn btn-success">
+                                        Télécharger M3U
+                                    </a>
                                 </div>
-                                <a href="${API_BASE}/api/v1/playlist/download/${playlist.id_playlist}" class="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg transition-colors">
-                                    Télécharger M3U
-                                </a>
                             </div>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-            <div class="mt-6 text-center">
-                <p class="text-gray-600 mb-4">Les fichiers M3U sont prêts à être déployés sur les lecteurs</p>
-                <button onclick="closeModal()" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors">
-                    Fermer
-                </button>
-            </div>
-        `;
-        
-        modal.classList.add('active');
-    }
-
-    
-    document.getElementById('uploadModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeUploadModal();
+                        `;
+                    }).join('')}
+                </div>
+                <div class="mt-4 text-center">
+                    <p class="text-muted mb-3">Les fichiers M3U sont prêts à être déployés sur les lecteurs</p>
+                    <button onclick="closeModal()" class="btn btn-secondary">Fermer</button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
         }
-    });
 
-    document.getElementById('planifierModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closePlanifierModal();
-        }
-    });
-</script>
+        document.getElementById('uploadModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUploadModal();
+            }
+        });
+
+        document.getElementById('planifierModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePlanifierModal();
+            }
+        });
+    </script>
 </body>
 </html>
