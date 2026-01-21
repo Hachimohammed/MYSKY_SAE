@@ -68,7 +68,7 @@ def marketing_upload_multiple():
             return jsonify({'success': False, 'error': "Aucun fichier valide"}), 400
 
         current_user_id = get_current_user_id()
-        print(f"📤 Upload par utilisateur ID: {current_user_id}")
+        print(f" Upload par utilisateur ID: {current_user_id}")
 
         uploaded_count, errors = audio_service.uploadMultipleFiles(
             valid_files, 
@@ -278,6 +278,8 @@ def marketing_generate_playlist_week():
                 admin_service.pullMP3toplayers()
                 admin_service.Pullm3uToPlayers()
                 print("Fichiers envoyés aux lecteurs")
+                admin_service.playm3ubydayandtimestamp()
+                print("Lecture lancée sur les lecteurs")
             except Exception as e:
                 print(f"Erreur envoi: {e}")
                 errors.append(f"Erreur envoi lecteurs: {str(e)}")
