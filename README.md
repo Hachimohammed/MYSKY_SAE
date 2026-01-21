@@ -5,7 +5,12 @@ Dans de nombreuses organisations (entreprises, gares, campus…), il est nécess
 Ce projet consiste à développer un **système de supervision** permettant de garantir la **continuité du service audio**, même en cas de **coupure réseau** ou **électrique**.
 
 ---
+## 🌲 Arborescence du projet
+/Document pour tous les fichiers et documents de rendu de la SAE.
+/PagesCodes/Sae_V2 pour le départ de l'application
+---
 
+---
 ## 🧠 Objectifs du projet
 Le système doit permettre :
 - De **surveiller l’état des lecteurs** (UP/KO).  
