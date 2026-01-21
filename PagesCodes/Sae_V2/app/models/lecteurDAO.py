@@ -310,7 +310,7 @@ class lecteurDAO(lecteurDAOInterface):
 
             for file in json['playlists'].values():
                 
-                    f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file["nom_playlist"]}"
+                    f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file.get('nom_playlist')}"
                     
                     for ip in ips:
                         client.connect(ip,6601)
