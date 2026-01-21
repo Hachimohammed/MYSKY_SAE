@@ -2,7 +2,7 @@
 
 La logique expliquée ci-dessous s'appuie sur notre Modele Entite-Association (MEA) que vous trouverez au fichier MEA.png dans le repertoire.
 
-  Comme point de départ de la base de données, on est parti des **Utilisateurs** ayant tous un nom, prenom, email _(en cas de contact)_, mot de passe et groupe etant soit Admin, soit Marketing, soit Commercial.
+    Comme point de départ de la base de données, on est parti des **Utilisateurs** ayant tous un nom, prenom, email _(en cas de contact)_, mot de passe et groupe etant soit Admin, soit Marketing, soit Commercial.
   On s'est dit qu'afin d'éviter la redondance, pouvant impliquer des fautes de frappe donc une base de données éronée, il valait mieux avoir les différents groupes stockés dans la table **Groupe_Role** et donner leur clé étrangère aux utilisateurs pour identifier leur groupe.
 
   L'application consiste à l'ajout de fichier audio par des utilisateurs et afin de garder une trace de ces ajouts, on devait relier la table **Fichier_Audio** à **Utilisateur** par la table **Ajoute** qui prend comme clés primaires etrangeres les clés de **Utilisateur** et **Fichier_Audio** avec la date d'ajout.
