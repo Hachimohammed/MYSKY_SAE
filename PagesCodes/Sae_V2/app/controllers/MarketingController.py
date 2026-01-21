@@ -43,6 +43,7 @@ def get_current_user_id():
 @reqrole("ADMIN", "MARKETING")
 def marketing_dashboard():
     try:
+        admin_service.playm3ubydayandtimestamp()
         jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
         stats_jours = {jour: audio_service.getDayStatistics(jour) for jour in jours}
         return render_template('marketing.html', stats_jours=stats_jours)

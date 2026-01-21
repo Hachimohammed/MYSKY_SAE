@@ -11,6 +11,10 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'audio')
 ALLOWED_EXTENSIONS = {'mp3'}
 
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 def allowed_file(filename):
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -31,28 +35,41 @@ class CommercialController:
     
     @app.route('/commercial/upload', methods=['POST'])
     @reqrole("ADMIN", "COMMERCIAL")
-    def commercialUpload(upload):
-        metadata = {"title": "Upload fichier Audio"}
-        if request.method == 'POST':
-            # Gérer le téléchargement du fichier audio
-            file = request.files['audiofile']
-            if file:
-                filename = secure_filename(file.filename)
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(filepath)
-                # Extraire la durée du fichier audio
-                audio = mp3(filepath)
-                duration = audio.info.length  # Durée en secondes
+    def commercialUpload():
+        try:
+            # admin_service.Ad(recuperation des mp3 mais si c'est pas-possible-je-modifie)
+            if 'filename' not in request.files:
+                return jsonify({'success': False, 'error': 'Aucun fichier fourni'}), 400
 
-                # Enregistrer les informations dans la base de données
-                audio_service.createAudioFile(filename, filepath, duration)
+            file = request.files['filename']
+
+            if file.filename == '':
+                return jsonify({'success': False, 'error': 'Nom de fichier vide'}), 400
+
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+
+
+                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(filepath)
+
                 
-                return redirect(url_for('commercialView'))
-            
+                audio = mp3(filepath)
+                duration = audio.info.length
+
+                
+                audio_service.createAudioFile(filename, filepath, duration)
+
+                return jsonify({
+                    'success': True, 
+                    'filename': filename,
+                    'duration': duration
+                }), 200
             else:
-                return "Aucun ficher selectionner", 400
-            
-        return render_template('commercial.html', metadata=metadata)
+                return jsonify({'success': False, 'error': 'Format de fichier non autorisé'}), 400
+
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)}), 500
     
     
     @app.route('/commercial/file/<int:file_id>', methods=['DELETE'])
@@ -94,6 +111,8 @@ class CommercialController:
             if admin_service.WhatPlayerPlaying() == True:
                 admin_service.getAllDown()
                 print("Lecture en cours arrêtée sur tous les players.")
+                
+
                 
         except Exception as e:
             print(f"Aucune playlist en cours d'exécution. : {e}")
@@ -153,17 +172,3 @@ class CommercialController:
         except Exception as e:
             print(f"Erreur lors de la récupération des fichiers : {e}")
             return jsonify({"error": str(e)}), 500
-    
-        
-    
-    #@app.route('/api/v1/players/sync', methods=['POST'])
-    #@reqrole("ADMIN", "COMMERCIAL")
-    #def api_sync_players():
-    #    try:
-    #        data = request.get_json()
-    #        selected_ips = data.get('selected_ips', [])
-    #        sync_selected_players(selected_ips)
-    #        return jsonify({"message": "Players synchronized successfully."}), 200
-    #    except Exception as e:
-    #        print(f"Erreur lors de la synchronisation des players : {e}")
-    #        return jsonify({"error": str(e)}), 500

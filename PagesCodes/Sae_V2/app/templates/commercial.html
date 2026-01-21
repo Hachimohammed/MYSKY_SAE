@@ -732,8 +732,15 @@
                 </div>
             </div>
 
+            <form action="/" method="POST" enctype="multipart/form-data">
             <div class="upload-zone text-center" onclick="document.getElementById('fileInput').click()">
-                <input type="file" id="fileInput" accept=".mp3" class="d-none" onchange="handleFileSelect(event)">
+                <input 
+                type="file" 
+                id="fileInput" 
+                name="fillename" 
+                accept=".mp3" 
+                class="d-none" 
+                onchange="handleFileSelect(event)">
                 <svg width="64" height="64" fill="none" stroke="#3b82f6" viewBox="0 0 24 24" class="mx-auto mb-3">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                 </svg>
@@ -741,6 +748,7 @@
                 <p class="text-muted mb-3">ou glissez-déposez votre fichier ici</p>
                 <p class="small text-muted mb-0">Formats acceptés : .mp3 | Taille max : 50MB</p>
             </div>
+            </form>
 
             <div id="filePreview" class="d-none mt-4">
                 <div class="file-preview">
