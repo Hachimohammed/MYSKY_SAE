@@ -5,7 +5,7 @@ import json
 import requests
 from pathlib import Path
 from mpd import MPDClient
-import datetime
+from datetime import datetime
 from app import app
 from app.models.lecteur import lecteur
 from app.models.BDDao import DatabaseInit
@@ -237,7 +237,7 @@ class lecteurDAO(lecteurDAOInterface):
                     cmd = [
                     "rsync", "-avz", "--progress",
                     f"{dir}/",
-                    f"{nom_lecteur}@{adresse_ip}:~/musique/"]
+                    f"{nom_lecteur}@{adresse_ip}/home/test/Musique"]
 
                     res = subprocess.run(cmd, capture_output=True, text=True)
 
@@ -266,7 +266,7 @@ class lecteurDAO(lecteurDAOInterface):
                     cmd = [
                     "rsync", "-avz", "--progress",
                     f"{f}/",
-                    f"{nom_lecteur}@{adresse_ip}:~/musique/"]
+                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique/playlists"]
 
                     subprocess.run(cmd, capture_output=True, text=True)
 
@@ -288,43 +288,58 @@ class lecteurDAO(lecteurDAOInterface):
         """
 
         try:
+
+
         
             client = MPDClient()
 
             jours = ["LUNDI","MARDI","MERCREDI","JEUDI","VENDREDI","SAMEDI","DIMANCHE"]
 
             get = requests.get(f"http://127.0.0.1:5000/api/v1/playlists")
-            json = get.json
+            json = get.json()
 
-            now = datetime.datetime.now() 
-            jour_actuel = jours[now.weekday()] 
+            now = datetime.now()
+            jour_actuel = jours[now.weekday()]
             str_date = datetime.now().strftime("%Y%m%d")
-            date_et_temps = datetime.now().strftime("%Y-%m-%d %H:%M")
+            date_et_temps = now.strftime("%Y-%m-%d %H:%M")
 
 
 
 
             conn = self._getDBConnection()
             ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
+            conn.close()
 
 
-            for file in json['playlists'].values():
-                
-                    f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file.get('nom_playlist')}"
-                    
-                    for ip in ips:
-                        client.connect(ip,6601)
-                        if file["date_heure_diffusion"] != None and file["date_heure_diffusion"] == date_et_temps:
-                            MPDClient.load(f)
-                            MPDClient.play(1)
-                            client.close()
-                            client.disconnect()
+            for file in json.get('playlists',[]):
 
-                        if file["jour_semaine"] == jour_actuel :
-                            MPDClient.load(f)
-                            MPDClient.play(1)
-                            client.close()
-                            client.disconnect()
+                        date_heure = file.get('date_heure_diffusion')
+                        jour_semaine = file.get('jour_semaine')
+
+                        f = "/var/lib/mpd/playlists"
+
+                        m3u = file.get('nom_playlist')
+
+                        jouer_playlist = False
+
+                        if date_heure == date_et_temps:
+                                jouer_playlist = True
+
+                        elif jour_semaine == jour_actuel:
+                                jouer_playlist = True
+
+
+
+                        if jouer_playlist:
+                            for ip in ips:
+                                ip = ip[0]
+                                client.connect(ip,6601)
+                                client.clear()
+                                client.load(m3u)
+                                client.play()
+                                client.close()
+                                client.disconnect()
+
 
         except Exception as e:
             print(f"Erreur {e} dans la méthode playm3ubydayandtimestamp")
