@@ -13,6 +13,6 @@ La logique expliquée ci-dessous s'appuie sur notre Modele Entite-Association (M
 
   Maintenant, du au fait que l'application est faite pour qu'un planning recoive des playlist, il fallait desormais relier la table **Planning** à **Playlist** par playlist qui recoit comme clé étrangère *id_planning* pour être associé à un planning généré par l'application.
 
-  Enfin, il reste la partie des **Lecteurs**
+  Enfin, il reste la partie des **Lecteurs** qui sont reliés à des playlists qu'ils vont lire par la table **joue_dans** afin qu'un lecteur puisse jouer plusieurs playlists et plusieurs lecteurs jouent une même playlist. **Lecteur** est ensuite relié à **Log** pour son état et **Localisation** pour sa position.
 
   
