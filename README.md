@@ -12,9 +12,9 @@ Ce projet consiste à développer un **système de supervision** permettant de g
 ---
 ## 🌲 Arborescence du projet
 
-**/Document** pour tous les fichiers et documents de rendu de la SAE
+**/Document =** tous les fichiers et documents de rendu de la SAE
 
-**/PagesCodes/Sae_V2** pour le code de l'application
+**/PagesCodes/Sae_V2 =** le code de l'application
 
 ---
 ## 🧠 Objectifs du projet
