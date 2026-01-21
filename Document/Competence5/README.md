@@ -3,6 +3,7 @@
 **Diagramme de GANTT :** https://sharing.clickup.com/90152272888/g/h/2kyqx0zr-635/0da42b6273e2582
 
 Initiales à coté de chaque tâche:
+
 YB = Yunes BOUABTA; S = Sofiane SEBBAH ; YS = Yakouba SOW ; K = Kenzo FILLONEAU ; HM = Mohammed Hachim
 
 **Feuille de temps :**
