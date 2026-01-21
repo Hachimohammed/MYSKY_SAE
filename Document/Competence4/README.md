@@ -9,8 +9,10 @@ La logique expliquée ci-dessous s'appuie sur notre Modele Entite-Association (M
 
   Les fichiers audio sont soit des musiques, soit des annonnces (pubs, urgence...), c'est pourquoi à la même image que **Groupe_Role**, on a relié **Fichier_Audio** à **Type_contenu**.
 
-  L'enjeu était d'ensuite relier ces fichiers à des playlists. C'est pourquoi on a créé la table **Playlist** qui donnera sa clé étrangère *id_playlist* à **Fichier_Audio** afin que chaque musique soit associée à une playlist.
+  L'enjeu était d'ensuite relier ces fichiers à des playlists. C'est pourquoi on a créé la table **Playlist** et **Fait_partie_de** qui recevra comme clé étrangère primaire*id_playlist* et *id_fichier_audio* afin que chaque musique soit associée à une ou plusieurs playlists.
 
-  Maintenant, du au fait que l'application est faite pour qu'un planning recoive des playlist, il fallait desormais relier la table **Planning** à **Playlist** par playlist qui donne
+  Maintenant, du au fait que l'application est faite pour qu'un planning recoive des playlist, il fallait desormais relier la table **Planning** à **Playlist** par playlist qui recoit comme clé étrangère *id_planning* pour être associé à un planning généré par l'application.
+
+  Enfin, il reste la partie des **Lecteurs**
 
   
