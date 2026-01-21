@@ -37,6 +37,7 @@ class CommercialController:
     @reqrole("ADMIN", "COMMERCIAL")
     def commercialUpload():
         try:
+            # admin_service.Ad(recuperation des mp3 mais si c'est pas-possible-je-modifie)
             if 'filename' not in request.files:
                 return jsonify({'success': False, 'error': 'Aucun fichier fourni'}), 400
 
@@ -110,6 +111,8 @@ class CommercialController:
             if admin_service.WhatPlayerPlaying() == True:
                 admin_service.getAllDown()
                 print("Lecture en cours arrêtée sur tous les players.")
+                
+
                 
         except Exception as e:
             print(f"Aucune playlist en cours d'exécution. : {e}")

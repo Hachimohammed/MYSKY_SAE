@@ -18,8 +18,7 @@ us = UserService()
 def admin_page():
     metadata = {"title" : " Admin Panel"}
     ass.findPlayer()
-    metadata = {"title": "Admin Panel"}
-    ass.findPlayer()
+    ass.findStatut()
     print("hello")
 
     players = ass.getAllPlayerWithTheirLocalisation() 
