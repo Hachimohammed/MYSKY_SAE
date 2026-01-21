@@ -1,1 +1,1 @@
-Dans ce répertoire, on présente le code des pages.
+Le code de l'appli se trouve dans Sae_V2.
