@@ -6,7 +6,7 @@ import requests
 import time
 from pathlib import Path
 from mpd import MPDClient
-import datetime
+from datetime import datetime
 from app import app
 from app.models.lecteur import lecteur
 from app.models.BDDao import DatabaseInit
@@ -165,13 +165,16 @@ class lecteurDAO(lecteurDAOInterface):
 
             for nom_lecteur, adresse_ip in hosts:
                 cmd = [
+                    "sudo",
                     "rsync", "-avz", "--progress",
                     f"{dir_path}/",
-                    f"{nom_lecteur}@{adresse_ip}:~/musique/"
+                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique/"
                 ]
+
                 res = subprocess.run(cmd, capture_output=True, text=True)
 
                 if res.returncode == 0:
+                    # tout va bien
                     update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
                     subprocess.run(update_mpd, capture_output=True)
 
@@ -188,11 +191,12 @@ class lecteurDAO(lecteurDAOInterface):
 
             for nom_lecteur, adresse_ip in hosts:
                 cmd = [
+                    "sudo",
                     "rsync", "-avz", "--progress",
                     f"{f}/",
-                    f"{nom_lecteur}@{adresse_ip}:~/musique/"
+                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique/playlists/"
                 ]
-                subprocess.run(cmd, capture_output=True, text=True)
+                subprocess.run(cmd, capture_output=True)
 
                 update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
                 subprocess.run(update_mpd, capture_output=True)
@@ -210,38 +214,43 @@ class lecteurDAO(lecteurDAOInterface):
             get = requests.get(f"http://127.0.0.1:5000/api/v1/playlists")
             json_data = get.json()
 
-            now = datetime.datetime.now()
+            now = datetime.now()
             jour_actuel = jours[now.weekday()]
             date_et_temps = now.strftime("%Y-%m-%d %H:%M")
 
             conn = self._getDBConnection()
             ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
-
-            for file_data in json_data.get('playlists', {}).values():
-                f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file_data.get('nom_playlist')}"
-
-                for ip_row in ips:
-                    ip = ip_row[0]
-                    client.connect(ip, 6601)
-                    
-                    if file_data.get("date_heure_diffusion") and file_data["date_heure_diffusion"] == date_et_temps:
-                        client.load(f)
-                        client.play(1)
-                        client.close()
-                        client.disconnect()
-                    elif file_data.get("jour_semaine") == jour_actuel:
-                        client.load(f)
-                        client.play(1)
-                        client.close()
-                        client.disconnect()
-
             conn.close()
+
+            for file in json_data.get('playlists', []):
+                date_heure = file.get('date_heure_diffusion')
+                jour_semaine = file.get('jour_semaine')
+
+                jouer_playlist = False
+
+                if date_heure == date_et_temps:
+                    jouer_playlist = True
+                elif jour_semaine == jour_actuel:
+                    jouer_playlist = True
+
+                urls = file.get("download_m3u_url")
+
+                if jouer_playlist:
+                    for ip in ips:
+                        ip = ip[0]
+                        client.connect(ip, 6601)
+                        client.clear()
+                        for url in urls:
+                            client.add(url)
+                        client.play()
+                        client.disconnect()
+
         except Exception as e:
-            print(f"Erreur {e} dans playm3ubydayandtimestamp")
+            print(f"Erreur {e} dans la méthode playm3ubydayandtimestamp")
 
     def Ad(self, mp3):
         """
-        CORRECTION: Pause la playlist, joue la pub, puis reprend la playlist
+        Pause la playlist, joue la pub, puis reprend la playlist
         """
         try:
             client = MPDClient()
@@ -297,7 +306,7 @@ class lecteurDAO(lecteurDAOInterface):
 
     def WhatPlayerPlaying(self):
         """
-        CORRECTION: Retourne les informations sur ce qui joue
+        Retourne les informations sur ce qui joue
         """
         try:
             client = MPDClient()

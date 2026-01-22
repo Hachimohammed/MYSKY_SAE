@@ -1,11 +1,24 @@
 # 🎵 Projet de Supervision de Diffusion Musicale
 
+## 💻 Lancer le projet
+- Allez dans le repertoire **PagesCodes/Sae_V2**
+- Installez toutes les extensions inscrites dans **requirement.txt** du répertoire avec **pip install nom_de_l'extension**
+- Depuis le reperetoire **PagesCodes/Sae_V2**, tapez dans un terminal **python main.py** ou **python3 main.py**
+- **Ctrl+Click** sur le lien **http://127.0.0.1/localhost** affiché sur le terminal
+
+---
+## 🌲 Arborescence du projet
+
+**/Document =** tous les fichiers et documents de rendu de la SAE
+
+**/PagesCodes/Sae_V2 =** le code de l'application
+
+---
 ## 📖 Sujet
 Dans de nombreuses organisations (entreprises, gares, campus…), il est nécessaire d’assurer une **diffusion musicale continue** avec la possibilité d’insérer des **messages publicitaires** ou **urgents**.  
 Ce projet consiste à développer un **système de supervision** permettant de garantir la **continuité du service audio**, même en cas de **coupure réseau** ou **électrique**.
 
 ---
-
 ## 🧠 Objectifs du projet
 Le système doit permettre :
 - De **surveiller l’état des lecteurs** (UP/KO).  
