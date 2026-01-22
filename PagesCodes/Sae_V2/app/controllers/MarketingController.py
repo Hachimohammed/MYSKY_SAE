@@ -242,9 +242,9 @@ def marketing_generate_playlist_week():
     """Génère les playlists M3U et envoie tout aux lecteurs"""
     try:
         current_user_id = get_current_user_id()
-        print(f" Génération playlist par utilisateur ID: {current_user_id}")
+        print(f"🎵 Génération playlist par utilisateur ID: {current_user_id}")
         
-        
+        # Créer un planning
         planning = planning_service.createPlanning(
             nom_planning=f"Planning_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             date_debut=datetime.now().isoformat(),
@@ -254,7 +254,7 @@ def marketing_generate_playlist_week():
         if not planning:
             return jsonify({'success': False, 'error': 'Erreur création planning'}), 500
 
-        
+        # Récupérer les dates/heures de diffusion
         ordre_folder = os.path.join(app.root_path, 'static', 'ordre')
         jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
         
@@ -269,20 +269,20 @@ def marketing_generate_playlist_week():
             id_planning=planning.id_planning,
             audio_service=audio_service,
             app_root_path=app.root_path,
-            use_http_urls=True,
+            use_http_urls=False,  
             dates_diffusion=dates_diffusion
         )
 
-        
+        # Envoi aux lecteurs
         if playlists_created:
             try:
                 admin_service.pullMP3toplayers()
                 admin_service.Pullm3uToPlayers()
-                print("Fichiers envoyés aux lecteurs")
+                print(" Fichiers envoyés aux lecteurs")
                 admin_service.playm3ubydayandtimestamp()
-                print("Lecture lancée sur les lecteurs")
+                print(" Lecture lancée sur les lecteurs")
             except Exception as e:
-                print(f"Erreur envoi: {e}")
+                print(f" Erreur envoi: {e}")
                 errors.append(f"Erreur envoi lecteurs: {str(e)}")
 
         return jsonify({
@@ -293,7 +293,7 @@ def marketing_generate_playlist_week():
         }), 201
 
     except Exception as e:
-        print(f"❌ Erreur génération playlist: {e}")
+        print(f" Erreur génération playlist: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500

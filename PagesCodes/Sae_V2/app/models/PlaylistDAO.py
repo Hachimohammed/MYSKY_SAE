@@ -196,13 +196,13 @@ class PlaylistDAO(PlaylistDAOInterface):
 			print(f"Erreur dans getAudioFiles: {e}")
 			return []
 	
-	def generateM3U(self, id_playlist, use_http_urls=True):
+	def generateM3U(self, id_playlist, use_http_urls=False):
 		"""
 		Génère le fichier M3U physique pour une playlist
 		
 		Args:
 			id_playlist: ID de la playlist
-			use_http_urls: Si True, génère des URLs HTTP, sinon des chemins locaux
+			use_http_urls: Si True, génère des URLs HTTP, sinon des chemins locaux (par défaut False)
 		"""
 		try:
 			playlist = self.getById(id_playlist)
@@ -231,7 +231,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 				for audio in audio_files:
 					duree = audio.duree if audio.duree else -1
 					
-					
+					# Titre pour l'info EXTINF
 					if audio.artiste and audio.artiste != 'Inconnu':
 						titre = f"{audio.artiste} - {audio.nom}"
 					else:
@@ -239,9 +239,9 @@ class PlaylistDAO(PlaylistDAOInterface):
 					
 					f.write(f"#EXTINF:{duree},{titre}\n")
 					
-					# IMPORTANT : Générer l'URL HTTP pour que le lecteur puisse streamer
+					# CHANGEMENT ICI : Utiliser le chemin physique par défaut
 					if use_http_urls:
-						# Générer l'URL de téléchargement
+						# Générer l'URL HTTP si explicitement demandé
 						with app.app_context():
 							audio_url = url_for(
 								'api_download_audio',
@@ -250,14 +250,14 @@ class PlaylistDAO(PlaylistDAOInterface):
 							)
 						f.write(f"{audio_url}\n")
 					else:
-						# Utiliser le chemin local (ne marchera que si les fichiers sont accessibles)
+						# UTILISER LE CHEMIN PHYSIQUE (comportement par défaut)
 						f.write(f"{audio.chemin_fichier}\n")
 			
-			print(f"Fichier M3U généré avec succès: {m3u_path}")
+			print(f"✅ Fichier M3U généré avec succès: {m3u_path}")
 			return True
 			
 		except Exception as e:
-			print(f"Erreur dans generateM3U: {e}")
+			print(f"❌ Erreur dans generateM3U: {e}")
 			import traceback
 			traceback.print_exc()
 			return False
