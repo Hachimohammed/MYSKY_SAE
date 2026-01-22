@@ -52,9 +52,9 @@ class PlaylistService:
         """Récupère tous les fichiers audio d'une playlist"""
         return self.playlist_dao.getAudioFiles(id_playlist)
     
-    def generateM3UFile(self, id_playlist, use_http_urls=True):
+    def generateM3UFile(self, id_playlist, use_http_urls=True, base_path="/home/test/Musique"):
         """Génère le fichier M3U physique pour une playlist"""
-        return self.playlist_dao.generateM3U(id_playlist, use_http_urls)
+        return self.playlist_dao.generateM3U(id_playlist, use_http_urls, base_path)
     
     def generateDailyPlaylist(self, jour_semaine, id_planning=None, use_http_urls=True):
         """Génère une playlist M3U pour un jour de la semaine"""
@@ -151,14 +151,12 @@ class PlaylistService:
     
     # ==================== ORCHESTRATION COMPLEXE ====================
     
-    def generateWeekPlaylistsWithOrder(self, id_planning, audio_service, app_root_path, use_http_urls=True, dates_diffusion=None):
+    def generateWeekPlaylistsWithOrder(self, id_planning, audio_service, app_root_path, 
+                                    use_http_urls=True, base_path="/home/test/Musique", 
+                                    dates_diffusion=None):
         """
-        LOGIQUE MÉTIER COMPLÈTE : Génère toutes les playlists de la semaine en respectant l'ordre sauvegardé
-        
-        Args:
-            dates_diffusion: dict {'LUNDI': 'YYYY-MM-DD HH:MM', 'MARDI': ...}
-        
-        Retourne: (playlists_created, errors)
+         Génère toutes les playlists de la semaine en respectant l'ordre sauvegardé
+    
         """
         jours = ['LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI', 'DIMANCHE']
         playlists_created = []
@@ -180,7 +178,7 @@ class PlaylistService:
                 if dates_diffusion and jour in dates_diffusion:
                     date_heure_diffusion = dates_diffusion[jour]
                 
-               
+                
                 nom_playlist = f"Playlist_{jour}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
                 chemin_m3u = os.path.join(app_root_path, 'static', 'playlists', f"{nom_playlist}.m3u")
                 duree_totale = sum(f.duree for f in fichiers_ordonnes if f.duree)
@@ -191,12 +189,12 @@ class PlaylistService:
                     duree_total=duree_totale,
                     id_planning=id_planning,
                     jour_semaine=jour,
-                    date_heure_diffusion=date_heure_diffusion  
+                    date_heure_diffusion=date_heure_diffusion
                 )
                 
                 if not playlist:
                     error_msg = f"Erreur création playlist pour {jour}"
-                    print(f"❌ {error_msg}")
+                    print(f" {error_msg}")
                     errors.append(error_msg)
                     continue
                 
@@ -204,18 +202,18 @@ class PlaylistService:
                 for ordre, fichier in enumerate(fichiers_ordonnes, start=1):
                     self.addAudioWithOrder(playlist.id_playlist, fichier.id_fichier, ordre)
                 
-               
-                if self.generateM3UFile(playlist.id_playlist, use_http_urls):
+                # Générer le fichier M3U avec chemins absolus
+                if self.generateM3UFile(playlist.id_playlist, use_http_urls, base_path):
                     playlists_created.append(playlist)
-                    print(f"✅ Playlist générée pour {jour} avec {len(fichiers_ordonnes)} fichiers")
+                    print(f" Playlist générée pour {jour} avec {len(fichiers_ordonnes)} fichiers")
                 else:
                     error_msg = f"Erreur génération M3U pour {jour}"
-                    print(f"{error_msg}")
+                    print(f" {error_msg}")
                     errors.append(error_msg)
                     
             except Exception as e:
                 error_msg = f"Erreur lors de la génération de la playlist {jour}: {str(e)}"
-                print(f" {error_msg}")
+                print(f"{error_msg}")
                 errors.append(error_msg)
         
         return playlists_created, errors

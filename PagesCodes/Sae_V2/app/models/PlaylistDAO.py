@@ -196,13 +196,16 @@ class PlaylistDAO(PlaylistDAOInterface):
 			print(f"Erreur dans getAudioFiles: {e}")
 			return []
 	
-	def generateM3U(self, id_playlist, use_http_urls=False):
+	
+
+	def generateM3U(self, id_playlist, use_http_urls=False, base_path="/home/test/Musique"):
 		"""
 		Génère le fichier M3U physique pour une playlist
-		
 		Args:
 			id_playlist: ID de la playlist
-			use_http_urls: Si True, génère des URLs HTTP, sinon des chemins locaux (par défaut False)
+			use_http_urls: Si True, génère des URLs HTTP, sinon des chemins absolus
+			base_path: Chemin de base absolu pour les fichiers audio (par défaut /home/test/Musique)
+		
 		"""
 		try:
 			playlist = self.getById(id_playlist)
@@ -221,7 +224,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 			
 			print(f"Génération M3U: {m3u_path}")
 			print(f"Nombre de fichiers: {len(audio_files)}")
-			print(f"Mode: {'URLs HTTP' if use_http_urls else 'Chemins locaux'}")
+			print(f"Mode: {'URLs HTTP' if use_http_urls else f'Chemins absolus (base: {base_path})'}")
 			
 			with open(m3u_path, 'w', encoding='utf-8') as f:
 				f.write("#EXTM3U\n")
@@ -231,7 +234,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 				for audio in audio_files:
 					duree = audio.duree if audio.duree else -1
 					
-					# Titre pour l'info EXTINF
+					
 					if audio.artiste and audio.artiste != 'Inconnu':
 						titre = f"{audio.artiste} - {audio.nom}"
 					else:
@@ -239,9 +242,8 @@ class PlaylistDAO(PlaylistDAOInterface):
 					
 					f.write(f"#EXTINF:{duree},{titre}\n")
 					
-					# CHANGEMENT ICI : Utiliser le chemin physique par défaut
 					if use_http_urls:
-						# Générer l'URL HTTP si explicitement demandé
+						
 						with app.app_context():
 							audio_url = url_for(
 								'api_download_audio',
@@ -250,8 +252,11 @@ class PlaylistDAO(PlaylistDAOInterface):
 							)
 						f.write(f"{audio_url}\n")
 					else:
-						# UTILISER LE CHEMIN PHYSIQUE (comportement par défaut)
-						f.write(f"{audio.chemin_fichier}\n")
+						
+						jour = audio.jour_semaine if audio.jour_semaine else "DIVERS"
+						filename = os.path.basename(audio.chemin_fichier)
+						chemin_absolu = f"{base_path}/{jour}/{filename}"
+						f.write(f"{chemin_absolu}\n")
 			
 			print(f"✅ Fichier M3U généré avec succès: {m3u_path}")
 			return True
@@ -261,7 +266,7 @@ class PlaylistDAO(PlaylistDAOInterface):
 			import traceback
 			traceback.print_exc()
 			return False
-	
+		
 	def generateM3UForDay(self, jour_semaine, id_planning=None, use_http_urls=True):
 		"""Génère une playlist M3U pour un jour de la semaine"""
 		try:

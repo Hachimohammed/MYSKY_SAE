@@ -264,12 +264,12 @@ def marketing_generate_playlist_week():
             if date_heure:
                 dates_diffusion[jour] = date_heure
 
-        
         playlists_created, errors = playlist_service.generateWeekPlaylistsWithOrder(
             id_planning=planning.id_planning,
             audio_service=audio_service,
             app_root_path=app.root_path,
-            use_http_urls=False,  
+            use_http_urls=False,
+            base_path="/home/test/Musique",  
             dates_diffusion=dates_diffusion
         )
 
@@ -278,11 +278,11 @@ def marketing_generate_playlist_week():
             try:
                 admin_service.pullMP3toplayers()
                 admin_service.Pullm3uToPlayers()
-                print(" Fichiers envoyés aux lecteurs")
+                print("✅ Fichiers envoyés aux lecteurs")
                 admin_service.playm3ubydayandtimestamp()
-                print(" Lecture lancée sur les lecteurs")
+                print("✅ Lecture lancée sur les lecteurs")
             except Exception as e:
-                print(f" Erreur envoi: {e}")
+                print(f"❌ Erreur envoi: {e}")
                 errors.append(f"Erreur envoi lecteurs: {str(e)}")
 
         return jsonify({
@@ -293,11 +293,10 @@ def marketing_generate_playlist_week():
         }), 201
 
     except Exception as e:
-        print(f" Erreur génération playlist: {e}")
+        print(f"❌ Erreur génération playlist: {e}")
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
-
 # ==================== RESTE DES ROUTES ====================
 
 @app.route('/api/v1/playlist/download/<int:id_playlist>')

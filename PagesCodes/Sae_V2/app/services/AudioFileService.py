@@ -181,7 +181,7 @@ class AudioFileService:
         if audio.chemin_fichier and os.path.exists(audio.chemin_fichier):
             try:
                 os.remove(audio.chemin_fichier)
-                print(f"✅ Fichier supprimé: {audio.chemin_fichier}")
+                print(f" Fichier supprimé: {audio.chemin_fichier}")
             except Exception as e:
                 print(f"Erreur suppression fichier: {e}")
 
@@ -226,7 +226,7 @@ class AudioFileService:
         with open(ordre_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         
-        print(f"✅ Ordre sauvegardé dans {ordre_file}")
+        print(f" Ordre sauvegardé dans {ordre_file}")
         return True
     
     def loadPlaybackOrder(self, jour_semaine, ordre_folder):
@@ -244,10 +244,10 @@ class AudioFileService:
                     if audio:
                         fichiers_ordonnes.append(audio)
                 
-                print(f"✅ Ordre chargé pour {jour_semaine}: {len(fichiers_ordonnes)} fichiers")
+                print(f" Ordre chargé pour {jour_semaine}: {len(fichiers_ordonnes)} fichiers")
         else:
             fichiers_ordonnes = self.getAudioFilesByDay(jour_semaine)
-            print(f"⚠️ Pas d'ordre pour {jour_semaine}, utilisation ordre par défaut")
+            print(f" Pas d'ordre pour {jour_semaine}, utilisation ordre par défaut")
         
         return fichiers_ordonnes
     
