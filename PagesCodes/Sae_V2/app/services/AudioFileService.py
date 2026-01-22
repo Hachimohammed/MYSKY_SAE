@@ -7,9 +7,7 @@ from datetime import datetime
 from flask import url_for
 
 class AudioFileService:
-    """
-    Service contenant TOUTE la logique métier des fichiers audio
-    """
+    """Service contenant TOUTE la logique métier des fichiers audio"""
     
     def __init__(self, app=None):
         self.audio_dao = AudioFileDAO()
@@ -72,7 +70,7 @@ class AudioFileService:
     # ==================== LOGIQUE MÉTIER AVANCÉE ====================
     
     def getDayStatistics(self, jour_semaine):
-        """Récupère les statistiques d'un jour (durée, taille, nombre)"""
+        """Récupère les statistiques d'un jour"""
         fichiers = self.getAudioFilesByDay(jour_semaine)
         
         total_duration = sum(f.duree for f in fichiers if f.duree)
@@ -134,20 +132,15 @@ class AudioFileService:
             }
     
     def uploadMultipleFiles(self, files, jour_semaine, app_root_path, id_utilisateur=1):
-        """
-        Upload plusieurs fichiers MP3 pour un jour donné
-        Retourne: (uploaded_count, errors)
-        """
+        """Upload plusieurs fichiers MP3 pour un jour donné"""
         uploaded_count = 0
         errors = []
 
         for file in files:
             if file.filename == '':
                 continue
-            #fonction de  la biblo  werkzeug elle permet de securiser le nom du fichier
-            filename = secure_filename(file.filename) #supprimer les elements dangereux comme ../
             
-            
+            filename = secure_filename(file.filename)
             folder_full = os.path.join(app_root_path, 'static', 'audio', jour_semaine)
             os.makedirs(folder_full, exist_ok=True)
             
@@ -179,10 +172,7 @@ class AudioFileService:
         return uploaded_count, errors
     
     def deleteAudioFileWithPhysicalFile(self, id_fichier):
-        """
-        Supprime un fichier audio de la BDD ET du disque
-        Retourne: (success, error_message)
-        """
+        """Supprime un fichier audio de la BDD ET du disque"""
         audio = self.getAudioFileById(id_fichier)
         
         if not audio:
@@ -191,7 +181,7 @@ class AudioFileService:
         if audio.chemin_fichier and os.path.exists(audio.chemin_fichier):
             try:
                 os.remove(audio.chemin_fichier)
-                print(f" Fichier supprimé: {audio.chemin_fichier}")
+                print(f"✅ Fichier supprimé: {audio.chemin_fichier}")
             except Exception as e:
                 print(f"Erreur suppression fichier: {e}")
 
@@ -201,10 +191,7 @@ class AudioFileService:
             return False, 'Erreur suppression BDD'
     
     def deleteDayFilesWithPhysical(self, jour_semaine):
-        """
-        Supprime tous les fichiers d'un jour (BDD + disque)
-        Retourne: deleted_count
-        """
+        """Supprime tous les fichiers d'un jour (BDD + disque)"""
         fichiers = self.getAudioFilesByDay(jour_semaine)
         deleted_count = 0
 
@@ -214,7 +201,7 @@ class AudioFileService:
                     os.remove(f.chemin_fichier)
                     print(f"Fichier supprimé: {f.chemin_fichier}")
                 except Exception as e:
-                    print(f" Erreur suppression fichier {f.chemin_fichier}: {e}")
+                    print(f"Erreur suppression fichier {f.chemin_fichier}: {e}")
             
             if self.deleteAudioFile(f.id_fichier):
                 deleted_count += 1
@@ -223,7 +210,7 @@ class AudioFileService:
     
     # ==================== GESTION DE L'ORDRE ====================
     
-    def savePlaybackOrder(self, jour_semaine, fichiers_ordre, ordre_folder,date_diffusion=None, heure_diffusion=None):
+    def savePlaybackOrder(self, jour_semaine, fichiers_ordre, ordre_folder, date_diffusion=None, heure_diffusion=None):
         """Sauvegarde l'ordre de lecture des fichiers pour un jour"""
         os.makedirs(ordre_folder, exist_ok=True)
         
@@ -232,21 +219,18 @@ class AudioFileService:
             'jour': jour_semaine,
             'fichiers_ordre': fichiers_ordre,
             'date_sauvegarde': datetime.now().isoformat()
-    }
+        }
         if date_diffusion and heure_diffusion:
             data['date_heure_diffusion'] = f"{date_diffusion} {heure_diffusion}"
         
         with open(ordre_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         
-        print(f" Ordre sauvegardé dans {ordre_file}")
+        print(f"✅ Ordre sauvegardé dans {ordre_file}")
         return True
     
     def loadPlaybackOrder(self, jour_semaine, ordre_folder):
-        """
-        Charge l'ordre de lecture sauvegardé pour un jour
-        Retourne: liste d'objets AudioFile ordonnés
-        """
+        """Charge l'ordre de lecture sauvegardé pour un jour"""
         ordre_file = os.path.join(ordre_folder, f"ordre_{jour_semaine}.json")
         fichiers_ordonnes = []
         
@@ -260,10 +244,10 @@ class AudioFileService:
                     if audio:
                         fichiers_ordonnes.append(audio)
                 
-                print(f" Ordre chargé pour {jour_semaine}: {len(fichiers_ordonnes)} fichiers")
+                print(f"✅ Ordre chargé pour {jour_semaine}: {len(fichiers_ordonnes)} fichiers")
         else:
             fichiers_ordonnes = self.getAudioFilesByDay(jour_semaine)
-            print(f" Pas d'ordre pour {jour_semaine}, utilisation ordre par défaut")
+            print(f"⚠️ Pas d'ordre pour {jour_semaine}, utilisation ordre par défaut")
         
         return fichiers_ordonnes
     
@@ -279,8 +263,9 @@ class AudioFileService:
                 ordre_data = json.load(f)
                 return ordre_data.get('date_heure_diffusion')
         except Exception as e:
-            print(f" Erreur getDateHeureDiffusion: {e}")
+            print(f"❌ Erreur getDateHeureDiffusion: {e}")
             return None
+    
     # ==================== FORMATAGE POUR API ====================
     
     def formatAudioFileForApi(self, audio_file, include_download_url=True):
@@ -315,3 +300,5 @@ class AudioFileService:
             })
         
         return fichiers_data
+    
+ 

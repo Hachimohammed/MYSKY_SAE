@@ -109,6 +109,7 @@ class DatabaseInit:
                     id_Type_contenu INTEGER,
                     chemin_fichier TEXT,
                     duree INTEGER,
+                    statut_diffusion TEXT,
                     artiste TEXT,
                     album TEXT,
                     jour_semaine TEXT,

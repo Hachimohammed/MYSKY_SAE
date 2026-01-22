@@ -25,23 +25,23 @@ class AudioFileDAO(AudioFileDAOInterface):
             conn = self._getDbConnection()
             date_ajout = datetime.now().isoformat()
             
+            # Par défaut EN_ATTENTE pour les pubs
+            statut = 'EN_ATTENTE' if id_type_contenu == 2 else None
             
             cursor = conn.execute("""
                 INSERT INTO Fichier_audio (nom, type_fichier, taille, date_ajout, id_Type_contenu,
-                                          chemin_fichier, duree, artiste, album, jour_semaine)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                          chemin_fichier, duree, artiste, album, jour_semaine, statut_diffusion)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (nom, type_fichier, taille, date_ajout, id_type_contenu, 
-                  chemin_fichier, duree, artiste, album, jour_semaine))
+                  chemin_fichier, duree, artiste, album, jour_semaine, statut))
             
             id_fichier = cursor.lastrowid
-            
             
             if id_utilisateur:
                 conn.execute("""
                     INSERT OR IGNORE INTO Ajoute (id_utilisateur, id_Fichier_audio, Date_Ajout)
                     VALUES (?, ?, ?)
                 """, (id_utilisateur, id_fichier, date_ajout))
-            
             
             conn.commit()
             
@@ -56,7 +56,8 @@ class AudioFileDAO(AudioFileDAOInterface):
                 'duree': duree,
                 'artiste': artiste,
                 'album': album,
-                'jour_semaine': jour_semaine
+                'jour_semaine': jour_semaine,
+                'statut_diffusion': statut
             })
         except Exception as e:
             print(f"Erreur dans create: {e}")
@@ -64,7 +65,27 @@ class AudioFileDAO(AudioFileDAOInterface):
                 conn.rollback()
             return None
         finally:
-            
+            if conn:
+                conn.close()
+    
+    def updateStatutDiffusion(self, id_fichier, statut):
+        """Met à jour le statut de diffusion d'un fichier (EN_ATTENTE ou TERMINE)"""
+        conn = None
+        try:
+            conn = self._getDbConnection()
+            conn.execute("""
+                UPDATE Fichier_audio
+                SET statut_diffusion = ?
+                WHERE id_Fichier_audio = ?
+            """, (statut, id_fichier))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Erreur dans updateStatutDiffusion: {e}")
+            if conn:
+                conn.rollback()
+            return False
+        finally:
             if conn:
                 conn.close()
     
@@ -195,10 +216,8 @@ class AudioFileDAO(AudioFileDAOInterface):
         conn = None
         try:
             conn = self._getDbConnection()
-            # Supprimer les relations
             conn.execute("DELETE FROM fait_partie_de WHERE id_Fichier_audio = ?", (id_fichier,))
             conn.execute("DELETE FROM Ajoute WHERE id_Fichier_audio = ?", (id_fichier,))
-            # Supprimer le fichier
             conn.execute("DELETE FROM Fichier_audio WHERE id_Fichier_audio = ?", (id_fichier,))
             conn.commit()
             return True
@@ -223,10 +242,7 @@ class AudioFileDAO(AudioFileDAOInterface):
             return False
     
     def addToUser(self, id_fichier, id_utilisateur):
-        """
-
-        Associe un fichier à un utilisateur dans la table Ajoute
-        """
+        """Associe un fichier à un utilisateur dans la table Ajoute"""
         conn = None
         try:
             conn = self._getDbConnection()

@@ -3,6 +3,7 @@ from ping3 import *
 import subprocess
 import json
 import requests
+import time
 from pathlib import Path
 from mpd import MPDClient
 import datetime
@@ -15,7 +16,6 @@ class lecteurDAO(lecteurDAOInterface):
 
     def __init__(self):
         self.database = app.root_path + '/musicapp.db'
-          
     
     def _getDBConnection(self):
         """Obtient une connexion à la base de données"""
@@ -25,26 +25,17 @@ class lecteurDAO(lecteurDAOInterface):
         return conn
 
     def findPlayer(self):
-
         """
-        Méthode findPlayer du DAO qui consiste à partir de la commande status de tailnet et de son 
-        option --json trouve automatiquement les machines dont leurs noms (nom que vous avez données à la machine)
-        et leurs adresse iP soient récuperer et intégrer à une liste de machines , ensuite il manque la localisation 
-        on va utiliser le site 'ipinfo.ip' pour tout sa on va récuperer la ville données par le site
-        ensuite on intégre tout sa à la bdd
-        git
-        
+        Trouve automatiquement les machines via Tailscale et les ajoute à la BDD
         """
-
         try:
             conn = self._getDBConnection()
-
             players = {}
             
             cmd = subprocess.run(
-                ["tailscale","status","--json"],
+                ["tailscale", "status", "--json"],
                 capture_output=True,
-                text = True
+                text=True
             )
 
             data = json.loads(cmd.stdout)
@@ -56,471 +47,402 @@ class lecteurDAO(lecteurDAOInterface):
 
                 if name not in players:
                     players[name] = {
-                        "name" : name,
-                        "ip" : ip,
-                        "ville" : None,
-                        "latitude" : None,
-                        "longitude" : None
+                        "name": name,
+                        "ip": ip,
+                        "ville": None,
+                        "latitude": None,
+                        "longitude": None
                     }
 
+            for player in players:
+                if players[player]['ville'] is None:
+                    curl = 'curl -s https://api.ipify.org'
+                    ssh_curl = f'ssh {players[player]["name"]}@{players[player]["ip"]} "{curl}"'
+                    curl_res = subprocess.run(ssh_curl, shell=True, capture_output=True, text=True, timeout=35)
+                    public_ip = curl_res.stdout.strip()
 
+                    res = requests.get(f"https://ipinfo.io/{public_ip}/json")
+                    loc_data = res.json()
+                    players[player]['ville'] = loc_data['city']
+                    lat_long = loc_data["loc"]
+                    latitude, longitude = map(float, lat_long.split(','))
+                    players[player]['latitude'] = latitude
+                    players[player]['longitude'] = longitude
 
-                for player in players:
-                    if players[player]['ville'] == None:
+                    conn.execute("INSERT OR IGNORE INTO localisation (ville, latitude, longitude) VALUES (?, ?, ?)",
+                                (players[player]['ville'], players[player]['latitude'], players[player]['longitude']))
+                    conn.commit()
 
-                        curl = 'curl -s https://api.ipify.org'
+                    id_localisation = conn.execute("SELECT id_localisation FROM localisation WHERE ville = ?",
+                                                    (players[player]['ville'],)).fetchone()
 
-                        ssh_curl = f'ssh {players[player]["name"]}@{players[player]["ip"]} "{curl}"'
+                    conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur, adresse_ip, statut, id_localisation) VALUES (?, ?, ?, ?)",
+                                (players[player]['name'], players[player]['ip'], "UP", id_localisation[0]))
+                    conn.commit()
 
-                        curl_res = subprocess.run(ssh_curl,shell=True,capture_output=True,text=True,timeout=35)
-
-                        public_ip = curl_res.stdout.strip()
-
-
-
-                        ip = players[player]['ip']
-                        res = requests.get(f"https://ipinfo.io/{public_ip}/json")
-                        loc_data = res.json()
-                        players[player]['ville'] = loc_data['city']
-                        lat_long = loc_data["loc"]
-                        latitude, longitude = map(float, lat_long.split(','))
-                        players[player]['latitude'] = latitude
-                        players[player]['longitude'] =longitude
-
-
-
-
-                        conn.execute("INSERT OR IGNORE INTO localisation (ville,latitude,longitude)"
-                        "VALUES (?,?,?)",(players[player]['ville'],players[player]['latitude'],
-                        players[player]['longitude']))
-
-                        conn.commit()
-
-                        id_localisation = conn.execute("SELECT id_localisation FROM localisation WHERE ville =  (?)",
-                        (players[player]['ville'],)).fetchone()
-
-                        conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,statut,id_localisation)"
-                        "VALUES (?,?,?,?)",
-                        (players[player]['name'],players[player]['ip'],"UP",id_localisation[0]))
-
-                        conn.commit()
-
-                    conn.close()
-                    
+            conn.close()
 
         except Exception as e:
-            print(f"erreur {e} dans findPlayer")
+            print(f"Erreur {e} dans findPlayer")
 
-
-    def AppendPlayerManually(self,adresse_ip,nom_lecteur):
-
-        """
-        Fonction qui consiste en cas de par exemple non réponse de tailnet (ce qui peut peut-être arriver)
-        de rajouter des machines 
-        C'est le seul cas ou on utilisera cette fonction
-        
-        """
-
+    def AppendPlayerManually(self, adresse_ip, nom_lecteur):
+        """Ajoute manuellement un lecteur"""
         conn = self._getDBConnection()
-
-        conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur,adresse_ip,emplacement,statut)" 
-        "VALUES (?,?,?)",nom_lecteur,adresse_ip)
-
+        conn.execute("INSERT OR IGNORE INTO lecteur (nom_lecteur, adresse_ip, statut) VALUES (?, ?, 'DOWN')", 
+                    (nom_lecteur, adresse_ip))
         conn.commit()
         conn.close()
 
-
-
-
     def findStatut(self):
-        """
-        
-        Le programme marche trés bien (tester avec une version test sur une machine) MAIS
-        les sockets RAW nécessite des privilgés DONC EXECUTER SUDO
-
-        """
-        
+        """Vérifie le statut des lecteurs via ping"""
         conn = self._getDBConnection()
         try:
-
             ip_adresse = conn.execute('SELECT DISTINCT adresse_ip FROM lecteur').fetchall()
             for ip in ip_adresse:
-
                 ip_t = ip[0]
-                delay = ping(ip,timeout=4)
+                delay = ping(ip_t, timeout=4)
 
                 if delay is not None and delay is not False:
-                    conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",(ip_t,))
+                    conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = ?", (ip_t,))
                 else:
-                    conn.execute("UPDATE lecteur SET statut = 'DOWN' WHERE adresse_ip = (?)",(ip_t,))
-            print("Programme executer à la perfection")
+                    conn.execute("UPDATE lecteur SET statut = 'DOWN' WHERE adresse_ip = ?", (ip_t,))
+            
+            conn.commit()
+            print("Programme exécuté à la perfection")
         except Exception as e:
             print(f"Erreur {e} dans findStatut")
+        finally:
+            conn.close()
 
-    def Sync(self,adresse_ip):
-
-        """
-        Synchronise un lecteur données
-
-        """
-
-
+    def Sync(self, adresse_ip):
+        """Synchronise un lecteur donné"""
         try:
-
             conn = self._getDBConnection()
+            cmd = ['sudo', 'tailscale', 'up', '--reset']
+            subprocess.run(cmd, capture_output=True)
 
-            cmd = ['sudo','tailscale', 'up', '--reset']
+            delay = ping(adresse_ip, timeout=4)
 
-            success, output = self._execute_command(cmd)
-
-            delay = ping(adresse_ip,timeout=4)
-
-            if success:
-                if delay is not None and delay is not False:
-                    conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",(adresse_ip,))
-                else:
-                    print('erreur ping')
+            if delay is not None and delay is not False:
+                conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = ?", (adresse_ip,))
+                conn.commit()
             else:
-                print('echec avec la commande up')
-        
+                print('Erreur ping')
+            
+            conn.close()
         except Exception as e:
             print(f'Erreur {e} dans Sync')
 
     def SyncAll(self):
-
-        """
-        Synchronise tout les lecteurs
-        """
-
+        """Synchronise tous les lecteurs"""
         try:
-
             conn = self._getDBConnection()
+            cmd = ['sudo', 'tailscale', 'up', '--reset']
+            subprocess.run(cmd, capture_output=True)
 
-            cmd = ['sudo','tailscale', 'up', '--reset']
+            ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
 
-            success, output = self._execute_command(cmd)
+            for ip_row in ips:
+                ip = ip_row[0]
+                delay = ping(ip, timeout=4)
 
-            ips = conn.execute("SELECT ip_adresse FROM lecteur").fetchall()
-
-            for ip in ips:
-
-                delay = ping(ip,timeout=4)
-
-                if success:
-                    if delay is not None and delay is not False:
-                        conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = (?)",(ip,))
-                    else:
-                        print('erreur ping')
+                if delay is not None and delay is not False:
+                    conn.execute("UPDATE lecteur SET statut = 'UP' WHERE adresse_ip = ?", (ip,))
                 else:
-                    print('echec avec la commande up')
-        
+                    print(f'Erreur ping pour {ip}')
+            
+            conn.commit()
+            conn.close()
         except Exception as e:
-            print(f'Erreur {e} dans Sync')
-
-    
-
+            print(f'Erreur {e} dans SyncAll')
 
     def pullMP3toPlayers(self):
+        """Push les fichiers MP3 vers les lecteurs via rsync"""
         try:
-            """
-            Méthode qui consiste à pull les differents fichiers dans le dossier audio à l'aide de 
-            l'API conçu par Mohamed Hachim
-            """
-
             conn = self._getDBConnection()
+            dir_path = "/home/servermysky/MYSKY_SAE/PagesCodes/Sae_V2/app/static/audio"
+            hosts = conn.execute("SELECT nom_lecteur, adresse_ip FROM lecteur").fetchall()
 
-            dir = "/home/servermysky/MYSKY_SAE/PagesCodes/Sae_V2/app/static/audio"
-
-            hosts= conn.execute("SELECT nom_lecteur,adresse_ip FROM lecteur").fetchall()
-
-            for nom_lecteur,adresse_ip in hosts:
-                    cmd = [
+            for nom_lecteur, adresse_ip in hosts:
+                cmd = [
                     "rsync", "-avz", "--progress",
-                    f"{dir}/",
-                    f"{nom_lecteur}@{adresse_ip}:~/musique/"]
+                    f"{dir_path}/",
+                    f"{nom_lecteur}@{adresse_ip}:~/musique/"
+                ]
+                res = subprocess.run(cmd, capture_output=True, text=True)
 
-                    res = subprocess.run(cmd, capture_output=True, text=True)
+                if res.returncode == 0:
+                    update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
+                    subprocess.run(update_mpd, capture_output=True)
 
-                    if res.returncode == 0:
-                    # tout va bien
-                    
-                        update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
-                        subprocess.run(update_mpd, capture_output=True)
-
-
+            conn.close()
         except Exception as e:
             print(f"Erreur {e} dans pullMP3toPlayers")
 
-
     def Pullm3uToPlayers(self):
-        """
-        Même logique 
-        """
+        """Push les playlists M3U vers les lecteurs"""
         try:
             conn = self._getDBConnection()
-            hosts = conn.execute('SELECT DISTINCT nom_lecteur,adresse_ip FROM lecteur').fetchall()
-
+            hosts = conn.execute('SELECT DISTINCT nom_lecteur, adresse_ip FROM lecteur').fetchall()
             f = "/home/servermysky/MYSKY_SAE/PagesCodes/Sae_V2/app/static/playlists"
 
-            for nom_lecteur,adresse_ip in hosts:
-                    cmd = [
+            for nom_lecteur, adresse_ip in hosts:
+                cmd = [
                     "rsync", "-avz", "--progress",
                     f"{f}/",
-                    f"{nom_lecteur}@{adresse_ip}:~/musique/"]
+                    f"{nom_lecteur}@{adresse_ip}:~/musique/"
+                ]
+                subprocess.run(cmd, capture_output=True, text=True)
 
-                    subprocess.run(cmd, capture_output=True, text=True)
+                update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
+                subprocess.run(update_mpd, capture_output=True)
 
-                        
-                    update_mpd = ["ssh", f"{nom_lecteur}@{adresse_ip}", "mpc -p 6601 update"]
-                    subprocess.run(update_mpd, capture_output=True)
-                    
-
+            conn.close()
         except Exception as e:
-            print(f"erreur {e} dans Pullm3uToPlayers")
+            print(f"Erreur {e} dans Pullm3uToPlayers")
 
     def playm3ubydayandtimestamp(self):
-
-        """
-        
-        Recupere les informations d'une playlist et joue la playlist associer aux jours de lecture
-        grâce à l'API de la Playlist
-
-        """
-
+        """Joue les playlists selon le jour et l'heure"""
         try:
-        
             client = MPDClient()
-
-            jours = ["LUNDI","MARDI","MERCREDI","JEUDI","VENDREDI","SAMEDI","DIMANCHE"]
+            jours = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI", "DIMANCHE"]
 
             get = requests.get(f"http://127.0.0.1:5000/api/v1/playlists")
-            json = get.json
+            json_data = get.json()
 
-            now = datetime.datetime.now() 
-            jour_actuel = jours[now.weekday()] 
-            str_date = datetime.now().strftime("%Y%m%d")
-            date_et_temps = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-
-
+            now = datetime.datetime.now()
+            jour_actuel = jours[now.weekday()]
+            date_et_temps = now.strftime("%Y-%m-%d %H:%M")
 
             conn = self._getDBConnection()
             ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
 
+            for file_data in json_data.get('playlists', {}).values():
+                f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file_data.get('nom_playlist')}"
 
-            for file in json['playlists'].values():
-                
-                    f = f"~/MYSKY_SAE/PagesCodes/SAE_V2/app/static/playlists/{file.get('nom_playlist')}"
+                for ip_row in ips:
+                    ip = ip_row[0]
+                    client.connect(ip, 6601)
                     
-                    for ip in ips:
-                        client.connect(ip,6601)
-                        if file["date_heure_diffusion"] != None and file["date_heure_diffusion"] == date_et_temps:
-                            MPDClient.load(f)
-                            MPDClient.play(1)
-                            client.close()
-                            client.disconnect()
-
-                        if file["jour_semaine"] == jour_actuel :
-                            MPDClient.load(f)
-                            MPDClient.play(1)
-                            client.close()
-                            client.disconnect()
-
-        except Exception as e:
-            print(f"Erreur {e} dans la méthode playm3ubydayandtimestamp")
-
-    def Ad(self,mp3):
-
-            """
-            Methode pour mettre en pause un playlist jouer un mp3 pour 
-            le commercial relancer la playlist là ou elle en était 
-
-            """
-
-            try:
-
-                client = MPDClient()
-
-                conn = self._getDBConnection()
-                ips = conn.execute("SELECT adresse_ip FROM lecteur").fetchall()
-
-                for ip in ips:
-                        client.connect(ip,6601)
-                        status = client.status()
-                        playlist_pos = status['song']
-                        playlist_index = status['playlist']
-                        playlist_state = status['state']
-
-                        if playlist_state == "play":
-                            client.pause(1)
-                        
-                        client.add = mp3
-                        client.add(mp3)
-                        client.play()
-
-                        duree = int(client.currentsong()["time"][0]) 
-                        time.sleep(duree + 1)
-
-                        client.delete(-1) # supprime le dernier son ajoute
-
-                        client.play(playlist_pos)
-
+                    if file_data.get("date_heure_diffusion") and file_data["date_heure_diffusion"] == date_et_temps:
+                        client.load(f)
+                        client.play(1)
                         client.close()
                         client.disconnect()
-            except Exception as e:
-                print(f"Erreur {e} dans la méthode Ad")
+                    elif file_data.get("jour_semaine") == jour_actuel:
+                        client.load(f)
+                        client.play(1)
+                        client.close()
+                        client.disconnect()
 
+            conn.close()
+        except Exception as e:
+            print(f"Erreur {e} dans playm3ubydayandtimestamp")
+
+    def Ad(self, mp3):
+        """
+        CORRECTION: Pause la playlist, joue la pub, puis reprend la playlist
+        """
+        try:
+            client = MPDClient()
+            conn = self._getDBConnection()
+            ips = conn.execute("SELECT adresse_ip FROM lecteur WHERE statut = 'UP'").fetchall()
+
+            for ip_row in ips:
+                ip = ip_row[0]
+                
+                try:
+                    client.connect(ip, 6601)
+                    status = client.status()
+                    
+                    # Sauvegarder la position actuelle
+                    playlist_pos = int(status.get('song', 0))
+                    playlist_state = status.get('state', 'stop')
+
+                    # Pause si en lecture
+                    if playlist_state == "play":
+                        client.pause(1)
+                    
+                    # Ajouter et jouer la pub
+                    client.add(mp3)
+                    playlist_length = int(client.status()['playlistlength'])
+                    client.play(playlist_length - 1)  # Jouer le dernier ajouté
+
+                    # Attendre la durée de la pub
+                    current = client.currentsong()
+                    duree = int(current.get("time", "0").split(":")[0]) if "time" in current else 45
+                    time.sleep(duree + 1)
+
+                    # Supprimer la pub de la playlist
+                    client.delete(playlist_length - 1)
+
+                    # Reprendre la musique
+                    if playlist_state == "play":
+                        client.play(playlist_pos)
+                    
+                    client.close()
+                    client.disconnect()
+                    
+                except Exception as e:
+                    print(f"Erreur connexion MPD sur {ip}: {e}")
+                    try:
+                        client.close()
+                        client.disconnect()
+                    except:
+                        pass
+
+            conn.close()
+        except Exception as e:
+            print(f"Erreur {e} dans Ad")
 
     def WhatPlayerPlaying(self):
-
         """
-        Retourne assez d'element qui nous indique ce que les lecteurs jouent et 
-        ou elles en sont 
+        CORRECTION: Retourne les informations sur ce qui joue
         """
-
         try:
+            client = MPDClient()
+            conn = self._getDBConnection()
+            ips = conn.execute("""
+                SELECT l.adresse_ip, lo.ville 
+                FROM lecteur l 
+                JOIN localisation lo USING(id_localisation)
+                WHERE l.statut = 'UP'
+                LIMIT 1
+            """).fetchone()
+            
+            if not ips:
+                return None
+            
+            ip, localisation = ips[0], ips[1]
+            
+            try:
+                client.connect(ip, 6601)
+                status = client.status()
+                song = client.currentsong()
+                
+                elapsed = int(float(status.get("elapsed", 0)))
+                duration_str = song.get("time", "0")
+                duration = int(duration_str.split(":")[0]) if ":" in duration_str else int(duration_str)
+                file_path = song.get("file", "Inconnu")
+                name = song.get("title", song.get("file", "Inconnu"))
 
-                client = MPDClient()
+                client.close()
+                client.disconnect()
+                
+                conn.close()
 
-                conn = self._getDBConnection()
-                ips = conn.execute("SELECT l.adresse_ip,lo.ville FROM lecteur l JOIN localisation lo USING(id_localisation)").fetchall()
-                for ip,localisation in ips:
-                        client.connect(ip,6601)
-                        status = client.status()
-                        song = client.currentSong()
-                        elapsed = status["elapsed"][0]
-                        duration = song["time"][0]
-                        file = song["file"]
-                        name = song["title"]
-
-                        return {
-                            "ip":ip,
-                            "localisation":localisation,
-                            "file":file,
-                            "name":name,
-                            "elapsed":elapsed,
-                            "duration":duration
-                        }
+                return {
+                    "ip": ip,
+                    "localisation": localisation,
+                    "file": file_path,
+                    "name": name,
+                    "elapsed": elapsed,
+                    "duration": duration
+                }
+            except Exception as e:
+                print(f"Erreur connexion MPD: {e}")
+                try:
+                    client.close()
+                    client.disconnect()
+                except:
+                    pass
+                conn.close()
+                return None
                 
         except Exception as e:
-            print(f"Erreur {e} dans la méthode WhatPlayersPlaying")
-
+            print(f"Erreur {e} dans WhatPlayerPlaying")
+            return None
 
     def getAllPlayer(self):
-
+        """Récupère tous les lecteurs"""
         try:
             players = []
-            conn= self._getDBConnection()
+            conn = self._getDBConnection()
             hosts = conn.execute("SELECT * FROM lecteur").fetchall()
 
             for host in hosts:
-                if host not in players:
-                    players.append(dict(host))
+                players.append(dict(host))
 
+            conn.close()
             return players
-            
         except Exception as e:
             print(f"Erreur {e} dans getAllPlayer")
+            return []
 
-    
     def getAllPlayerWithTheirLocalisation(self):
-
+        """Récupère tous les lecteurs avec leur localisation"""
         try:
-
             players = []
-            conn= self._getDBConnection()
+            conn = self._getDBConnection()
             hosts = conn.execute("SELECT * FROM lecteur JOIN localisation USING(id_localisation)").fetchall()
 
             for host in hosts:
-                if host not in players:
-                    players.append(dict(host))
+                players.append(dict(host))
 
+            conn.close()
             return players
-            
         except Exception as e:
-            print(f"Erreur {e} dans getAllPlayer")
+            print(f"Erreur {e} dans getAllPlayerWithTheirLocalisation")
+            return []
 
-    
-    def findByIP(self,adresse_ip):
-
+    def findByIP(self, adresse_ip):
+        """Trouve un lecteur par IP"""
         try:
+            conn = self._getDBConnection()
+            host = conn.execute("SELECT * FROM lecteur WHERE adresse_ip = ?", (adresse_ip,)).fetchone()
+            conn.close()
             
-            conn= self._getDBConnection()
-            host = conn.execute("SELECT * FROM lecteur WHERE adresse_ip = (?)",(adresse_ip,)).fetchone()
-            print(host)
-            return lecteur(dict(host))
-            
+            if host:
+                return lecteur(dict(host))
+            return None
         except Exception as e:
             print(f"Erreur {e} dans findByIP")
+            return None
 
-    
     def findByEmplacement(self, emplacement):
+        """Trouve un lecteur par emplacement"""
         try:
-            
-            conn= self._getDBConnection()
-            host = conn.execute("SELECT * FROM lecteur l JOIN localisation lo USING(id_localisation) WHERE ville = (?)",(emplacement,)).fetchall()
-            print(host)
-            return lecteur(dict(host))
-            
-        except Exception as e:
-            print(f"Erreur {e} dans findByLocalisation")
-
-    
-    def getAllUp(self):
-            
-            """
-            Retourne tout les lecteurs en état de marche et de synchronisité
-
-            """
-            
-            try:
-
-                up = []
-                conn = self._getDBConnection()
-                hosts = conn.execute("SELECT DISTINCT * FROM lecteur WHERE statut = 'UP'").fetchall()
-
-                for host in hosts:
-                    if host not in up:
-                        up.append(dict(host))
-
-                return up
-
-            except Exception as e:
-                print(f"Erreur {e} dans getAllUp")
-
-
-    def getAllDown(self):
-
-        """
-            Retourne tout les lecteurs qui ne sont âs en état de marche et de synchronisité
-            
-        """
-            
-        try:
-
-            down = []
             conn = self._getDBConnection()
-            hosts = conn.execute("SELECT DISTINCT * FROM lecteur WHERE statut = 'KO'").fetchall()
+            hosts = conn.execute("""
+                SELECT * FROM lecteur l 
+                JOIN localisation lo USING(id_localisation) 
+                WHERE ville = ?
+            """, (emplacement,)).fetchall()
+            conn.close()
+            
+            return [lecteur(dict(host)) for host in hosts]
+        except Exception as e:
+            print(f"Erreur {e} dans findByEmplacement")
+            return []
+
+    def getAllUp(self):
+        """Retourne tous les lecteurs UP"""
+        try:
+            up = []
+            conn = self._getDBConnection()
+            hosts = conn.execute("SELECT DISTINCT * FROM lecteur WHERE statut = 'UP'").fetchall()
 
             for host in hosts:
-                if host not in down:
-                    down.append(dict(host))
+                up.append(dict(host))
 
-            return down
-
+            conn.close()
+            return up
         except Exception as e:
-            print(f"Erreir {e} dans getAllDown")
+            print(f"Erreur {e} dans getAllUp")
+            return []
 
+    def getAllDown(self):
+        """Retourne tous les lecteurs DOWN"""
+        try:
+            down = []
+            conn = self._getDBConnection()
+            hosts = conn.execute("SELECT DISTINCT * FROM lecteur WHERE statut = 'DOWN' OR statut = 'KO'").fetchall()
 
+            for host in hosts:
+                down.append(dict(host))
 
-
-                 
-
-    
-
-
-
-    
-
-
-
+            conn.close()
+            return down
+        except Exception as e:
+            print(f"Erreur {e} dans getAllDown")
+            return []

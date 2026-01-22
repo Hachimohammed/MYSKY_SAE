@@ -1,43 +1,98 @@
-from flask import render_template, redirect, url_for, jsonify, send_file, request 
+from flask import render_template, jsonify, request, session, url_for
 from app import app
 import os
-from mutagen.mp3 import MP3 as mp3
+from mutagen.mp3 import MP3
+from datetime import datetime
 from app.services.AudioFileService import AudioFileService
-from app.services.PlaylistService import PlaylistService
-from app.services.AdminService import AdminService
 from app.controllers.LoginController import reqrole
 from werkzeug.utils import secure_filename
+from app.models.lecteurDAO import lecteurDAO
 
-UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'audio')
+# Configuration
+UPLOAD_FOLDER_PUB = os.path.join(app.root_path, 'static', 'commercial')
 ALLOWED_EXTENSIONS = {'mp3'}
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(UPLOAD_FOLDER_PUB, exist_ok=True)
 
 def allowed_file(filename):
-        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-audio_service = AudioFileService()
-playlist_service = PlaylistService()
-admin_service = AdminService()
+audio_service = AudioFileService(app)
+lecteur_dao = lecteurDAO()
+
 
 class CommercialController:
-
-    #Classe dédiée au contrôle des accès liés aux commerciaux
 
     @app.route('/commercial')
     @reqrole("ADMIN", "COMMERCIAL")
     def commercialView():
-        metadata = {"title": "Commercial Dashboard"}
-        return render_template('commercial.html', metadata=metadata)
-    
-    
-    @app.route('/commercial/upload', methods=['POST'])
-    @reqrole("ADMIN", "COMMERCIAL")
-    def commercialUpload():
+        """Page principale commerciale"""
+        # Récupérer les infos du lecteur
+        playing_info = None
         try:
-            # admin_service.Ad(recuperation des mp3 mais si c'est pas-possible-je-modifie)
+            playing_info = lecteur_dao.WhatPlayerPlaying()
+            if playing_info:
+                print(f" Lecture en cours: {playing_info.get('name')} à {playing_info.get('localisation')}")
+            else:
+                print(" Aucun lecteur actif ou aucune lecture en cours")
+        except Exception as e:
+            print(f" Erreur récupération info lecteur: {e}")
+            playing_info = None
+        
+        
+        ads_history = []
+        try:
+            all_files = audio_service.getAllAudioFiles()
+            ads = [f for f in all_files if f.id_type_contenu == 2]
+            ads.sort(key=lambda x: x.date_ajout, reverse=True)
+            
+            
+            for ad in ads[:10]:
+                try:
+                    date_ajout = datetime.fromisoformat(ad.date_ajout)
+                    now = datetime.now()
+                    diff = now - date_ajout
+                    
+                    if diff.days > 0:
+                        time_ago = f"il y a {diff.days} jour{'s' if diff.days > 1 else ''}"
+                    elif diff.seconds >= 3600:
+                        hours = diff.seconds // 3600
+                        time_ago = f"il y a {hours} heure{'s' if hours > 1 else ''}"
+                    elif diff.seconds >= 60:
+                        minutes = diff.seconds // 60
+                        time_ago = f"il y a {minutes} minute{'s' if minutes > 1 else ''}"
+                    else:
+                        time_ago = "à l'instant"
+                except:
+                    time_ago = "Date inconnue"
+                
+                if ad.duree:
+                    minutes = ad.duree // 60
+                    seconds = ad.duree % 60
+                    duree_format = f"{minutes}:{seconds:02d}"
+                else:
+                    duree_format = "0:00"
+                
+                ads_history.append({
+                    'id': ad.id_fichier,
+                    'nom': ad.nom + '.mp3',
+                    'duree': duree_format,
+                    'time_ago': time_ago,
+                    'statut': ad.statut_diffusion
+                })
+        except Exception as e:
+            print(f"❌ Erreur récupération historique: {e}")
+        
+        return render_template('commercial.html', 
+                             playing_info=playing_info,
+                             ads_history=ads_history)
+
+
+    @app.route('/commercial/upload-ad', methods=['POST'])
+    @reqrole("ADMIN", "COMMERCIAL")
+    def commercial_upload_ad():
+        """Upload de publicité"""
+        try:
             if 'filename' not in request.files:
                 return jsonify({'success': False, 'error': 'Aucun fichier fourni'}), 400
 
@@ -46,129 +101,147 @@ class CommercialController:
             if file.filename == '':
                 return jsonify({'success': False, 'error': 'Nom de fichier vide'}), 400
 
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
+            if not allowed_file(file.filename):
+                return jsonify({'success': False, 'error': 'Seuls les fichiers MP3 sont autorisés'}), 400
 
+            # Sauvegarde du fichier
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(UPLOAD_FOLDER_PUB, filename)
+            file.save(filepath)
+            print(f"Publicité sauvegardée : {filepath}")
 
-                filepath = os.path.join(UPLOAD_FOLDER, filename)
-                file.save(filepath)
+            # Extraction de la durée
+            try:
+                audio = MP3(filepath)
+                duration = int(audio.info.length)
+            except Exception as e:
+                print(f" Erreur lecture métadonnées : {e}")
+                duration = 45
 
-                
-                audio = mp3(filepath)
-                duration = audio.info.length
+            # Enregistrement en BDD avec statut EN_ATTENTE
+            user_id = session.get('user_id', 1)
+            audio_file = audio_service.createAudioFile(
+                nom=filename.rsplit('.', 1)[0],
+                type_fichier='mp3',
+                taille=os.path.getsize(filepath),
+                chemin_fichier=filepath,
+                id_type_contenu=2,  # Type PUB
+                duree=duration,
+                jour_semaine=None,
+                id_utilisateur=user_id
+            )
 
-                
-                audio_service.createAudioFile(filename, filepath, duration)
-
+            if not audio_file:
                 return jsonify({
-                    'success': True, 
-                    'filename': filename,
-                    'duration': duration
+                    'success': False,
+                    'error': 'Erreur lors de l\'enregistrement en base de données'
+                }), 500
+
+            return jsonify({
+                'success': True,
+                'filename': filename,
+                'duration': duration,
+                'id_fichier': audio_file.id_fichier,
+                'statut': audio_file.statut_diffusion
+            }), 200
+
+        except Exception as e:
+            print(f"❌ Erreur upload ad : {e}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({'success': False, 'error': str(e)}), 500
+
+
+    # ========== API POUR LES LECTEURS ==========
+
+    @app.route('/api/v1/commercial/ads-for-players', methods=['GET'])
+    def api_get_ads_for_players():
+        """
+        API pour les lecteurs : récupère uniquement les publicités EN_ATTENTE
+        
+        Les lecteurs appellent cette API toutes les 2 secondes pour vérifier 
+        s'il y a de nouvelles pubs à diffuser
+        
+        ACCÈS: Public (pas d'authentification requise)
+        
+        """
+        try:
+            all_files = audio_service.getAllAudioFiles()
+            
+            ads = [f for f in all_files if f.id_type_contenu == 2 and f.statut_diffusion == 'EN_ATTENTE']
+            
+        
+            ads.sort(key=lambda x: x.date_ajout, reverse=True)
+            
+            ads_data = []
+            for ad in ads:
+                ads_data.append({
+                    'id_fichier': ad.id_fichier,
+                    'nom': ad.nom,
+                    'duree': ad.duree,
+                    'date_ajout': ad.date_ajout,
+                    'statut': ad.statut_diffusion,
+                    'download_url': url_for('api_download_audio', id_fichier=ad.id_fichier, _external=True)
+                })
+            
+            return jsonify({
+                'success': True,
+                'count': len(ads_data),
+                'ads': ads_data
+            }), 200
+            
+        except Exception as e:
+            print(f"Erreur get ads for players: {e}")
+            return jsonify({'success': False, 'error': str(e)}), 500
+    
+    
+    @app.route('/api/v1/commercial/mark-ad-as-played/<int:id_fichier>', methods=['POST'])
+    def api_mark_ad_as_played(id_fichier):
+        """
+        API pour les lecteurs : marque une pub comme TERMINE après diffusion
+        
+        ACCÈS: Public (pas d'authentification requise)
+        """
+        try:
+            success = audio_service.audio_dao.updateStatutDiffusion(id_fichier, 'TERMINE')
+            
+            if success:
+                return jsonify({
+                    'success': True,
+                    'message': f'Publicité {id_fichier} marquée comme terminée'
                 }), 200
             else:
-                return jsonify({'success': False, 'error': 'Format de fichier non autorisé'}), 400
-
+                return jsonify({
+                    'success': False,
+                    'error': 'Erreur lors de la mise à jour'
+                }), 500
+                
         except Exception as e:
+            print(f"Erreur mark ad as played: {e}")
             return jsonify({'success': False, 'error': str(e)}), 500
     
     
-    @app.route('/commercial/file/<int:file_id>', methods=['DELETE'])
-    @reqrole("ADMIN", "COMMERCIAL")
-    def commercialDeleteFile(id_fichier):
+    @app.route('/api/v1/player/current', methods=['GET'])
+    def api_get_current_player():
+        """
+        API pour récupérer ce qui est en train de jouer sur les lecteurs
+        
+        ACCÈS: Public (pas d'authentification requise)
+        """
         try:
-            success, error = audio_service.deleteAudioFile(id_fichier)
-
-            if success:
-                return jsonify({'success': True}), 200
+            playing_info = lecteur_dao.WhatPlayerPlaying()
+            
+            if playing_info:
+                return jsonify({
+                    'success': True,
+                    'playing': playing_info
+                }), 200
             else:
-                return jsonify({'success': False, 'error': error}), 404 if error == 'Fichier introuvable' else 500
-            
+                return jsonify({
+                    'success': True,
+                    'playing': None
+                }), 200
+                
         except Exception as e:
-            print(f"Erreur lors de la suppression du fichier : {e}")
+            print(f"Erreur get current player: {e}")
             return jsonify({'success': False, 'error': str(e)}), 500
-    
-    
-    @app.route('/commercial/files/generate', methods=['POST'])
-    @reqrole("ADMIN", "COMMERCIAL")
-    def generateFileLecture():
-            file_upload = audio_service.createAudioFile()
-            if file_upload == True:
-                try:
-                    admin_service.pullMP3toplayers()
-                    print("Fichiers MP3 envoyés aux players.")
-
-                except Exception as e:
-                    print(f"Erreur lors de l'envoi des fichiers MP3 aux players : {e}")
-                    return jsonify({"error": str(e)}), 500
-            return redirect(url_for('commercialView'))
-
-
-    @app.route('/commercial/playlist/stop')
-    @reqrole("ADMIN", "COMMERCIAL")
-    def commercialStopPlaylist():
-        try:
-            admin_service.WhatPlayerPlaying()
-            if admin_service.WhatPlayerPlaying() == True:
-                admin_service.getAllDown()
-                print("Lecture en cours arrêtée sur tous les players.")
-                
-
-                
-        except Exception as e:
-            print(f"Aucune playlist en cours d'exécution. : {e}")
-            return jsonify({"error": str(e)}), 500
-        
-        return redirect(url_for('commercialView'))
-    
-
-    @app.route('/api/v1/files/download/<int:id_fichier>')
-    @reqrole("ADMIN", "COMMERCIAL")
-    def api_download_audio_file(id_fichier):
-        try:
-            audio_ficher = audio_service.getAudioFileById(id_fichier)
-
-            if not audio_ficher:
-                return jsonify({"error": "Fichier non trouvé"}), 404
-            
-            if not audio_ficher.chemin_fichier or not os.path.exists(audio_ficher.chemin_fichier):
-                return jsonify({"error": "Chemin du fichier invalide"}), 404
-            
-            return send_file(
-                audio_ficher.chemin_fichier,
-                mimetype='audio/mp3',
-                as_attachment=True,
-                download_name=f"{audio_ficher.nom}.mp3"
-            )
-       
-        except Exception as e:
-            print(f"Erreur lors du téléchargement du fichier : {e}")
-            return jsonify({"error": str(e)}), 500        
-
-
-    @app.route('/api/v1/files')
-    @reqrole("ADMIN", "COMMERCIAL")
-    def api_get_audio_files():
-        try:
-            audio_fichier = audio_service.getAllAudioFiles()
-
-            fichier_data = []
-            for f in audio_fichier:
-                fichier_data.append({
-                "id": f.id_fichier,
-                "nom": f.nom,
-                "type": f.type_fichier,
-                "taille": f.taille,
-                "date_ajout": f.date_ajout,
-                "id_type": f.id_type_contenu,
-                "chemin": f.chemin_fichier,
-                "duree": f.duree,
-                "artiste": f.artiste,
-                "album": f.album,
-                "jour_semaine": f.jour_semaine
-            })
-        
-            return jsonify(fichier_data)
-    
-        except Exception as e:
-            print(f"Erreur lors de la récupération des fichiers : {e}")
-            return jsonify({"error": str(e)}), 500

@@ -5,602 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service Commercial - MySky Audio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(to bottom right, #0f172a, #1e3a8a, #0f172a);
-            min-height: 100vh;
-        }
-
-        /* Header */
-        .header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .logo-container {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .header-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: white;
-            margin: 0;
-        }
-
-        .header-subtitle {
-            font-size: 0.75rem;
-            color: #bfdbfe;
-            margin: 0;
-        }
-
-        .btn-logout {
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Main Title */
-        .main-title {
-            font-size: 3rem;
-            font-weight: bold;
-            color: white;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .main-subtitle {
-            color: #bfdbfe;
-            text-align: center;
-            font-size: 1.125rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Player */
-        .player-wrapper {
-            background: linear-gradient(to bottom right, #9333ea, #ec4899, #f97316);
-            border-radius: 24px;
-            padding: 1px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .player-glass {
-            position: absolute;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(60px);
-        }
-
-        .player-particles {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-            opacity: 0.3;
-        }
-
-        .particle1 {
-            position: absolute;
-            width: 288px;
-            height: 288px;
-            background: white;
-            border-radius: 50%;
-            filter: blur(60px);
-            top: -100px;
-            left: -100px;
-            animation: pulse 2s infinite;
-        }
-
-        .particle2 {
-            position: absolute;
-            width: 384px;
-            height: 384px;
-            background: #fde047;
-            border-radius: 50%;
-            filter: blur(60px);
-            bottom: -150px;
-            right: -150px;
-            animation: pulse 2s infinite;
-            animation-delay: 1s;
-        }
-
-        .player-content {
-            position: relative;
-            background: linear-gradient(to bottom right, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 2rem;
-        }
-
-        .vinyl-disc {
-            width: 96px;
-            height: 96px;
-            border-radius: 50%;
-            background: linear-gradient(to bottom right, #a855f7, #ec4899);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: spin 3s linear infinite;
-            position: relative;
-        }
-
-        .vinyl-inner {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #0f172a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .vinyl-center {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(to bottom right, #c084fc, #f9a8d4);
-        }
-
-        .playing-indicator {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 24px;
-            height: 24px;
-            background: #22c55e;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            animation: pulse 2s infinite;
-        }
-
-        .playing-dot {
-            width: 12px;
-            height: 12px;
-            background: white;
-            border-radius: 50%;
-        }
-
-        .track-label {
-            color: #d8b4fe;
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 0.25rem;
-        }
-
-        .track-title {
-            font-size: 1.875rem;
-            font-weight: 900;
-            background: linear-gradient(to right, #d8b4fe, #f9a8d4, #fed7aa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.25rem;
-        }
-
-        .track-subtitle {
-            color: #9ca3af;
-            font-size: 0.875rem;
-        }
-
-        .badge-devices {
-            padding: 0.5rem 1rem;
-            background: rgba(168, 85, 247, 0.2);
-            backdrop-filter: blur(12px);
-            color: #e9d5ff;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            border: 1px solid rgba(168, 85, 247, 0.3);
-        }
-
-        .badge-live {
-            padding: 0.5rem 1rem;
-            background: rgba(34, 197, 94, 0.2);
-            backdrop-filter: blur(12px);
-            color: #bbf7d0;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            animation: pulse 2s infinite;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            position: relative;
-            background: rgba(51, 65, 85, 0.5);
-            border-radius: 50px;
-            height: 8px;
-            margin-bottom: 0.5rem;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .progress-bar-custom {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(to right, #a855f7, #ec4899, #f97316);
-            border-radius: 50px;
-            transition: width 0.3s;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .progress-glow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(to right, #c084fc, #f9a8d4, #fdba74);
-            border-radius: 50px;
-            filter: blur(4px);
-            opacity: 0.6;
-            transition: width 0.3s;
-        }
-
-        .time-display {
-            color: #d8b4fe;
-            font-size: 0.875rem;
-            font-weight: bold;
-        }
-
-        .time-separator {
-            color: #6b7280;
-            font-size: 0.75rem;
-        }
-
-        .time-total {
-            color: #9ca3af;
-            font-size: 0.875rem;
-            font-weight: bold;
-        }
-
-        /* Controls */
-        .btn-control {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(to bottom right, #475569, #334155);
-            border: none;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-control:hover {
-            background: linear-gradient(to bottom right, #9333ea, #ec4899);
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-        }
-
-        .btn-control svg {
-            color: #d1d5db;
-            transition: color 0.3s;
-        }
-
-        .btn-control:hover svg {
-            color: white;
-        }
-
-        .btn-play-pause {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(to bottom right, #9333ea, #ec4899);
-            border: none;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            position: relative;
-        }
-
-        .btn-play-pause:hover {
-            background: linear-gradient(to bottom right, #a855f7, #f472b6);
-            transform: scale(1.1);
-            box-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
-        }
-
-        .btn-play-glow {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom right, #c084fc, #f9a8d4);
-            border-radius: 16px;
-            filter: blur(20px);
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-
-        .btn-play-pause:hover .btn-play-glow {
-            opacity: 0.75;
-        }
-
-        /* Volume Slider */
-        .volume-slider {
-            flex: 1;
-            height: 8px;
-            border-radius: 50px;
-            appearance: none;
-            cursor: pointer;
-            background: linear-gradient(to right, rgb(168, 85, 247) 0%, rgb(236, 72, 153) 75%, rgb(71, 85, 105) 75%, rgb(71, 85, 105) 100%);
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-            transition: all 0.2s;
-        }
-
-        .volume-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
-        }
-
-        .volume-slider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #a855f7, #ec4899);
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-            transition: all 0.2s;
-        }
-
-        .volume-slider::-moz-range-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
-        }
-
-        .volume-value {
-            color: #d8b4fe;
-            font-size: 0.875rem;
-            font-weight: bold;
-            min-width: 3rem;
-            text-align: right;
-        }
-
-        .btn-mute {
-            width: 40px;
-            height: 40px;
-            background: rgba(51, 65, 85, 0.5);
-            border: none;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .btn-mute:hover {
-            background: #9333ea;
-        }
-
-        .btn-mute.muted {
-            background: #dc2626;
-        }
-
-        /* Upload Section */
-        .upload-section {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            padding: 2rem;
-        }
-
-        .upload-icon-container {
-            width: 56px;
-            height: 56px;
-            background: #3b82f6;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .upload-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #111827;
-        }
-
-        .upload-subtitle {
-            color: #4b5563;
-        }
-
-        .upload-zone {
-            border: 3px dashed #93c5fd;
-            border-radius: 16px;
-            padding: 2rem;
-            background: #eff6ff;
-            transition: background 0.3s;
-            cursor: pointer;
-        }
-
-        .upload-zone:hover {
-            background: #dbeafe;
-        }
-
-        .file-preview {
-            background: linear-gradient(to right, #f0fdf4, #dcfce7);
-            border-radius: 16px;
-            padding: 1.5rem;
-            border: 2px solid #86efac;
-        }
-
-        .file-icon {
-            width: 56px;
-            height: 56px;
-            background: #22c55e;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-broadcast {
-            padding: 0.75rem 2rem;
-            background: linear-gradient(to right, #ef4444, #dc2626);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-        }
-
-        .btn-broadcast:hover {
-            background: linear-gradient(to right, #dc2626, #b91c1c);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        /* History */
-        .history-item {
-            padding: 1.25rem;
-            background: #fff7ed;
-            border-radius: 12px;
-            border: 2px solid #fed7aa;
-        }
-
-        .history-item-gray {
-            background: #f9fafb;
-            border-color: #e5e7eb;
-        }
-
-        .history-icon {
-            width: 48px;
-            height: 48px;
-            background: #f97316;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .history-icon-gray {
-            background: #9ca3af;
-        }
-
-        .badge-completed {
-            padding: 0.5rem 1rem;
-            background: #dcfce7;
-            color: #15803d;
-            font-weight: bold;
-            border-radius: 8px;
-            font-size: 0.875rem;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content-custom {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            padding: 2rem;
-            max-width: 672px;
-            width: 100%;
-            margin: 1rem;
-        }
-
-        .modal-icon {
-            width: 80px;
-            height: 80px;
-            background: #f97316;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            animation: pulse 2s infinite;
-        }
-
-        .ad-progress-bar {
-            background: #fed7aa;
-            border-radius: 50px;
-            height: 16px;
-            overflow: hidden;
-            margin-bottom: 0.5rem;
-        }
-
-        .ad-progress-fill {
-            background: #f97316;
-            height: 100%;
-            border-radius: 50px;
-            transition: width 0.1s;
-            width: 0%;
-        }
-
-        .info-box {
-            background: #eff6ff;
-            border-radius: 16px;
-            padding: 1.25rem;
-            border: 2px solid #bfdbfe;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/commercial.css') }}">
 </head>
 <body>
     
@@ -610,7 +15,7 @@
             <div class="d-flex align-items-center justify-content-between py-3">
                 <div class="d-flex align-items-center gap-3">
                     <div class="logo-container">
-                        <img src="{{ url_for('static', filename='Logo3.png') }}" alt="MySky Audio Logo" />
+                        <img src="{{ url_for('static', filename='Logo/Logo3.png') }}" alt="MySky Audio Logo" />
                     </div>
                     <div>
                         <h1 class="header-title">MySky Audio</h1>
@@ -640,8 +45,7 @@
             </div>
 
             <div class="player-content">
-                <!-- Header -->
-                <div class="d-flex align-items-start justify-content-between mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="d-flex align-items-center gap-3">
                         <div style="position: relative;">
                             <div class="vinyl-disc">
@@ -649,70 +53,22 @@
                                     <div class="vinyl-center"></div>
                                 </div>
                             </div>
+                            {% if playing_info %}
                             <div class="playing-indicator">
                                 <div class="playing-dot"></div>
                             </div>
+                            {% endif %}
                         </div>
                         <div>
                             <p class="track-label">🎵 En lecture</p>
-                            <h3 id="currentTrack" class="track-title">Summer Vibes - Track 04</h3>
-                            <p class="track-subtitle">Playlist MySky · Ambiance Magasin</p>
+                            {% if playing_info %}
+                                <h3 class="track-title">{{ playing_info.name }}</h3>
+                                <p class="track-subtitle">📍 {{ playing_info.localisation }}</p>
+                            {% else %}
+                                <h3 class="track-title">Aucune lecture</h3>
+                                <p class="track-subtitle">Aucun lecteur actif</p>
+                            {% endif %}
                         </div>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge-devices">📍 3 appareils</span>
-                        <span class="badge-live">🔴 LIVE</span>
-                    </div>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="mb-4">
-                    <div class="progress-container">
-                        <div id="progressBar" class="progress-bar-custom" style="width: 45%"></div>
-                        <div id="progressGlow" class="progress-glow" style="width: 45%"></div>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span id="currentTime" class="time-display">2:15</span>
-                        <span class="time-separator">◆◆◆</span>
-                        <span id="totalTime" class="time-total">5:00</span>
-                    </div>
-                </div>
-
-                <!-- Controls -->
-                <div class="d-flex align-items-center justify-content-between gap-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn-control">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M8.445 14.832A1 1 0 0010 14v-2.798l5.445 3.63A1 1 0 0017 14V6a1 1 0 00-1.555-.832L10 8.798V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z"/>
-                            </svg>
-                        </button>
-                        
-                        <button id="playPauseBtn" class="btn-play-pause">
-                            <div class="btn-play-glow"></div>
-                            <svg id="pauseIcon" style="position: relative; z-index: 1;" width="40" height="40" fill="white" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-
-                        <button class="btn-control">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M4.555 5.168A1 1 0 003 6v8a1 1 0 001.555.832L10 11.202V14a1 1 0 001.555.832l6-4a1 1 0 000-1.664l-6-4A1 1 0 0010 6v2.798l-5.445-3.63z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Volume -->
-                    <div class="d-flex align-items-center gap-3" style="flex: 1; max-width: 384px;">
-                        <svg width="24" height="24" fill="#9ca3af" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                        <input type="range" id="volumeSlider" min="0" max="100" value="75" class="volume-slider" oninput="updateVolume(this.value)">
-                        <span id="volumeValue" class="volume-value">75%</span>
-                        <button onclick="toggleMute()" id="muteBtn" class="btn-mute">
-                            <svg id="volumeIcon" width="20" height="20" fill="#d1d5db" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -727,20 +83,18 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="upload-title mb-1">Diffuser une publicité urgente</h3>
-                    <p class="upload-subtitle mb-0">La musique s'arrêtera automatiquement et reprendra après la diffusion</p>
+                    <h3 class="upload-title mb-1">Téléverser une publicité</h3>
+                    <p class="upload-subtitle mb-0">Le fichier sera diffusé automatiquement par les lecteurs</p>
                 </div>
             </div>
 
-            <form action="/" method="POST" enctype="multipart/form-data">
             <div class="upload-zone text-center" onclick="document.getElementById('fileInput').click()">
                 <input 
-                type="file" 
-                id="fileInput" 
-                name="fillename" 
-                accept=".mp3" 
-                class="d-none" 
-                onchange="handleFileSelect(event)">
+                    type="file" 
+                    id="fileInput" 
+                    accept=".mp3" 
+                    class="d-none" 
+                    onchange="handleFileSelect(event)">
                 <svg width="64" height="64" fill="none" stroke="#3b82f6" viewBox="0 0 24 24" class="mx-auto mb-3">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                 </svg>
@@ -748,7 +102,6 @@
                 <p class="text-muted mb-3">ou glissez-déposez votre fichier ici</p>
                 <p class="small text-muted mb-0">Formats acceptés : .mp3 | Taille max : 50MB</p>
             </div>
-            </form>
 
             <div id="filePreview" class="d-none mt-4">
                 <div class="file-preview">
@@ -760,15 +113,15 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="fw-bold text-dark h5 mb-0" id="fileName">message.mp3</p>
-                                <p class="text-muted small mb-0">Fichier prêt à être diffusé</p>
+                                <p class="fw-bold text-dark h5 mb-0" id="fileName">fichier.mp3</p>
+                                <p class="text-muted small mb-0">Fichier prêt à être téléversé</p>
                             </div>
                         </div>
-                        <button onclick="diffuserPublicite()" class="btn-broadcast d-flex align-items-center gap-2">
+                        <button onclick="uploadPublicite()" class="btn-upload d-flex align-items-center gap-2">
                             <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                             </svg>
-                            DIFFUSER (musique s'arrête automatiquement)
+                            TÉLÉVERSER
                         </button>
                     </div>
                 </div>
@@ -781,240 +134,73 @@
                 <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Historique des interruptions publicitaires
+                Historique des publicités ({{ ads_history|length }} total)
             </h3>
             <div class="d-flex flex-column gap-3">
-                <div class="history-item d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="history-icon">
-                            <svg width="24" height="24" fill="white" viewBox="0 0 20 20">
-                                <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
-                            </svg>
+                {% if ads_history and ads_history|length > 0 %}
+                    {% for ad in ads_history %}
+                    <div class="history-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="history-icon {% if ad.statut == 'TERMINE' %}history-icon-gray{% endif %}">
+                                <svg width="24" height="24" fill="white" viewBox="0 0 20 20">
+                                    <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="fw-bold text-dark h5 mb-0">{{ ad.nom }}</p>
+                                <p class="small text-muted mb-0">Ajoutée {{ ad.time_ago }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="fw-bold text-dark h5 mb-0">vente_flash_50%.mp3</p>
-                            <p class="small text-muted mb-0">Diffusée il y a 25 minutes</p>
-                        </div>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge-completed">✓ Terminée</span>
-                        <p class="text-muted small mt-1 mb-0">Durée: 0:45</p>
-                    </div>
-                </div>
-
-                <div class="history-item d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="history-icon">
-                            <svg width="24" height="24" fill="white" viewBox="0 0 20 20">
-                                <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="fw-bold text-dark h5 mb-0">promo_weekend.mp3</p>
-                            <p class="small text-muted mb-0">Diffusée il y a 2 heures</p>
+                        <div class="text-end">
+                            {% if ad.statut == 'EN_ATTENTE' %}
+                                <span class="badge-pending">⏳ En attente</span>
+                            {% else %}
+                                <span class="badge-completed">✓ Diffusée</span>
+                            {% endif %}
+                            <p class="text-muted small mt-1 mb-0">Durée: {{ ad.duree }}</p>
                         </div>
                     </div>
-                    <div class="text-end">
-                        <span class="badge-completed">✓ Terminée</span>
-                        <p class="text-muted small mt-1 mb-0">Durée: 1:15</p>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <p class="text-center mb-0">📭 Aucune publicité téléversée récemment</p>
+                        <p class="text-center small text-muted mb-0">Téléversez votre première publicité ci-dessus</p>
                     </div>
-                </div>
-
-                <div class="history-item history-item-gray d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="history-icon history-icon-gray">
-                            <svg width="24" height="24" fill="white" viewBox="0 0 20 20">
-                                <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="fw-bold text-dark h5 mb-0">nouvelle_collection.mp3</p>
-                            <p class="small text-muted mb-0">Diffusée hier à 15:30</p>
-                        </div>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge-completed">✓ Terminée</span>
-                        <p class="text-muted small mt-1 mb-0">Durée: 0:30</p>
-                    </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
-    <div id="interruptModal" class="modal">
+    <!-- Modal d'attente -->
+    <div id="waitingModal" class="modal">
         <div class="modal-content-custom">
             <div class="text-center mb-4">
                 <div class="modal-icon">
-                    <svg width="40" height="40" fill="white" viewBox="0 0 20 20">
-                        <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+                    <svg class="spinner" width="40" height="40" fill="white" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
+                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" opacity="0.75"/>
                     </svg>
                 </div>
-                <h3 class="h3 fw-bold text-dark mb-2">Diffusion de la publicité en cours...</h3>
-                <p class="text-muted h5 mb-3" id="adFileName">spot_promo.mp3</p>
+                <h3 class="h3 fw-bold text-dark mb-2">En attente de diffusion</h3>
+                <p class="text-muted h5 mb-3" id="waitingFileName">fichier.mp3</p>
                 
-                <div class="ad-progress-bar">
-                    <div id="adProgress" class="ad-progress-fill"></div>
+                <div class="info-box mb-4">
+                    <p class="text-dark text-center mb-0">
+                        ✅ Fichier téléversé avec succès<br>
+                        📻 Les lecteurs détecteront et diffuseront automatiquement cette publicité<br>
+                        ⏱ Durée : <span id="waitingDuration">--:--</span>
+                    </p>
                 </div>
-                <p class="text-muted">La musique reprendra automatiquement après la publicité</p>
-            </div>
 
-            <div class="info-box mb-4">
-                <p class="text-dark text-center mb-0">
-                    <strong>📻 Diffusion sur :</strong> 3 appareils<br>
-                    <strong>⏸️ Musique :</strong> En pause temporaire<br>
-                    <strong>⏱️ Durée estimée :</strong> <span id="adDuration">0:45</span>
-                </p>
+                <button onclick="closeWaitingModal()" class="btn btn-primary w-100 py-3 fw-bold" style="border-radius: 12px;">
+                    OK
+                </button>
             </div>
-
-            <button onclick="closeModal()" class="btn btn-secondary w-100 py-3 fw-bold" style="border-radius: 12px;">
-                Fermer
-            </button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        let isPlaying = true;
-        let selectedFile = null;
-        let currentVolume = 75;
-        let isMuted = false;
-        let volumeBeforeMute = 75;
-
-        setInterval(() => {
-            if (isPlaying) {
-                const progressBar = document.getElementById('progressBar');
-                const progressGlow = document.getElementById('progressGlow');
-                let currentWidth = parseFloat(progressBar.style.width) || 45;
-                currentWidth += 0.5;
-                if (currentWidth >= 100) currentWidth = 0;
-                progressBar.style.width = currentWidth + '%';
-                progressGlow.style.width = currentWidth + '%';
-                
-                const totalSeconds = Math.floor((currentWidth / 100) * 300);
-                const minutes = Math.floor(totalSeconds / 60);
-                const seconds = totalSeconds % 60;
-                document.getElementById('currentTime').textContent = 
-                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }
-        }, 1000);
-
-        function updateVolume(value) {
-            currentVolume = value;
-            document.getElementById('volumeValue').textContent = value + '%';
-            
-            const slider = document.getElementById('volumeSlider');
-            slider.style.background = `linear-gradient(to right, rgb(168, 85, 247) 0%, rgb(236, 72, 153) ${value}%, rgb(71, 85, 105) ${value}%, rgb(71, 85, 105) 100%)`;
-            
-            updateVolumeIcon(value);
-        }
-
-        function updateVolumeIcon(volume) {
-            const icon = document.getElementById('volumeIcon');
-            if (volume == 0) {
-                icon.innerHTML = '<path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"/>';
-            } else if (volume < 50) {
-                icon.innerHTML = '<path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"/>';
-            } else {
-                icon.innerHTML = '<path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd"/>';
-            }
-        }
-
-        function toggleMute() {
-            const slider = document.getElementById('volumeSlider');
-            const muteBtn = document.getElementById('muteBtn');
-            
-            if (!isMuted) {
-                volumeBeforeMute = currentVolume;
-                updateVolume(0);
-                slider.value = 0;
-                muteBtn.classList.add('muted');
-                isMuted = true;
-            } else {
-                updateVolume(volumeBeforeMute);
-                slider.value = volumeBeforeMute;
-                muteBtn.classList.remove('muted');
-                isMuted = false;
-            }
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file && file.type === 'audio/mpeg') {
-                selectedFile = file;
-                document.getElementById('fileName').textContent = file.name;
-                document.getElementById('filePreview').classList.remove('d-none');
-            } else {
-                alert('⚠️ Veuillez sélectionner un fichier MP3 valide');
-            }
-        }
-
-        function diffuserPublicite() {
-            if (!selectedFile) return;
-            
-            isPlaying = false;
-            
-            document.getElementById('adFileName').textContent = selectedFile.name;
-            document.getElementById('interruptModal').classList.add('active');
-            
-            let progress = 0;
-            const adInterval = setInterval(() => {
-                progress += 2;
-                document.getElementById('adProgress').style.width = progress + '%';
-                
-                if (progress >= 100) {
-                    clearInterval(adInterval);
-                    setTimeout(() => {
-                        isPlaying = true;
-                        closeModal();
-                        
-                        addToHistory(selectedFile.name);
-                        
-                        document.getElementById('filePreview').classList.add('d-none');
-                        document.getElementById('fileInput').value = '';
-                        selectedFile = null;
-                        
-                        alert('✅ Publicité diffusée avec succès!\n\n🎵 La musique a repris automatiquement sur tous les appareils.');
-                    }, 500);
-                }
-            }, 100);
-        }
-
-        function addToHistory(fileName) {
-            const historyContainer = document.querySelector('.d-flex.flex-column.gap-3');
-            const newEntry = document.createElement('div');
-            newEntry.className = 'history-item d-flex align-items-center justify-content-between';
-            newEntry.innerHTML = `
-                <div class="d-flex align-items-center gap-3">
-                    <div class="history-icon">
-                        <svg width="24" height="24" fill="white" viewBox="0 0 20 20">
-                            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="fw-bold text-dark h5 mb-0">${fileName}</p>
-                        <p class="small text-muted mb-0">Diffusée à l'instant</p>
-                    </div>
-                </div>
-                <div class="text-end">
-                    <span class="badge-completed">✓ Terminée</span>
-                    <p class="text-muted small mt-1 mb-0">Durée: 0:45</p>
-                </div>
-            `;
-            historyContainer.insertBefore(newEntry, historyContainer.firstChild);
-        }
-
-        function closeModal() {
-            document.getElementById('interruptModal').classList.remove('active');
-            document.getElementById('adProgress').style.width = '0%';
-        }
-
-        document.getElementById('interruptModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='JavaScript/commercial.js') }}"></script>
 
 </body>
 </html>

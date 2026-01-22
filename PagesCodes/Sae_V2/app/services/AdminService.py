@@ -1,8 +1,8 @@
 from app.models.lecteurDAO import lecteurDAO
-from app.models.lecteurDAOInterface import lecteurDAOInterface
 from app.models.UserDAO import UserSqliteDAO
 
-class AdminService():
+class AdminService:
+    """Service admin avec correction des méthodes"""
 
     def __init__(self):
         self.ld = lecteurDAO()
@@ -14,7 +14,7 @@ class AdminService():
     def findStatut(self):
         self.ld.findStatut()
 
-    def Sync(self,adresse_ip):
+    def Sync(self, adresse_ip):
         self.ld.Sync(adresse_ip) 
 
     def SyncAll(self):
@@ -29,8 +29,9 @@ class AdminService():
     def playm3ubydayandtimestamp(self):
         self.ld.playm3ubydayandtimestamp()
 
-    def Ad(self,mp3):
-        self.ld.Ad()
+    def Ad(self, mp3):
+        """CORRECTION: passer le paramètre mp3"""
+        self.ld.Ad(mp3)
 
     def getAllPlayer(self):
         return self.ld.getAllPlayer()
@@ -41,11 +42,12 @@ class AdminService():
     def getAllPlayerLen(self):
         return len(self.ld.getAllPlayer())
     
-    def findByIP(self,adresse_ip):
+    def findByIP(self, adresse_ip):
         return self.ld.findByIP(adresse_ip)
     
-    def findByLocalisation(self,adresse_ip):
-        return self.ld.findByLocalisation()
+    def findByLocalisation(self, emplacement):
+        """CORRECTION: ajouter paramètre emplacement"""
+        return self.ld.findByEmplacement(emplacement)
     
     def getAllUp(self):
         return self.ld.getAllUp()
@@ -60,15 +62,15 @@ class AdminService():
         return len(self.ld.getAllUp())
     
     def WhatPlayerPlaying(self):
-        self.ld.WhatPlayerPlaying()
+        """CORRECTION: retourner le résultat"""
+        return self.ld.WhatPlayerPlaying()
     
-    def addUser(prenom, nom, mail, mot_de_passe, id_groupe, self):
+    def addUser(self, prenom, nom, mail, mot_de_passe, id_groupe):
+        """CORRECTION: ordre des paramètres"""
         self.us.addUser(prenom, nom, mail, mot_de_passe, id_groupe)
 
     def getAllUsers(self):
         return self.us.getAllUsers()
     
-    def deleteUser(self,user_id):
+    def deleteUser(self, user_id):
         self.us.deleteUser(user_id)
-    
-

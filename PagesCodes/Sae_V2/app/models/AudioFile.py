@@ -15,6 +15,7 @@ class AudioFile:
         self.artiste = dico.get('artiste')
         self.album = dico.get('album')
         self.jour_semaine = dico.get('jour_semaine')
+        self.statut_diffusion = dico.get('statut_diffusion', 'EN_ATTENTE')
     
     def to_dict(self):
         """Convertit l'objet en dictionnaire"""
@@ -29,5 +30,6 @@ class AudioFile:
             'duree': self.duree,
             'artiste': self.artiste,
             'album': self.album,
-            'jour_semaine': self.jour_semaine
+            'jour_semaine': self.jour_semaine,
+            'statut_diffusion': self.statut_diffusion
         }
