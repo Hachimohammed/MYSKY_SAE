@@ -235,9 +235,10 @@ class lecteurDAO(lecteurDAOInterface):
 
             for nom_lecteur,adresse_ip in hosts:
                     cmd = [
+                    "sudo",
                     "rsync", "-avz", "--progress",
                     f"{dir}/",
-                    f"{nom_lecteur}@{adresse_ip}/home/test/Musique"]
+                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique/"]
 
                     res = subprocess.run(cmd, capture_output=True, text=True)
 
@@ -264,9 +265,10 @@ class lecteurDAO(lecteurDAOInterface):
 
             for nom_lecteur,adresse_ip in hosts:
                     cmd = [
+                    "sudo",
                     "rsync", "-avz", "--progress",
                     f"{f}/",
-                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique/playlists"]
+                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique/playlists/"]
 
                     subprocess.run(cmd, capture_output=True, text=True)
 
@@ -316,9 +318,7 @@ class lecteurDAO(lecteurDAOInterface):
                         date_heure = file.get('date_heure_diffusion')
                         jour_semaine = file.get('jour_semaine')
 
-                        f = "/var/lib/mpd/playlists"
 
-                        m3u = file.get('nom_playlist')
 
                         jouer_playlist = False
 
@@ -328,6 +328,8 @@ class lecteurDAO(lecteurDAOInterface):
                         elif jour_semaine == jour_actuel:
                                 jouer_playlist = True
 
+                        urls = file.get("download_m3u_url")
+
 
 
                         if jouer_playlist:
@@ -335,9 +337,9 @@ class lecteurDAO(lecteurDAOInterface):
                                 ip = ip[0]
                                 client.connect(ip,6601)
                                 client.clear()
-                                client.load(m3u)
+                                for url in urls:
+                                    client.add(url)
                                 client.play()
-                                client.close()
                                 client.disconnect()
 
 
