@@ -168,7 +168,7 @@ class lecteurDAO(lecteurDAOInterface):
                     "sudo",
                     "rsync", "-avz", "--progress",
                     f"{dir_path}/",
-                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique/"
+                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique"
                 ]
 
                 res = subprocess.run(cmd, capture_output=True, text=True)
@@ -194,7 +194,7 @@ class lecteurDAO(lecteurDAOInterface):
                     "sudo",
                     "rsync", "-avz", "--progress",
                     f"{f}/",
-                    f"{nom_lecteur}@{adresse_ip}:/home/test/Musique/playlists/"
+                    f"{nom_lecteur}@{adresse_ip}:/home/test/playlists"
                 ]
                 subprocess.run(cmd, capture_output=True)
 
@@ -233,15 +233,15 @@ class lecteurDAO(lecteurDAOInterface):
                 elif jour_semaine == jour_actuel:
                     jouer_playlist = True
 
-                urls = file.get("download_m3u_url")
+
 
                 if jouer_playlist:
+                    name = file.get("nom_playlist")
                     for ip in ips:
                         ip = ip[0]
-                        client.connect(ip, 6601)
+                        client.connect(ip, 6600)
                         client.clear()
-                        for url in urls:
-                            client.add(url)
+                        client.load(name)
                         client.play()
                         client.disconnect()
 
