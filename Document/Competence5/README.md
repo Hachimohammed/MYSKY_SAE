@@ -7,6 +7,8 @@ YB = Yunes BOUABTA; S = Sofiane SEBBAH ; YS = Yakouba SOW ; K = Kenzo FILLONEAU 
 
 **Feuille de temps :** https://docs.google.com/spreadsheets/d/144viPT0Kw9tfOGwiz4w50dmR_DVE78iaw08l_Z460m4/edit?usp=sharing
 
+**Matrice RACI :**  https://docs.google.com/spreadsheets/d/1UPY_L3Z0ioxK1jGpg91R7N0wyzxg3UISUtYTOjAXaiY/edit?usp=sharing
+
 **User Story _(fichier user_story_myskyv2.pdf)_ :** https://drive.google.com/file/d/1vkE6ZSjyA1sQio2L6jBvc8QlL9SQUdk7/view?usp=drivesdk
 
 **Cahier des charges _(fichier MYSKY_CDG officiel.pdf)_ :** https://drive.google.com/file/d/1rBGbDXWnH-gNeEay7HxnTgvt8sOQxZMY/view?usp=sharing
