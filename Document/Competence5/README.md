@@ -29,7 +29,8 @@ Suite à ses **retours, modifications et conseils**, nous avons apporté les am�
 ## Vidéo de présentation
 
 Le **lien de la vidéo** réalisée pour la **première version des maquettes** est ajouté **directement dans ce message**.
-🔗 [Voir la vidéo de présentation – Version 1](https://www.youtube.com/watch?v=FU0ri1P4wrA)
+
+🔗 [Voir la vidéo de présentation – Version 1] :    (https://www.youtube.com/watch?v=FU0ri1P4wrA)
 
 
 ---
