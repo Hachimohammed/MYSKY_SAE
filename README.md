@@ -5,6 +5,14 @@
 - Installez toutes les extensions inscrites dans **requirement.txt** du répertoire avec **pip install nom_de_l'extension**
 - Depuis le reperetoire **PagesCodes/Sae_V2**, tapez dans un terminal **python main.py** ou **python3 main.py**
 - **Ctrl+Click** sur le lien **http://127.0.0.1/localhost** affiché sur le terminal
+## Connexion à l'application
+
+Après le lancement de l'application, vous serez redirigé vers la page de connexion.
+
+Utilisez les identifiants suivants :
+
+- **Nom d’utilisateur** : `leadadmin@mysky.com`
+- **Mot de passe** : `mysky123`
 
 ---
 ## 🌲 Arborescence du projet
