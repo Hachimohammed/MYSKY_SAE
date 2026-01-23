@@ -19,7 +19,7 @@ Conformément à votre demande, nous avons réalisé les **maquettes** et les av
 
 En complément, nous avons pris l’initiative de réaliser une **vidéo de présentation** afin de montrer l’**interactivité des maquettes** et de mieux illustrer les parcours utilisateurs.
 
-La **première version des maquettes**, accompagnée de cette vidéo, a été envoyée au client du projet, **M. Patrice Bringuier**.  
+La **première version des maquettes**, accompagnée de cette vidéo, a été envoyée au client du projet, **M. BRINGUIER**.  
 Suite à ses **retours, modifications et conseils**, nous avons apporté les améliorations demandées et réalisé une **deuxième version des maquettes**.
 
 ## Contenu du répertoire `maquettes`
