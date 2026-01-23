@@ -5,7 +5,7 @@
 Initiales à coté de chaque tâche sur GANTT :  
 YB = Yunes BOUABTA; S = Sofiane SEBBAH ; YS = Yakouba SOW ; K = Kenzo FILLONEAU ; HM = Mohammed HACHIM
 
-**Feuille de temps :**
+**Feuille de temps :** https://docs.google.com/spreadsheets/d/144viPT0Kw9tfOGwiz4w50dmR_DVE78iaw08l_Z460m4/edit?usp=sharing
 
 **User Story _(fichier user_story_myskyv2.pdf)_ :** https://drive.google.com/file/d/1vkE6ZSjyA1sQio2L6jBvc8QlL9SQUdk7/view?usp=drivesdk
 
